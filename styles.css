@@ -181,9 +181,25 @@ button { color: inherit; }
   box-shadow: 0 12px 22px rgba(255, 90, 31, 0.2);
 }
 .button.secondary {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 6px 16px rgba(17, 24, 39, 0.05);
+}
+.button.secondary:hover {
+  border-color: #d2d7de;
+  background: #f7f8fa;
+}
+/* En el hero el botón secundario sí usa el tratamiento sobre fondo naranja. */
+.hero-actions .button.secondary {
   border: 1px solid rgba(255,255,255,.45);
   background: rgba(255,255,255,.16);
   color: var(--white);
+  box-shadow: none;
+}
+.hero-actions .button.secondary:hover {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.62);
 }
 .button.quiet {
   border: 1px solid var(--line);
@@ -1090,7 +1106,7 @@ body.profile-open { overflow: hidden; }
     margin-top: 14px;
     flex-direction: column;
   }
-  .button.secondary {
+  .hero-actions .button.secondary {
     border-color: rgba(255,255,255,.3);
   }
   .hero-panel {
