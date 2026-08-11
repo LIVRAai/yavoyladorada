@@ -1203,3 +1203,37 @@ body.profile-open { overflow: hidden; }
   .footer-inner { flex-direction: column; }
   .mobile-dock { display: grid; }
 }
+
+/* YaVoy logo en header — imagen alojada en Imgur */
+.brand {
+  flex: 0 0 auto;
+}
+.brand-logo-crop {
+  position: relative;
+  display: block;
+  width: 190px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.brand-logo-crop img {
+  position: absolute;
+  width: 360px;
+  max-width: none;
+  height: auto;
+  left: -8px;
+  top: -73px;
+  display: block;
+}
+
+@media (max-width: 760px) {
+  .brand-logo-crop {
+    width: 152px;
+    height: 44px;
+  }
+  .brand-logo-crop img {
+    width: 300px;
+    left: -8px;
+    top: -61px;
+  }
+}
