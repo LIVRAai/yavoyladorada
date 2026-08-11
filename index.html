@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="YaVoy: catálogo local, domicilios y mandados en La Dorada y Puerto Salgar." />
+  <title>YaVoy | Lo encuentras. Te lo llevamos.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="YaVoy, inicio">
+        <span class="brand-mark">YV</span>
+        <span class="brand-copy">
+          <strong>YaVoy</strong>
+          <small>Catálogo local + domicilios</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#catalogo">Catálogo</a>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#cobertura">Cobertura</a>
+        <a class="nav-cta" href="#pedir">Pedir un YaVoy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="eyebrow-dot"></span>La Dorada + Puerto Salgar</span>
+          <h1>Lo encuentras aquí. <em>YaVoy por ello.</em></h1>
+          <p class="hero-description">
+            Descubre negocios, productos y servicios locales. Cuando encuentres lo que necesitas,
+            pide que YaVoy lo recoja y te lo lleve.
+          </p>
+
+          <div class="search-box">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="sr-only" for="buscar">Buscar negocio, producto o servicio</label>
+            <input id="buscar" type="search" placeholder="Prueba: pan, ferretería, uñas, hamburguesa..." />
+            <button id="buscarBtn" type="button">Buscar</button>
+          </div>
+
+          <div class="hero-actions">
+            <a class="button primary large" href="#catalogo">Explorar catálogo</a>
+            <a class="button secondary large" href="#pedir">Ya sé qué necesito</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Propuesta de valor de YaVoy">
+          <div class="hero-panel-top"><span class="status-dot"></span><span>Central local</span></div>
+          <div class="metric">
+            <strong>Descubre. Pide. Recibe.</strong>
+            <p>Un catálogo para encontrar lo local y una central para moverlo hasta donde lo necesitas.</p>
+          </div>
+          <div class="mini-flow">
+            <div><span>01</span><strong>Encuentra</strong><small>Negocios y servicios</small></div>
+            <div><span>02</span><strong>Pide</strong><small>Con YaVoy</small></div>
+            <div><span>03</span><strong>Recibe</strong><small>En tu ubicación</small></div>
+          </div>
+          <div class="panel-note"><span>●</span><p>La tarifa y disponibilidad siempre se confirman antes de iniciar el servicio.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section compact" id="categorias">
+      <div class="container">
+        <div class="section-heading">
+          <div><span class="eyebrow plain">Explora</span><h2>¿Qué necesitas hoy?</h2></div>
+          <p>Busca directamente o entra por categoría. El catálogo es el punto de partida de YaVoy.</p>
+        </div>
+
+        <div class="category-grid">
+          <button class="category-card" type="button" data-filter="comida"><span class="category-icon">🍽</span><strong>Comida</strong><small>Restaurantes, panaderías, tiendas</small></button>
+          <button class="category-card" type="button" data-filter="hogar"><span class="category-icon">⌂</span><strong>Hogar</strong><small>Ferretería, arreglos, decoración</small></button>
+          <button class="category-card" type="button" data-filter="belleza"><span class="category-icon">✦</span><strong>Belleza</strong><small>Peluquería, uñas, cuidado personal</small></button>
+          <button class="category-card" type="button" data-filter="moda"><span class="category-icon">◌</span><strong>Moda</strong><small>Ropa, calzado y accesorios</small></button>
+          <button class="category-card" type="button" data-filter="servicios"><span class="category-icon">⚙</span><strong>Servicios</strong><small>Técnicos, oficios y profesionales</small></button>
+          <button class="category-card" type="button" data-filter="tecnologia"><span class="category-icon">⌁</span><strong>Tecnología</strong><small>Celulares, accesorios y reparación</small></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="catalogo">
+      <div class="container">
+        <div class="section-heading business-heading">
+          <div><span class="eyebrow plain">Catálogo local</span><h2>Encuentra algo cerca.</h2></div>
+          <p>Descubre el negocio, habla directamente con él o solicita que YaVoy haga la recogida y entrega.</p>
+        </div>
+
+        <div class="catalog-tools">
+          <div class="filter-row" aria-label="Filtros por categoría">
+            <button class="filter-pill active" type="button" data-filter="todos">Todos</button>
+            <button class="filter-pill" type="button" data-filter="comida">Comida</button>
+            <button class="filter-pill" type="button" data-filter="hogar">Hogar</button>
+            <button class="filter-pill" type="button" data-filter="belleza">Belleza</button>
+            <button class="filter-pill" type="button" data-filter="moda">Moda</button>
+            <button class="filter-pill" type="button" data-filter="servicios">Servicios</button>
+            <button class="filter-pill" type="button" data-filter="tecnologia">Tecnología</button>
+          </div>
+          <label class="location-filter">Zona
+            <select id="cityFilter">
+              <option value="todas">Todas</option>
+              <option value="la-dorada">La Dorada</option>
+              <option value="puerto-salgar">Puerto Salgar</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="business-grid" id="businessGrid">
+          <article class="business-card" data-category="comida" data-city="la-dorada" data-city-label="La Dorada" data-search="pan panaderia desayuno cafe comida parque" data-name="Panadería El Parque" data-description="Pan fresco, desayunos, bebidas calientes y productos para llevar." data-location="Cerca al parque · Barrio Los Andes" data-hours="5:30 a. m. – 8:00 p. m." data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image food"><span class="tag">Comida</span><div class="image-letter">P</div></div>
+            <div class="business-body">
+              <div class="business-topline"><span>La Dorada</span><span>•</span><span>Los Andes</span></div>
+              <h3>Panadería El Parque</h3><p>Pan fresco, desayunos, bebidas calientes y productos para llevar.</p>
+              <div class="business-meta"><span>📍 Cerca al parque</span><span>🕒 5:30 a. m. – 8:00 p. m.</span></div>
+              <div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div>
+            </div>
+          </article>
+
+          <article class="business-card" data-category="servicios tecnologia" data-city="la-dorada" data-city-label="La Dorada" data-search="tecnico celular computador reparacion tecnologia domicilio servicio" data-name="TecniAndes" data-description="Reparación de celulares, computadores, accesorios y soporte técnico." data-location="Atención en el barrio Los Andes" data-hours="8:00 a. m. – 6:00 p. m." data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image service"><span class="tag">Servicios</span><div class="image-letter">T</div></div>
+            <div class="business-body"><div class="business-topline"><span>La Dorada</span><span>•</span><span>Domicilio</span></div><h3>TecniAndes</h3><p>Reparación de celulares, computadores, accesorios y soporte técnico.</p><div class="business-meta"><span>📍 Atención en Los Andes</span><span>🕒 8:00 a. m. – 6:00 p. m.</span></div><div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div></div>
+          </article>
+
+          <article class="business-card" data-category="belleza" data-city="la-dorada" data-city-label="La Dorada" data-search="unas manicure pedicure belleza estetica maria cita" data-name="María Studio" data-description="Manicure, pedicure, diseño de uñas y servicios de cuidado personal." data-location="Sector central · Barrio Los Andes" data-hours="9:00 a. m. – 7:00 p. m." data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image beauty"><span class="tag">Belleza</span><div class="image-letter">M</div></div>
+            <div class="business-body"><div class="business-topline"><span>La Dorada</span><span>•</span><span>Con cita</span></div><h3>María Studio</h3><p>Manicure, pedicure, diseño de uñas y servicios de cuidado personal.</p><div class="business-meta"><span>📍 Sector central</span><span>🕒 9:00 a. m. – 7:00 p. m.</span></div><div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div></div>
+          </article>
+
+          <article class="business-card" data-category="hogar" data-city="la-dorada" data-city-label="La Dorada" data-search="ferreteria hogar herramientas plomeria electricidad compras" data-name="Ferretería Los Andes" data-description="Herramientas, tornillería, electricidad, plomería y artículos para el hogar." data-location="Vía principal · Barrio Los Andes" data-hours="7:00 a. m. – 7:00 p. m." data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image home"><span class="tag">Hogar</span><div class="image-letter">F</div></div>
+            <div class="business-body"><div class="business-topline"><span>La Dorada</span><span>•</span><span>Entrega local</span></div><h3>Ferretería Los Andes</h3><p>Herramientas, tornillería, electricidad, plomería y artículos para el hogar.</p><div class="business-meta"><span>📍 Vía principal</span><span>🕒 7:00 a. m. – 7:00 p. m.</span></div><div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div></div>
+          </article>
+
+          <article class="business-card" data-category="moda" data-city="la-dorada" data-city-label="La Dorada" data-search="ropa moda accesorios regalos multimarca amate compras" data-name="Ámate Tienda" data-description="Moda, accesorios, detalles y una selección de productos de distintas marcas." data-location="Venta local · Barrio Los Andes" data-hours="Consultar disponibilidad" data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image fashion"><span class="tag">Moda</span><div class="image-letter">A</div></div>
+            <div class="business-body"><div class="business-topline"><span>La Dorada</span><span>•</span><span>Multimarca</span></div><h3>Ámate Tienda</h3><p>Moda, accesorios, detalles y una selección de productos de distintas marcas.</p><div class="business-meta"><span>📍 Venta local</span><span>🕒 Consultar disponibilidad</span></div><div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div></div>
+          </article>
+
+          <article class="business-card" data-category="comida" data-city="la-dorada" data-city-label="La Dorada" data-search="hamburguesa perro comida rapida domicilio noche burger" data-name="Burger 84" data-description="Hamburguesas, perros y combos para pedir en la noche sin salir del barrio." data-location="Barrio Los Andes" data-hours="5:00 p. m. – 11:00 p. m." data-whatsapp="573000000000" data-instagram="" data-reel="">
+            <div class="business-image food"><span class="tag">Comida</span><div class="image-letter">B</div></div>
+            <div class="business-body"><div class="business-topline"><span>La Dorada</span><span>•</span><span>Domicilio</span></div><h3>Burger 84</h3><p>Hamburguesas, perros y combos para pedir en la noche sin salir del barrio.</p><div class="business-meta"><span>📍 Los Andes</span><span>🕒 5:00 p. m. – 11:00 p. m.</span></div><div class="business-actions three"><a class="button quiet" href="https://wa.me/573000000000" target="_blank" rel="noopener">Negocio</a><button class="button secondary profile-button" type="button">Ver perfil</button><button class="button primary yavoy-button" type="button">Pedir con YaVoy</button></div></div>
+          </article>
+        </div>
+        <div class="empty-state" id="emptyState">No encontramos coincidencias. Prueba otra palabra, categoría o zona.</div>
+      </div>
+    </section>
+
+    <section class="section" id="pedir">
+      <div class="container request-layout">
+        <div class="request-copy">
+          <span class="eyebrow plain">Pedir un YaVoy</span>
+          <h2>Cuéntanos qué necesitas mover.</h2>
+          <p>Esta primera versión calcula una tarifa de referencia y prepara tu solicitud. La central confirma disponibilidad y valor final por WhatsApp antes de iniciar.</p>
+          <div class="selected-business is-hidden" id="selectedBusinessBox">
+            <small>Seleccionaste del catálogo</small>
+            <strong id="selectedBusinessName"></strong>
+            <button type="button" id="clearBusiness">Cambiar / quitar</button>
+          </div>
+        </div>
+
+        <form class="request-form" id="requestForm">
+          <div class="field full">
+            <label for="serviceType">¿Qué necesitas?</label>
+            <select id="serviceType" required>
+              <option value="domicilio">Recoger y entregar</option>
+              <option value="compra">Comprar por mí</option>
+              <option value="mandado">Hacer un mandado</option>
+              <option value="catalogo">Traer algo de un negocio del catálogo</option>
+            </select>
+          </div>
+
+          <div class="field"><label for="originCity">Ciudad de origen</label><select id="originCity" required><option value="la-dorada">La Dorada</option><option value="puerto-salgar">Puerto Salgar</option></select></div>
+          <div class="field"><label for="destinationCity">Ciudad de entrega</label><select id="destinationCity" required><option value="la-dorada">La Dorada</option><option value="puerto-salgar">Puerto Salgar</option></select></div>
+
+          <div class="field full"><label for="origin">¿Dónde recogemos o compramos?</label><input id="origin" required placeholder="Negocio, dirección o punto de referencia" /></div>
+          <div class="field full"><label for="destination">¿Dónde entregamos?</label><input id="destination" required placeholder="Dirección o punto de referencia" /></div>
+          <div class="field full"><label for="item">¿Qué debemos llevar o hacer?</label><input id="item" required placeholder="Ej.: recoger un pedido, comprar medicamentos, llevar documentos..." /></div>
+          <div class="field full"><label for="notes">Indicaciones adicionales <span>(opcional)</span></label><textarea id="notes" rows="3" placeholder="Nombre de quien recibe, referencia, forma de pago, etc."></textarea></div>
+
+          <div class="estimate-box">
+            <div><small>Tarifa de referencia</small><strong id="estimateValue">$6.000</strong></div>
+            <p id="estimateDetail">Trayecto dentro de la misma ciudad.</p>
+          </div>
+
+          <button class="submit-yavoy" type="submit">Continuar por WhatsApp →</button>
+          <small class="form-note">No se genera un cobro automático. YaVoy confirma el servicio antes de despachar.</small>
+        </form>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="como-funciona">
+      <div class="container">
+        <div class="section-heading"><div><span class="eyebrow plain">Simple</span><h2>Así funciona YaVoy.</h2></div><p>El catálogo y la central trabajan juntos, pero el proceso sigue siendo sencillo.</p></div>
+        <div class="steps">
+          <div class="step"><span>01</span><h3>Encuentra</h3><p>Explora negocios, productos y servicios locales o indícanos directamente qué necesitas.</p></div>
+          <div class="step"><span>02</span><h3>Solicita</h3><p>Selecciona “Pedir con YaVoy” o llena el formulario con origen, destino y detalle.</p></div>
+          <div class="step"><span>03</span><h3>Confirmamos</h3><p>La central valida disponibilidad, tarifa y condiciones por WhatsApp.</p></div>
+          <div class="step"><span>04</span><h3>Lo movemos</h3><p>Un domiciliario recoge el pedido y lo lleva al punto acordado.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="cobertura">
+      <div class="container coverage-grid">
+        <div><span class="eyebrow plain">Cobertura inicial</span><h2>Dos ciudades. Una sola central.</h2><p>El MVP inicia atendiendo La Dorada y Puerto Salgar. Los recorridos especiales o fuera del perímetro se confirman manualmente.</p></div>
+        <div class="coverage-cards"><div><span>01</span><strong>La Dorada</strong><small>Caldas</small></div><div><span>02</span><strong>Puerto Salgar</strong><small>Cundinamarca</small></div></div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container cta-box">
+        <div><span class="eyebrow light">Para comercios</span><h2>Tu negocio también puede estar en YaVoy.</h2><p>El catálogo es gratuito en la etapa inicial. La idea es que más personas te encuentren y puedan pedir una entrega desde tu negocio.</p></div>
+        <a class="cta-button" id="registerBusinessLink" href="#">Quiero aparecer en YaVoy →</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="profile-modal" id="profileModal" aria-hidden="true">
+    <div class="profile-backdrop" data-close-profile></div>
+    <section class="profile-dialog" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <button class="profile-close" type="button" aria-label="Cerrar perfil" data-close-profile>×</button>
+      <div class="profile-layout">
+        <div class="reel-column">
+          <div class="reel-frame" id="reelFrame">
+            <div class="reel-placeholder"><span class="reel-play">▶</span><strong>Este negocio está en YaVoy</strong><p>Aquí puede mostrarse su Reel o contenido destacado.</p><small>Perfil local</small></div>
+            <iframe id="reelEmbed" title="Contenido del negocio" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="profile-content">
+          <span class="profile-eyebrow" id="profileCity">Catálogo YaVoy</span>
+          <h2 id="profileTitle">Nombre del negocio</h2>
+          <p class="profile-description" id="profileDescription"></p>
+          <div class="profile-info"><div><span class="profile-info-label">Ubicación</span><strong id="profileLocation"></strong></div><div><span class="profile-info-label">Horario</span><strong id="profileHours"></strong></div></div>
+          <div class="profile-actions"><a class="profile-whatsapp" id="profileWhatsapp" href="#" target="_blank" rel="noopener">Hablar con el negocio</a><a class="profile-instagram is-hidden" id="profileInstagram" href="#" target="_blank" rel="noopener">Instagram</a></div>
+          <button class="profile-yavoy" id="profileYavoy" type="button">Pedir desde este negocio con YaVoy →</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner"><div><strong>YaVoy</strong><p>Catálogo local + central de domicilios para La Dorada y Puerto Salgar.</p></div><div class="footer-links"><a href="#catalogo">Catálogo</a><a href="#pedir">Pedir</a><a href="#como-funciona">Cómo funciona</a></div></div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
