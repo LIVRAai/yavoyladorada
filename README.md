@@ -86,3 +86,16 @@ La intención es validar primero catálogo + demanda + operación por WhatsApp.
 - `README.md`
 
 Se puede publicar como sitio estático en Vercel, Netlify, GitHub Pages o un hosting tradicional.
+
+## Optimización móvil
+
+Esta versión incluye ajustes específicos para celular:
+- barra inferior fija con accesos a Catálogo y Pedir un YaVoy;
+- categorías y filtros en carrusel horizontal;
+- tarjetas de negocio compactas con prioridad para “Pedir con YaVoy”;
+- campos de formulario a 16 px para evitar zoom automático en iPhone;
+- controles táctiles de al menos 42–48 px;
+- formulario y perfil adaptados a una sola columna;
+- soporte de `safe-area` para iPhone;
+- tipografía, espaciado y hero reducidos para pantallas pequeñas;
+- perfil de negocio presentado como panel inferior en móvil.
