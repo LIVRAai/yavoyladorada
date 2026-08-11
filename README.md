@@ -5,6 +5,20 @@ Primera versión funcional de **YaVoy**, pensada como una combinación de:
 1. **Catálogo local** de negocios, productos y servicios.
 2. **Central de domicilios y mandados** para La Dorada y Puerto Salgar.
 
+
+## Identidad visual
+
+Paleta principal de YaVoy:
+
+- Azul cobalto: `#3157D5`
+- Azul noche: `#18233D`
+- Menta: `#66D6B8`
+- Fondo: `#F5F7FB`
+- Blanco: `#FFFFFF`
+- Texto: `#20242C`
+
+La interfaz evita el naranja como color de marca para diferenciar visualmente YaVoy de otras plataformas de domicilios.
+
 ## Propuesta de valor
 
 YaVoy no funciona solamente como mensajería. El catálogo permite descubrir negocios locales y, desde cada ficha, convertir ese descubrimiento en una solicitud de recogida y entrega.

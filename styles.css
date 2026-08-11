@@ -1,18 +1,18 @@
 :root {
-  --bg: #f3f4f6;
+  --bg: #F5F7FB;
   --surface: #ffffff;
-  --surface-soft: #f6f7f9;
-  --surface-alt: #eceff3;
-  --primary: #ff5a1f;
-  --primary-dark: #e64a12;
-  --primary-soft: #fff1eb;
-  --accent: #111827;
-  --accent-soft: #eff3f8;
-  --text: #243043;
-  --muted: #6b7280;
-  --muted-2: #8e96a3;
+  --surface-soft: #F5F7FB;
+  --surface-alt: #EEF2F8;
+  --primary: #3157D5;
+  --primary-dark: #2747B8;
+  --primary-soft: #EEF2FF;
+  --accent: #18233D;
+  --accent-soft: #EEF3FA;
+  --text: #20242C;
+  --muted: #6B7280;
+  --muted-2: #8E96A3;
   --line: #e5e7eb;
-  --success: #2ecf7a;
+  --success: #66D6B8;
   --white: #ffffff;
   --shadow-sm: 0 10px 24px rgba(17, 24, 39, 0.06);
   --shadow-md: 0 18px 44px rgba(17, 24, 39, 0.1);
@@ -71,7 +71,7 @@ button { color: inherit; }
   color: var(--white);
   font-weight: 800;
   font-size: 14px;
-  box-shadow: 0 10px 24px rgba(255, 90, 31, 0.28);
+  box-shadow: 0 10px 24px rgba(49, 87, 213, 0.22);
 }
 .brand-copy {
   display: flex;
@@ -101,7 +101,7 @@ button { color: inherit; }
   border-radius: 999px;
   background: var(--primary);
   color: var(--white) !important;
-  box-shadow: 0 10px 22px rgba(255, 90, 31, 0.24);
+  box-shadow: 0 10px 22px rgba(49, 87, 213, 0.22);
 }
 
 /* Global UI */
@@ -125,7 +125,7 @@ button { color: inherit; }
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: #ffd4c5;
+  background: #A8E8D7;
 }
 .section { padding: 80px 0; }
 .section.compact { padding-top: 56px; }
@@ -178,7 +178,7 @@ button { color: inherit; }
 .button.primary {
   background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: var(--white);
-  box-shadow: 0 12px 22px rgba(255, 90, 31, 0.2);
+  box-shadow: 0 12px 22px rgba(49, 87, 213, 0.18);
 }
 .button.secondary {
   border: 1px solid var(--line);
@@ -190,7 +190,7 @@ button { color: inherit; }
   border-color: #d2d7de;
   background: #f7f8fa;
 }
-/* En el hero el botón secundario sí usa el tratamiento sobre fondo naranja. */
+/* En el hero el botón secundario usa el tratamiento sobre fondo azul. */
 .hero-actions .button.secondary {
   border: 1px solid rgba(255,255,255,.45);
   background: rgba(255,255,255,.16);
@@ -222,7 +222,7 @@ button { color: inherit; }
   min-height: 520px;
   padding: 34px 34px 30px;
   border-radius: 32px;
-  background: linear-gradient(180deg, #ff5b1f 0%, #ff4b1d 100%);
+  background: linear-gradient(180deg, #3157D5 0%, #2747B8 100%);
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -240,7 +240,7 @@ button { color: inherit; }
 }
 .hero h1 em {
   font-style: normal;
-  color: #fff0e9;
+  color: #DDE5FF;
 }
 .hero-description {
   max-width: 680px;
@@ -260,7 +260,7 @@ button { color: inherit; }
   background: rgba(255,255,255,.88);
   border: 1px solid rgba(255,255,255,.58);
   border-radius: 18px;
-  box-shadow: 0 18px 34px rgba(128, 30, 0, 0.14);
+  box-shadow: 0 18px 34px rgba(24, 35, 61, 0.16);
 }
 .search-icon {
   display: grid;
@@ -319,7 +319,7 @@ button { color: inherit; }
   height: 8px;
   border-radius: 999px;
   background: var(--success);
-  box-shadow: 0 0 0 6px rgba(46, 207, 122, 0.14);
+  box-shadow: 0 0 0 6px rgba(102, 214, 184, 0.16);
 }
 .metric {
   padding: 18px 0 14px;
@@ -405,12 +405,12 @@ button { color: inherit; }
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
-.category-card:nth-child(1) { background: linear-gradient(180deg, #ff5722 0%, #ffe7df 100%); }
-.category-card:nth-child(2) { background: linear-gradient(180deg, #32d07f 0%, #e4f8ec 100%); }
-.category-card:nth-child(3) { background: linear-gradient(180deg, #9b87f5 0%, #eee9ff 100%); }
-.category-card:nth-child(4) { background: linear-gradient(180deg, #ffbf3f 0%, #fff3d6 100%); }
-.category-card:nth-child(5) { background: linear-gradient(180deg, #32b7ff 0%, #e5f5ff 100%); }
-.category-card:nth-child(6) { background: linear-gradient(180deg, #ff7cbc 0%, #ffe7f2 100%); }
+.category-card:nth-child(1) { background: linear-gradient(180deg, #3157D5 0%, #E8EDFF 100%); }
+.category-card:nth-child(2) { background: linear-gradient(180deg, #66D6B8 0%, #E7F9F4 100%); }
+.category-card:nth-child(3) { background: linear-gradient(180deg, #8F7AE5 0%, #F0ECFF 100%); }
+.category-card:nth-child(4) { background: linear-gradient(180deg, #E8C45A 0%, #FFF7DA 100%); }
+.category-card:nth-child(5) { background: linear-gradient(180deg, #63A8E8 0%, #EAF5FF 100%); }
+.category-card:nth-child(6) { background: linear-gradient(180deg, #C27BCE 0%, #F7EAF9 100%); }
 .category-icon {
   width: 84px;
   height: 84px;
@@ -503,12 +503,12 @@ button { color: inherit; }
   display: grid;
   place-items: center;
 }
-.business-image.food { background: linear-gradient(180deg, #ff5f22 0%, #ffe9e0 100%); }
-.business-image.service { background: linear-gradient(180deg, #38c973 0%, #ebfaef 100%); }
-.business-image.beauty { background: linear-gradient(180deg, #b59cff 0%, #f2edff 100%); }
-.business-image.home { background: linear-gradient(180deg, #42b9ff 0%, #e8f6ff 100%); }
-.business-image.fashion { background: linear-gradient(180deg, #ffc24d 0%, #fff4dc 100%); }
-.business-image.tech { background: linear-gradient(180deg, #ff80c1 0%, #ffeaf4 100%); }
+.business-image.food { background: linear-gradient(180deg, #3157D5 0%, #E8EDFF 100%); }
+.business-image.service { background: linear-gradient(180deg, #66D6B8 0%, #E7F9F4 100%); }
+.business-image.beauty { background: linear-gradient(180deg, #9B8AE8 0%, #F1EEFF 100%); }
+.business-image.home { background: linear-gradient(180deg, #63A8E8 0%, #EAF5FF 100%); }
+.business-image.fashion { background: linear-gradient(180deg, #E8C45A 0%, #FFF7DA 100%); }
+.business-image.tech { background: linear-gradient(180deg, #C27BCE 0%, #F7EAF9 100%); }
 .tag {
   position: absolute;
   top: 16px;
@@ -595,7 +595,7 @@ button { color: inherit; }
 .selected-business {
   margin-top: 24px;
   padding: 18px;
-  border: 1px solid #ffd9ca;
+  border: 1px solid #D7E0FF;
   border-radius: 18px;
   background: var(--primary-soft);
 }
@@ -656,8 +656,8 @@ button { color: inherit; }
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: #ffb095;
-  box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.08);
+  border-color: #8CA6FF;
+  box-shadow: 0 0 0 4px rgba(49, 87, 213, 0.10);
 }
 .field textarea { resize: vertical; }
 .estimate-box {
@@ -668,8 +668,8 @@ button { color: inherit; }
   justify-content: space-between;
   gap: 18px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fff5f1 0%, #fff0e8 100%);
-  border: 1px solid #ffd8c7;
+  background: linear-gradient(180deg, #F5F7FF 0%, #EEF2FF 100%);
+  border: 1px solid #D7E0FF;
 }
 .estimate-box small {
   display: block;
@@ -702,7 +702,7 @@ button { color: inherit; }
   cursor: pointer;
   font-weight: 800;
   font-size: 15px;
-  box-shadow: 0 14px 26px rgba(255, 90, 31, 0.2);
+  box-shadow: 0 14px 26px rgba(49, 87, 213, 0.18);
 }
 .form-note {
   grid-column: 1 / -1;
@@ -796,7 +796,7 @@ button { color: inherit; }
   align-items: center;
   gap: 28px;
   border-radius: 30px;
-  background: linear-gradient(180deg, #ff5a1f 0%, #f24e18 100%);
+  background: linear-gradient(180deg, #3157D5 0%, #2747B8 100%);
   color: var(--white);
   box-shadow: var(--shadow-lg);
 }
@@ -864,7 +864,7 @@ button { color: inherit; }
   align-items: center;
   justify-content: center;
   padding: 34px;
-  background: linear-gradient(180deg, #ff5a1f 0%, #ff7649 100%);
+  background: linear-gradient(180deg, #3157D5 0%, #5F7EE8 100%);
 }
 .reel-frame {
   position: relative;
