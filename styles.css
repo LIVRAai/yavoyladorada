@@ -1204,36 +1204,37 @@ body.profile-open { overflow: hidden; }
   .mobile-dock { display: grid; }
 }
 
-/* YaVoy logo en header — imagen alojada en Imgur */
+/* YaVoy logo en header — imagen alojada en Imgur.
+   La imagen original tiene mucho espacio blanco: este marco recorta solo el logo. */
 .brand {
   flex: 0 0 auto;
+  min-width: 0;
 }
 .brand-logo-crop {
   position: relative;
   display: block;
-  width: 190px;
-  height: 52px;
+  width: 210px;
+  height: 58px;
   overflow: hidden;
-  border-radius: 10px;
 }
 .brand-logo-crop img {
   position: absolute;
-  width: 360px;
+  width: 380px;
   max-width: none;
   height: auto;
-  left: -8px;
-  top: -73px;
+  left: -20px;
+  top: -54px;
   display: block;
 }
 
 @media (max-width: 760px) {
   .brand-logo-crop {
-    width: 152px;
-    height: 44px;
+    width: 168px;
+    height: 46px;
   }
   .brand-logo-crop img {
-    width: 300px;
-    left: -8px;
-    top: -61px;
+    width: 305px;
+    left: -15px;
+    top: -43px;
   }
 }
