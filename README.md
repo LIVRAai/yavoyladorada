@@ -125,3 +125,9 @@ La experiencia se separa en dos niveles:
 - `script.js`: lógica funcional del catálogo y pedidos.
 
 La navegación directa con hash se respeta (`catalogo.html#pedir`), mientras que las aperturas normales evitan restaurar posiciones antiguas de scroll en móvil.
+
+## Ajuste móvil — Reel en perfil
+
+- El Reel del negocio ahora también se muestra en tablet y móvil.
+- En móvil, el perfil conserva su presentación como panel inferior y permite desplazarse verticalmente entre Reel e información del negocio.
+- El iframe del Reel se carga únicamente cuando se abre un perfil con `data-reel` configurado.
