@@ -1,21 +1,3 @@
-// ----------------------------
-// Inicio de página: evita que el navegador restaure una sección anterior
-// ----------------------------
-(function resetInitialScrollPosition() {
-  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-  const hasExplicitHash = Boolean(window.location.hash);
-  const goToTop = () => {
-    if (hasExplicitHash) return;
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  };
-  goToTop();
-  requestAnimationFrame(() => requestAnimationFrame(goToTop));
-  window.addEventListener("load", goToTop, { once: true });
-  window.addEventListener("pageshow", (event) => {
-    if (!event.persisted) goToTop();
-  }, { once: true });
-})();
-
 // =====================================================
 // YaVoy V1 — configuración rápida
 // Cambia este número por el WhatsApp real de la central.
@@ -122,49 +104,7 @@ function setFilter(filter) {
 }
 
 filterPills.forEach((pill) => pill.addEventListener("click", () => setFilter(pill.dataset.filter)));
-
-// En móvil: deslizar la fila no debe activar una categoría por accidente.
-const categoryGrid = document.querySelector(".category-grid");
-let categoryGestureMoved = false;
-let categoryTouchStartX = 0;
-let categoryTouchStartY = 0;
-let suppressCategoryClick = false;
-
-if (categoryGrid) {
-  categoryGrid.addEventListener("touchstart", (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    categoryTouchStartX = touch.clientX;
-    categoryTouchStartY = touch.clientY;
-    categoryGestureMoved = false;
-    suppressCategoryClick = false;
-  }, { passive: true });
-
-  categoryGrid.addEventListener("touchmove", (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    const dx = touch.clientX - categoryTouchStartX;
-    const dy = touch.clientY - categoryTouchStartY;
-    if (Math.hypot(dx, dy) > 8) {
-      categoryGestureMoved = true;
-      suppressCategoryClick = true;
-    }
-  }, { passive: true });
-
-  categoryGrid.addEventListener("touchend", () => {
-    if (!categoryGestureMoved) return;
-    window.setTimeout(() => {
-      suppressCategoryClick = false;
-      categoryGestureMoved = false;
-    }, 140);
-  }, { passive: true });
-}
-
-categoryCards.forEach((card) => card.addEventListener("click", (event) => {
-  if (suppressCategoryClick) {
-    event.preventDefault();
-    return;
-  }
+categoryCards.forEach((card) => card.addEventListener("click", () => {
   setFilter(card.dataset.filter);
   scrollToSection("catalogo");
 }));
@@ -305,11 +245,7 @@ function preloadBusiness(card) {
   getEstimate();
   closeProfile();
   scrollToSection("pedir");
-  if (isMobileViewport()) {
-    requestAnimationFrame(() => destinationInput.focus({ preventScroll: true }));
-  } else {
-    setTimeout(() => destinationInput.focus({ preventScroll: true }), prefersReducedMotion ? 0 : 420);
-  }
+  setTimeout(() => destinationInput.focus({ preventScroll: true }), prefersReducedMotion ? 0 : 520);
 }
 
 document.querySelectorAll(".yavoy-button").forEach((button) => button.addEventListener("click", () => preloadBusiness(button.closest(".business-card"))));
@@ -464,7 +400,6 @@ function setupMobileQuickNavigation() {
       const id = link.getAttribute("href")?.slice(1);
       if (!id) return;
       event.preventDefault();
-      if (link.classList.contains("dock-catalog")) setFilter("todos");
       scrollToSection(id);
     });
   });
