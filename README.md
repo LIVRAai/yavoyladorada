@@ -115,13 +115,13 @@ Esta versión incluye ajustes específicos para celular:
 - perfil de negocio presentado como panel inferior en móvil.
 
 
-## Optimización móvil V6
+## V4 — estructura de dos páginas
 
-- navegación táctil a secciones inmediata en móvil;
-- categorías sin `scroll-snap` ni animaciones que compitan con el gesto;
-- buscador con filtrado en vivo y botón Buscar oculto en móvil;
-- filtros duplicados ocultos en móvil: las categorías pasan a ser el selector principal;
-- tarjetas de negocio con dos acciones principales en móvil;
-- dock del catálogo reducido a Explorar / Pedir;
-- home móvil con un solo CTA persistente, visible después del hero;
-- animaciones de entrada más cortas y sin stagger en móvil.
+La experiencia se separa en dos niveles:
+
+- `index.html`: presentación de YaVoy, propuesta de valor, funcionamiento, públicos y cobertura.
+- `catalogo.html`: buscador, categorías, filtros, negocios, perfiles y solicitud de YaVoy.
+- `home.js`: interacciones y animaciones exclusivas del inicio.
+- `script.js`: lógica funcional del catálogo y pedidos.
+
+La navegación directa con hash se respeta (`catalogo.html#pedir`), mientras que las aperturas normales evitan restaurar posiciones antiguas de scroll en móvil.

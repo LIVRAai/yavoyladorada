@@ -50,7 +50,7 @@ function setupRevealAnimations() {
     el.classList.add("reveal-item");
     const parent = el.parentElement;
     const count = counts.get(parent) || 0;
-    el.style.setProperty("--reveal-delay", window.matchMedia("(max-width: 760px)").matches ? "0ms" : `${Math.min(count * 70, 280)}ms`);
+    el.style.setProperty("--reveal-delay", `${Math.min(count * 70, 280)}ms`);
     counts.set(parent, count + 1);
     observer.observe(el);
   });
@@ -67,41 +67,24 @@ function setupHeaderMotion() {
 function setupMobileDockMotion() {
   const dock = document.querySelector(".mobile-dock");
   if (!dock) return;
-
   let lastY = window.scrollY;
   let ticking = false;
-
   const update = () => {
     const y = window.scrollY;
     const delta = y - lastY;
-    const isMobile = window.matchMedia("(max-width: 760px)").matches;
-
-    if (!isMobile) {
-      dock.classList.remove("is-home-visible", "is-hidden-by-scroll");
-    } else {
-      // En el hero ya existe el CTA. El dock aparece cuando deja de estar a la vista.
-      dock.classList.toggle("is-home-visible", y > 360);
-
-      if (y < 360 || delta < -8) {
-        dock.classList.remove("is-hidden-by-scroll");
-      } else if (delta > 10) {
-        dock.classList.add("is-hidden-by-scroll");
-      }
+    if (!window.matchMedia("(max-width: 760px)").matches || prefersReducedMotion || y < 120 || delta < -7) {
+      dock.classList.remove("is-hidden-by-scroll");
+    } else if (delta > 9) {
+      dock.classList.add("is-hidden-by-scroll");
     }
-
+    dock.classList.toggle("is-emphasized", y > 240 && !dock.classList.contains("is-hidden-by-scroll"));
     lastY = y;
     ticking = false;
   };
-
-  update();
   window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
-    }
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
   }, { passive: true });
 }
-
 
 setupRevealAnimations();
 setupHeaderMotion();
