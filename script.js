@@ -1,3 +1,31 @@
+// ----------------------------
+// Inicio de página: evita que el navegador restaure una sección anterior
+// ----------------------------
+(function resetInitialScrollPosition() {
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  const goToTop = () => {
+    // Si la página quedó abierta con un #catalogo, #pedir, etc.,
+    // limpiamos el hash solo durante la carga inicial.
+    if (window.location.hash) {
+      history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  };
+
+  // Algunos navegadores móviles restauran el scroll después de pintar la página.
+  // Repetimos el ajuste únicamente durante el arranque para ganar esa carrera.
+  goToTop();
+  requestAnimationFrame(() => requestAnimationFrame(goToTop));
+  window.addEventListener("load", goToTop, { once: true });
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) goToTop();
+  }, { once: true });
+})();
+
 // =====================================================
 // YaVoy V1 — configuración rápida
 // Cambia este número por el WhatsApp real de la central.
