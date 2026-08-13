@@ -176,7 +176,7 @@ const profileDescription = document.getElementById("profileDescription");
 const profileLocation = document.getElementById("profileLocation");
 const profileHours = document.getElementById("profileHours");
 const profileCity = document.getElementById("profileCity");
-const profileWhatsapp = document.getElementById("profileWhatsapp");
+const profileActions = document.getElementById("profileActions");
 const profileInstagram = document.getElementById("profileInstagram");
 const profileYavoy = document.getElementById("profileYavoy");
 const reelFrame = document.getElementById("reelFrame");
@@ -191,11 +191,8 @@ function openProfile(card) {
   profileHours.textContent = card.dataset.hours || "Consultar horario";
   profileCity.textContent = `${card.dataset.cityLabel || "Catálogo"} · YaVoy`;
 
-  const whatsapp = card.dataset.whatsapp || "";
-  profileWhatsapp.style.display = whatsapp ? "" : "none";
-  if (whatsapp) profileWhatsapp.href = `https://wa.me/${whatsapp}`;
-
   const instagram = card.dataset.instagram || "";
+  profileActions?.classList.toggle("is-hidden", !instagram);
   profileInstagram.classList.toggle("is-hidden", !instagram);
   if (instagram) profileInstagram.href = instagram;
 

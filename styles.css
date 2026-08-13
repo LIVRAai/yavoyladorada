@@ -570,7 +570,6 @@ button { color: inherit; }
   grid-template-columns: 1fr 1fr;
   gap: 9px;
 }
-.business-actions.three { grid-template-columns: .85fr .95fr 1.3fr; }
 .empty-state {
   display: none;
   margin-top: 20px;
@@ -975,10 +974,6 @@ button { color: inherit; }
   font-size: 12px;
   font-weight: 800;
 }
-.profile-whatsapp {
-  background: var(--accent);
-  color: var(--white);
-}
 .profile-instagram {
   border: 1px solid var(--line);
   color: var(--accent);
@@ -1167,8 +1162,6 @@ body.profile-open { overflow: hidden; }
   .business-image { min-height: 154px; }
   .business-card h3 { font-size: 24px; }
   .business-card p { min-height: auto; }
-  .business-actions.three { grid-template-columns: 1fr 1fr; }
-  .business-actions.three .yavoy-button { grid-column: 1 / -1; }
 
   .request-form {
     padding: 20px;

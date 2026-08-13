@@ -26,7 +26,7 @@ YaVoy no funciona solamente como mensajería. El catálogo permite descubrir neg
 ## Flujo del MVP
 
 - El usuario busca en el catálogo.
-- Puede hablar directamente con el negocio o tocar **Pedir con YaVoy**.
+- Puede revisar el perfil del negocio o tocar **Pedir Domicilio**.
 - YaVoy precarga el negocio como origen del servicio.
 - El usuario agrega destino y detalle.
 - La web calcula una **tarifa de referencia**.
@@ -60,7 +60,7 @@ Estos valores son únicamente una configuración inicial del MVP y pueden modifi
 
 ## Agregar negocios
 
-Cada negocio es un `<article class="business-card">` dentro de `index.html`.
+Cada negocio es un `<article class="business-card">` dentro de `catalogo.html`.
 
 Datos principales:
 
@@ -72,11 +72,10 @@ Datos principales:
 - `data-description`
 - `data-location`
 - `data-hours`
-- `data-whatsapp`
 - `data-instagram`
 - `data-reel`
 
-El botón **Pedir con YaVoy** funciona automáticamente al copiar la estructura de una tarjeta existente.
+El botón **Pedir Domicilio** funciona automáticamente al copiar la estructura de una tarjeta existente.
 
 ## Alcance deliberadamente fuera de V1
 
@@ -106,7 +105,7 @@ Se puede publicar como sitio estático en Vercel, Netlify, GitHub Pages o un hos
 Esta versión incluye ajustes específicos para celular:
 - barra inferior fija con accesos a Catálogo y Pedir un YaVoy;
 - categorías y filtros en carrusel horizontal;
-- tarjetas de negocio compactas con prioridad para “Pedir con YaVoy”;
+- tarjetas de negocio compactas con acciones “Ver perfil” y “Pedir Domicilio”;
 - campos de formulario a 16 px para evitar zoom automático en iPhone;
 - controles táctiles de al menos 42–48 px;
 - formulario y perfil adaptados a una sola columna;
