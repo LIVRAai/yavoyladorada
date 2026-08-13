@@ -1,30 +1,3 @@
-// ----------------------------
-// Inicio de página: evita que el navegador restaure una sección anterior
-// ----------------------------
-(function resetInitialScrollPosition() {
-  if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-  }
-
-  const hasExplicitHash = Boolean(window.location.hash);
-
-  const goToTop = () => {
-    // Si el usuario llegó con un hash explícito (por ejemplo catalogo.html#pedir),
-    // respetamos esa navegación. En aperturas normales evitamos restaurar un scroll viejo.
-    if (hasExplicitHash) return;
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  };
-
-  // Algunos navegadores móviles restauran el scroll después de pintar la página.
-  // Repetimos el ajuste únicamente durante el arranque para ganar esa carrera.
-  goToTop();
-  requestAnimationFrame(() => requestAnimationFrame(goToTop));
-  window.addEventListener("load", goToTop, { once: true });
-  window.addEventListener("pageshow", (event) => {
-    if (!event.persisted) goToTop();
-  }, { once: true });
-})();
-
 // =====================================================
 // YaVoy V1 — configuración rápida
 // Cambia este número por el WhatsApp real de la central.
@@ -57,10 +30,30 @@ const cityFilter = document.getElementById("cityFilter");
 const emptyState = document.getElementById("emptyState");
 let currentFilter = "todos";
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isMobileViewport = () => window.matchMedia("(max-width: 760px)").matches;
 let filtersInitialized = false;
 
-function smoothScrollTo(id) {
-  document.getElementById(id)?.scrollIntoView({
+function scrollToSection(id, { focus = false } = {}) {
+  const target = document.getElementById(id);
+  if (!target) return;
+
+  if (isMobileViewport()) {
+    const root = document.documentElement;
+    const header = document.querySelector(".site-header");
+    const offset = (header?.offsetHeight || 0) + 8;
+    const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+
+    // En móvil priorizamos respuesta inmediata sobre una animación larga.
+    root.classList.add("instant-scroll");
+    window.scrollTo(0, top);
+    requestAnimationFrame(() => {
+      root.classList.remove("instant-scroll");
+      if (focus) target.focus?.({ preventScroll: true });
+    });
+    return;
+  }
+
+  target.scrollIntoView({
     behavior: prefersReducedMotion ? "auto" : "smooth",
     block: "start"
   });
@@ -88,7 +81,7 @@ function applyFilters(scroll = false) {
       card.style.display = "";
       visible += 1;
 
-      if (filtersInitialized && wasHidden && !prefersReducedMotion) {
+      if (filtersInitialized && wasHidden && !prefersReducedMotion && !isMobileViewport()) {
         card.classList.remove("filter-enter");
         void card.offsetWidth;
         card.style.setProperty("--reveal-delay", `${Math.min(index * 24, 140)}ms`);
@@ -101,7 +94,7 @@ function applyFilters(scroll = false) {
   });
 
   emptyState.style.display = visible ? "none" : "block";
-  if (scroll) smoothScrollTo("catalogo");
+  if (scroll) scrollToSection("catalogo");
 }
 
 function setFilter(filter) {
@@ -111,54 +104,9 @@ function setFilter(filter) {
 }
 
 filterPills.forEach((pill) => pill.addEventListener("click", () => setFilter(pill.dataset.filter)));
-
-// En móvil distinguimos un toque intencional de un arrastre horizontal/vertical.
-// Así deslizar la fila de categorías no activa una categoría accidentalmente.
-const categoryGrid = document.querySelector(".category-grid");
-let categoryGestureMoved = false;
-let categoryTouchStartX = 0;
-let categoryTouchStartY = 0;
-let suppressCategoryClick = false;
-
-if (categoryGrid) {
-  categoryGrid.addEventListener("touchstart", (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    categoryTouchStartX = touch.clientX;
-    categoryTouchStartY = touch.clientY;
-    categoryGestureMoved = false;
-    suppressCategoryClick = false;
-  }, { passive: true });
-
-  categoryGrid.addEventListener("touchmove", (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    const dx = touch.clientX - categoryTouchStartX;
-    const dy = touch.clientY - categoryTouchStartY;
-    if (Math.hypot(dx, dy) > 8) {
-      categoryGestureMoved = true;
-      suppressCategoryClick = true;
-    }
-  }, { passive: true });
-
-  categoryGrid.addEventListener("touchend", () => {
-    if (!categoryGestureMoved) return;
-    // El click sintetizado por algunos navegadores ocurre justo después de touchend.
-    // Mantenemos el bloqueo unos milisegundos y luego lo liberamos.
-    window.setTimeout(() => {
-      suppressCategoryClick = false;
-      categoryGestureMoved = false;
-    }, 140);
-  }, { passive: true });
-}
-
-categoryCards.forEach((card) => card.addEventListener("click", (event) => {
-  if (suppressCategoryClick) {
-    event.preventDefault();
-    return;
-  }
+categoryCards.forEach((card) => card.addEventListener("click", () => {
   setFilter(card.dataset.filter);
-  smoothScrollTo("catalogo");
+  scrollToSection("catalogo");
 }));
 cityFilter.addEventListener("change", () => applyFilters());
 searchButton.addEventListener("click", () => applyFilters(true));
@@ -296,7 +244,7 @@ function preloadBusiness(card) {
   selectedBusinessBox.classList.remove("is-hidden");
   getEstimate();
   closeProfile();
-  smoothScrollTo("pedir");
+  scrollToSection("pedir");
   setTimeout(() => destinationInput.focus({ preventScroll: true }), prefersReducedMotion ? 0 : 520);
 }
 
@@ -349,8 +297,8 @@ requestForm.addEventListener("submit", (event) => {
 
 // Registro de comercios por WhatsApp
 const registerBusinessLink = document.getElementById("registerBusinessLink");
-const businessMessage = "Hola YaVoy 👋 Quiero registrar mi negocio en el catálogo local. ¿Qué información necesitan?";
 if (registerBusinessLink) {
+  const businessMessage = "Hola YaVoy 👋 Quiero registrar mi negocio en el catálogo local. ¿Qué información necesitan?";
   registerBusinessLink.href = `https://wa.me/${YAVOY_WHATSAPP}?text=${encodeURIComponent(businessMessage)}`;
   registerBusinessLink.target = "_blank";
   registerBusinessLink.rel = "noopener";
@@ -391,7 +339,7 @@ function setupRevealAnimations() {
     element.classList.add("reveal-item");
     const parent = element.parentElement;
     const count = groupedCounters.get(parent) || 0;
-    element.style.setProperty("--reveal-delay", `${Math.min(count * 65, 260)}ms`);
+    element.style.setProperty("--reveal-delay", isMobileViewport() ? "0ms" : `${Math.min(count * 65, 260)}ms`);
     groupedCounters.set(parent, count + 1);
     observer.observe(element);
   });
@@ -445,6 +393,18 @@ function setupKeyboardFocus() {
   }, { once: true });
 }
 
+function setupMobileQuickNavigation() {
+  document.querySelectorAll('.mobile-dock a[href^="#"], .catalog-nav a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!isMobileViewport()) return;
+      const id = link.getAttribute("href")?.slice(1);
+      if (!id) return;
+      event.preventDefault();
+      scrollToSection(id);
+    });
+  });
+}
+
 getEstimate();
 applyFilters();
 filtersInitialized = true;
@@ -452,3 +412,4 @@ setupRevealAnimations();
 setupHeaderMotion();
 setupMobileDockMotion();
 setupKeyboardFocus();
+setupMobileQuickNavigation();
