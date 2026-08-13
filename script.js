@@ -111,7 +111,52 @@ function setFilter(filter) {
 }
 
 filterPills.forEach((pill) => pill.addEventListener("click", () => setFilter(pill.dataset.filter)));
-categoryCards.forEach((card) => card.addEventListener("click", () => {
+
+// En móvil distinguimos un toque intencional de un arrastre horizontal/vertical.
+// Así deslizar la fila de categorías no activa una categoría accidentalmente.
+const categoryGrid = document.querySelector(".category-grid");
+let categoryGestureMoved = false;
+let categoryTouchStartX = 0;
+let categoryTouchStartY = 0;
+let suppressCategoryClick = false;
+
+if (categoryGrid) {
+  categoryGrid.addEventListener("touchstart", (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    categoryTouchStartX = touch.clientX;
+    categoryTouchStartY = touch.clientY;
+    categoryGestureMoved = false;
+    suppressCategoryClick = false;
+  }, { passive: true });
+
+  categoryGrid.addEventListener("touchmove", (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    const dx = touch.clientX - categoryTouchStartX;
+    const dy = touch.clientY - categoryTouchStartY;
+    if (Math.hypot(dx, dy) > 8) {
+      categoryGestureMoved = true;
+      suppressCategoryClick = true;
+    }
+  }, { passive: true });
+
+  categoryGrid.addEventListener("touchend", () => {
+    if (!categoryGestureMoved) return;
+    // El click sintetizado por algunos navegadores ocurre justo después de touchend.
+    // Mantenemos el bloqueo unos milisegundos y luego lo liberamos.
+    window.setTimeout(() => {
+      suppressCategoryClick = false;
+      categoryGestureMoved = false;
+    }, 140);
+  }, { passive: true });
+}
+
+categoryCards.forEach((card) => card.addEventListener("click", (event) => {
+  if (suppressCategoryClick) {
+    event.preventDefault();
+    return;
+  }
   setFilter(card.dataset.filter);
   smoothScrollTo("catalogo");
 }));
