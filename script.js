@@ -6,13 +6,12 @@
     history.scrollRestoration = "manual";
   }
 
-  const goToTop = () => {
-    // Si la página quedó abierta con un #catalogo, #pedir, etc.,
-    // limpiamos el hash solo durante la carga inicial.
-    if (window.location.hash) {
-      history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-    }
+  const hasExplicitHash = Boolean(window.location.hash);
 
+  const goToTop = () => {
+    // Si el usuario llegó con un hash explícito (por ejemplo catalogo.html#pedir),
+    // respetamos esa navegación. En aperturas normales evitamos restaurar un scroll viejo.
+    if (hasExplicitHash) return;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 
@@ -306,9 +305,11 @@ requestForm.addEventListener("submit", (event) => {
 // Registro de comercios por WhatsApp
 const registerBusinessLink = document.getElementById("registerBusinessLink");
 const businessMessage = "Hola YaVoy 👋 Quiero registrar mi negocio en el catálogo local. ¿Qué información necesitan?";
-registerBusinessLink.href = `https://wa.me/${YAVOY_WHATSAPP}?text=${encodeURIComponent(businessMessage)}`;
-registerBusinessLink.target = "_blank";
-registerBusinessLink.rel = "noopener";
+if (registerBusinessLink) {
+  registerBusinessLink.href = `https://wa.me/${YAVOY_WHATSAPP}?text=${encodeURIComponent(businessMessage)}`;
+  registerBusinessLink.target = "_blank";
+  registerBusinessLink.rel = "noopener";
+}
 
 // ----------------------------
 // Motion system & microinteracciones

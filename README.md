@@ -113,3 +113,15 @@ Esta versión incluye ajustes específicos para celular:
 - soporte de `safe-area` para iPhone;
 - tipografía, espaciado y hero reducidos para pantallas pequeñas;
 - perfil de negocio presentado como panel inferior en móvil.
+
+
+## V4 — estructura de dos páginas
+
+La experiencia se separa en dos niveles:
+
+- `index.html`: presentación de YaVoy, propuesta de valor, funcionamiento, públicos y cobertura.
+- `catalogo.html`: buscador, categorías, filtros, negocios, perfiles y solicitud de YaVoy.
+- `home.js`: interacciones y animaciones exclusivas del inicio.
+- `script.js`: lógica funcional del catálogo y pedidos.
+
+La navegación directa con hash se respeta (`catalogo.html#pedir`), mientras que las aperturas normales evitan restaurar posiciones antiguas de scroll en móvil.

@@ -1881,3 +1881,339 @@ body {
 .business-card:hover {
   transform: none;
 }
+
+/* =====================================================
+   YaVoy V3 — carrusel móvil de categorías con gesto libre
+   Evita el efecto de "encaje/rebote" al arrastrar con el dedo.
+   ===================================================== */
+@media (max-width: 760px) and (pointer: coarse) {
+  .category-grid {
+    /* Desplazamiento continuo: ninguna tarjeta obliga a encajarse. */
+    scroll-snap-type: none !important;
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
+    overscroll-behavior-inline: none;
+    touch-action: pan-x;
+    scrollbar-width: none;
+    cursor: default;
+  }
+
+  .category-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-card {
+    scroll-snap-align: none !important;
+    scroll-snap-stop: normal;
+    touch-action: pan-x;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* En táctil no aplicamos hover ni escala al mantener el dedo apoyado:
+     el gesto horizontal debe sentirse como un carrusel nativo. */
+  .category-card:hover,
+  .category-card:active {
+    translate: 0 0;
+    scale: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .category-card:hover::before,
+  .category-card:active::before {
+    opacity: 0;
+  }
+
+  .category-card:hover .category-icon,
+  .category-card:active .category-icon {
+    transform: none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.7);
+  }
+}
+
+
+/* =====================================================
+   YaVoy V4 — arquitectura Inicio + Catálogo
+   ===================================================== */
+.home-wordmark,
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -.03em;
+}
+
+.home-wordmark {
+  color: var(--primary);
+  font-size: 22px;
+}
+
+.page-back {
+  font-size: 14px;
+  transition: color var(--motion-fast) ease, translate var(--motion-fast) ease;
+}
+
+.page-back:hover {
+  color: var(--primary);
+  translate: -2px 0;
+}
+
+.home-hero .hero-copy {
+  min-height: 560px;
+}
+
+.home-actions {
+  margin-top: 30px;
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: clamp(42px, 8vw, 110px);
+  align-items: end;
+}
+
+.intro-copy h2 {
+  margin: 10px 0 0;
+  color: var(--accent);
+  font-size: clamp(38px, 5.2vw, 66px);
+  line-height: .98;
+  letter-spacing: -.05em;
+}
+
+.intro-statement {
+  padding: 30px;
+  border: 1px solid #e7eaf0;
+  border-radius: 26px;
+  background: rgba(255,255,255,.72);
+  box-shadow: var(--shadow-sm);
+}
+
+.intro-statement p {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.7;
+}
+
+.intro-statement strong { color: var(--accent); }
+
+.inline-link {
+  display: inline-flex;
+  margin-top: 22px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.audience-card {
+  position: relative;
+  min-height: 360px;
+  padding: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(229,231,235,.9);
+  border-radius: 28px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: translate var(--motion-base) var(--ease-out), box-shadow var(--motion-base) ease;
+}
+
+.audience-card::before {
+  content: "";
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  right: -105px;
+  top: -105px;
+  border-radius: 50%;
+  opacity: .55;
+  background: radial-gradient(circle, rgba(49,87,213,.16), transparent 68%);
+}
+
+.audience-business::before { background: radial-gradient(circle, rgba(102,214,184,.25), transparent 68%); }
+.audience-driver::before { background: radial-gradient(circle, rgba(143,122,229,.20), transparent 68%); }
+
+.audience-card:hover {
+  translate: 0 -6px;
+  box-shadow: var(--shadow-md);
+}
+
+.audience-number {
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.audience-icon {
+  width: 72px;
+  height: 72px;
+  margin-top: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.audience-business .audience-icon { background: #E7F9F4; color: #278c73; }
+.audience-driver .audience-icon { background: #F0ECFF; color: #725cc8; }
+
+.audience-card h3 {
+  margin: 22px 0 10px;
+  color: var(--accent);
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.audience-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.audience-card a {
+  margin-top: auto;
+  padding-top: 24px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Catálogo como una experiencia funcional independiente. */
+.catalog-hero {
+  padding: 20px 0 8px;
+}
+
+.catalog-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(30px, 5vw, 56px);
+  border-radius: 32px;
+  background: linear-gradient(135deg, #3157D5 0%, #2747B8 58%, #203c9d 100%);
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
+}
+
+.catalog-hero-card::before,
+.catalog-hero-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.catalog-hero-card::before {
+  width: 330px;
+  height: 330px;
+  right: -120px;
+  top: -180px;
+  background: rgba(168,232,215,.16);
+}
+
+.catalog-hero-card::after {
+  width: 280px;
+  height: 280px;
+  left: -150px;
+  bottom: -190px;
+  background: rgba(255,255,255,.08);
+}
+
+.catalog-hero-copy,
+.catalog-search-box {
+  position: relative;
+  z-index: 1;
+}
+
+.catalog-hero-copy {
+  max-width: 820px;
+}
+
+.catalog-hero h1 {
+  margin: 12px 0 0;
+  font-size: clamp(48px, 7vw, 82px);
+  line-height: .96;
+  letter-spacing: -.055em;
+}
+
+.catalog-hero-copy p {
+  max-width: 680px;
+  margin: 18px 0 0;
+  color: rgba(255,255,255,.84);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.catalog-search-box {
+  max-width: 780px;
+  margin: 30px 0 0;
+}
+
+.catalog-page #categorias {
+  padding-top: 46px;
+}
+
+.catalog-page #catalogo {
+  scroll-margin-top: 70px;
+}
+
+.catalog-footer .footer-inner {
+  border-top: 0;
+}
+
+@media (max-width: 1080px) {
+  .intro-grid { grid-template-columns: 1fr; gap: 26px; }
+  .audience-grid { grid-template-columns: 1fr; }
+  .audience-card { min-height: 300px; }
+}
+
+@media (max-width: 760px) {
+  .home-wordmark { font-size: 20px; }
+  .page-back { font-size: 13px; }
+  .catalog-header-inner { gap: 10px; }
+  .catalog-nav { gap: 8px; }
+
+  .home-hero .hero-copy { min-height: 470px; }
+  .home-actions { margin-top: 24px; }
+
+  .intro-statement { padding: 22px; border-radius: 22px; }
+  .intro-copy h2 { font-size: clamp(36px, 11vw, 50px); }
+
+  .audience-card {
+    min-height: 300px;
+    padding: 22px;
+    border-radius: 24px;
+  }
+  .audience-card:hover { translate: 0 0; }
+  .audience-icon { margin-top: 24px; }
+
+  .catalog-hero { padding: 10px 0 0; }
+  .catalog-hero-card {
+    padding: 30px 18px 24px;
+    border-radius: 26px;
+  }
+  .catalog-hero h1 { font-size: clamp(44px, 13vw, 60px); }
+  .catalog-hero-copy p { font-size: 15px; }
+  .catalog-search-box { margin-top: 24px; }
+
+  .home-mobile-dock {
+    grid-template-columns: .9fr 1.1fr;
+  }
+}
