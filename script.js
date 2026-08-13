@@ -29,6 +29,15 @@ const categoryCards = [...document.querySelectorAll(".category-card")];
 const cityFilter = document.getElementById("cityFilter");
 const emptyState = document.getElementById("emptyState");
 let currentFilter = "todos";
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let filtersInitialized = false;
+
+function smoothScrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "start"
+  });
+}
 
 function normalizeText(value = "") {
   return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -39,19 +48,33 @@ function applyFilters(scroll = false) {
   const city = cityFilter.value;
   let visible = 0;
 
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
     const categories = (card.dataset.category || "").split(" ");
     const searchText = normalizeText(`${card.dataset.search || ""} ${card.textContent}`);
     const matchesCategory = currentFilter === "todos" || categories.includes(currentFilter);
     const matchesSearch = !term || searchText.includes(term);
     const matchesCity = city === "todas" || card.dataset.city === city;
     const shouldShow = matchesCategory && matchesSearch && matchesCity;
-    card.style.display = shouldShow ? "" : "none";
-    if (shouldShow) visible += 1;
+
+    if (shouldShow) {
+      const wasHidden = card.style.display === "none";
+      card.style.display = "";
+      visible += 1;
+
+      if (filtersInitialized && wasHidden && !prefersReducedMotion) {
+        card.classList.remove("filter-enter");
+        void card.offsetWidth;
+        card.style.setProperty("--reveal-delay", `${Math.min(index * 24, 140)}ms`);
+        card.classList.add("filter-enter");
+        card.addEventListener("animationend", () => card.classList.remove("filter-enter"), { once: true });
+      }
+    } else {
+      card.style.display = "none";
+    }
   });
 
   emptyState.style.display = visible ? "none" : "block";
-  if (scroll) document.getElementById("catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scroll) smoothScrollTo("catalogo");
 }
 
 function setFilter(filter) {
@@ -63,7 +86,7 @@ function setFilter(filter) {
 filterPills.forEach((pill) => pill.addEventListener("click", () => setFilter(pill.dataset.filter)));
 categoryCards.forEach((card) => card.addEventListener("click", () => {
   setFilter(card.dataset.filter);
-  document.getElementById("catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
+  smoothScrollTo("catalogo");
 }));
 cityFilter.addEventListener("change", () => applyFilters());
 searchButton.addEventListener("click", () => applyFilters(true));
@@ -116,6 +139,10 @@ function openProfile(card) {
   profileModal.classList.add("is-open");
   profileModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("profile-open");
+
+  requestAnimationFrame(() => {
+    profileModal.querySelector(".profile-close")?.focus({ preventScroll: true });
+  });
 }
 
 function closeProfile() {
@@ -167,8 +194,21 @@ function getEstimate() {
     details.push("incluye adicional por diligencia");
   }
 
-  estimateValue.textContent = money(total);
+  const nextValue = money(total);
+  const changed = estimateValue.textContent !== nextValue;
+  estimateValue.textContent = nextValue;
   estimateDetail.textContent = `${details.join(" · ")}. Valor sujeto a confirmación.`;
+
+  if (changed && !prefersReducedMotion) {
+    const estimateBox = estimateValue.closest(".estimate-box");
+    estimateBox?.classList.remove("is-updating");
+    if (estimateBox) {
+      void estimateBox.offsetWidth;
+      estimateBox.classList.add("is-updating");
+      estimateBox.addEventListener("animationend", () => estimateBox.classList.remove("is-updating"), { once: true });
+    }
+  }
+
   return total;
 }
 
@@ -184,8 +224,8 @@ function preloadBusiness(card) {
   selectedBusinessBox.classList.remove("is-hidden");
   getEstimate();
   closeProfile();
-  document.getElementById("pedir").scrollIntoView({ behavior: "smooth", block: "start" });
-  setTimeout(() => destinationInput.focus(), 500);
+  smoothScrollTo("pedir");
+  setTimeout(() => destinationInput.focus({ preventScroll: true }), prefersReducedMotion ? 0 : 520);
 }
 
 document.querySelectorAll(".yavoy-button").forEach((button) => button.addEventListener("click", () => preloadBusiness(button.closest(".business-card"))));
@@ -242,5 +282,99 @@ registerBusinessLink.href = `https://wa.me/${YAVOY_WHATSAPP}?text=${encodeURICom
 registerBusinessLink.target = "_blank";
 registerBusinessLink.rel = "noopener";
 
+// ----------------------------
+// Motion system & microinteracciones
+// ----------------------------
+function setupRevealAnimations() {
+  const revealTargets = [
+    ...document.querySelectorAll(".section-heading"),
+    ...document.querySelectorAll(".category-card"),
+    ...document.querySelectorAll(".business-card"),
+    ...document.querySelectorAll(".request-copy"),
+    ...document.querySelectorAll(".request-form"),
+    ...document.querySelectorAll(".step"),
+    ...document.querySelectorAll(".coverage-grid > div"),
+    ...document.querySelectorAll(".coverage-cards > div"),
+    ...document.querySelectorAll(".cta-box"),
+    ...document.querySelectorAll(".footer-inner")
+  ];
+
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+    revealTargets.forEach((element) => element.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      obs.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -7% 0px" });
+
+  const groupedCounters = new Map();
+  revealTargets.forEach((element) => {
+    element.classList.add("reveal-item");
+    const parent = element.parentElement;
+    const count = groupedCounters.get(parent) || 0;
+    element.style.setProperty("--reveal-delay", `${Math.min(count * 65, 260)}ms`);
+    groupedCounters.set(parent, count + 1);
+    observer.observe(element);
+  });
+}
+
+function setupHeaderMotion() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+
+  const updateHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 18);
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+}
+
+function setupMobileDockMotion() {
+  const dock = document.querySelector(".mobile-dock");
+  if (!dock) return;
+
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const update = () => {
+    const y = window.scrollY;
+    const delta = y - lastY;
+    const isMobile = window.matchMedia("(max-width: 760px)").matches;
+
+    if (!isMobile || prefersReducedMotion) {
+      dock.classList.remove("is-hidden-by-scroll");
+    } else if (y < 120 || delta < -7) {
+      dock.classList.remove("is-hidden-by-scroll");
+    } else if (delta > 9 && !document.body.classList.contains("profile-open")) {
+      dock.classList.add("is-hidden-by-scroll");
+    }
+
+    dock.classList.toggle("is-emphasized", y > 240 && !dock.classList.contains("is-hidden-by-scroll"));
+    lastY = y;
+    ticking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+function setupKeyboardFocus() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Tab") document.body.classList.add("using-keyboard");
+  }, { once: true });
+}
+
 getEstimate();
 applyFilters();
+filtersInitialized = true;
+setupRevealAnimations();
+setupHeaderMotion();
+setupMobileDockMotion();
+setupKeyboardFocus();

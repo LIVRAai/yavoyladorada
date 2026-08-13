@@ -1207,3 +1207,677 @@ body.profile-open { overflow: hidden; }
 
 /* YaVoy logo en header — imagen alojada en Imgur.
    La imagen original tiene mucho espacio blanco: este marco recorta solo el logo. */
+
+/* =====================================================
+   YaVoy — Motion & Interaction Layer
+   Optimizado para desktop + mobile, respetando reduced-motion.
+   ===================================================== */
+
+:root {
+  --motion-fast: 160ms;
+  --motion-base: 320ms;
+  --motion-slow: 620ms;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.16, 1.25, .3, 1);
+}
+
+/* Mejor sensación general al navegar */
+html {
+  scroll-padding-top: 86px;
+}
+
+body {
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(49, 87, 213, .18);
+  color: var(--accent);
+}
+
+/* Header reactivo al scroll */
+.site-header {
+  transition: background var(--motion-base) ease,
+              box-shadow var(--motion-base) ease,
+              border-color var(--motion-base) ease,
+              transform var(--motion-base) var(--ease-out);
+}
+
+.site-header.is-scrolled {
+  background: rgba(255, 255, 255, .82);
+  border-bottom-color: rgba(229, 231, 235, .72);
+  box-shadow: 0 12px 34px rgba(17, 24, 39, .07);
+}
+
+.main-nav a:not(.nav-cta) {
+  position: relative;
+  transition: color var(--motion-fast) ease;
+}
+
+.main-nav a:not(.nav-cta)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--motion-base) var(--ease-out);
+}
+
+.main-nav a:not(.nav-cta):hover::after,
+.main-nav a:not(.nav-cta):focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Botones: profundidad, brillo y respuesta táctil */
+.button,
+.submit-yavoy,
+.profile-yavoy,
+.cta-button,
+.nav-cta,
+.mobile-dock a,
+.search-box button,
+.profile-actions a {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--motion-fast) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              background var(--motion-base) ease,
+              border-color var(--motion-base) ease,
+              opacity var(--motion-fast) ease;
+}
+
+.button::after,
+.submit-yavoy::after,
+.profile-yavoy::after,
+.cta-button::after,
+.nav-cta::after,
+.search-box button::after,
+.profile-actions a::after {
+  content: "";
+  position: absolute;
+  inset: -35% auto -35% -75%;
+  width: 46%;
+  z-index: -1;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+  transition: left 560ms var(--ease-out);
+  pointer-events: none;
+}
+
+.button:hover::after,
+.submit-yavoy:hover::after,
+.profile-yavoy:hover::after,
+.cta-button:hover::after,
+.nav-cta:hover::after,
+.search-box button:hover::after,
+.profile-actions a:hover::after {
+  left: 130%;
+}
+
+.button:active,
+.submit-yavoy:active,
+.profile-yavoy:active,
+.cta-button:active,
+.nav-cta:active,
+.mobile-dock a:active,
+.search-box button:active,
+.category-card:active,
+.filter-pill:active {
+  transform: scale(.975);
+}
+
+/* Hero: entrada cinematográfica, ligera y rápida */
+.hero-copy {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-copy::before,
+.hero-copy::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.hero-copy::before {
+  width: 390px;
+  height: 390px;
+  right: -150px;
+  top: -170px;
+  background: radial-gradient(circle, rgba(255,255,255,.19), rgba(255,255,255,0) 68%);
+  animation: heroOrbA 10s ease-in-out infinite alternate;
+}
+
+.hero-copy::after {
+  width: 330px;
+  height: 330px;
+  left: -150px;
+  bottom: -180px;
+  background: radial-gradient(circle, rgba(102,214,184,.28), rgba(102,214,184,0) 68%);
+  animation: heroOrbB 12s ease-in-out infinite alternate;
+}
+
+.hero-copy .eyebrow,
+.hero-copy h1,
+.hero-copy .hero-description,
+.hero-copy .search-box,
+.hero-copy .hero-actions {
+  opacity: 0;
+  animation: heroEnter 760ms var(--ease-out) forwards;
+}
+
+.hero-copy .eyebrow { animation-delay: 80ms; }
+.hero-copy h1 { animation-delay: 150ms; }
+.hero-copy .hero-description { animation-delay: 230ms; }
+.hero-copy .search-box { animation-delay: 310ms; }
+.hero-copy .hero-actions { animation-delay: 390ms; }
+
+.hero-panel {
+  opacity: 0;
+  transform: translateY(18px) scale(.985);
+  animation: panelEnter 820ms 250ms var(--ease-out) forwards;
+}
+
+.search-box {
+  transition: transform var(--motion-base) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              background var(--motion-base) ease;
+}
+
+.search-box:focus-within {
+  transform: translateY(-2px) scale(1.008);
+  box-shadow: 0 24px 44px rgba(24, 35, 61, .22);
+  background: rgba(255,255,255,.98);
+}
+
+.status-dot {
+  animation: statusPulse 2.4s ease-in-out infinite;
+}
+
+.mini-flow > div {
+  transition: transform var(--motion-base) var(--ease-out),
+              background var(--motion-base) ease,
+              border-color var(--motion-base) ease;
+}
+
+.mini-flow > div:hover {
+  transform: translateX(5px);
+  background: #fff;
+  border-color: #dfe4eb;
+}
+
+/* Reveal por scroll */
+.reveal-item {
+  opacity: 0;
+  translate: 0 26px;
+  transition: opacity var(--motion-slow) ease,
+              translate var(--motion-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, translate;
+}
+
+.reveal-item.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Categorías: más vivas sin sacrificar legibilidad */
+.category-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: translate var(--motion-base) var(--ease-out),
+              scale var(--motion-base) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              filter var(--motion-base) ease;
+}
+
+.category-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, rgba(255,255,255,.22), transparent 45%);
+  opacity: 0;
+  transition: opacity var(--motion-base) ease;
+}
+
+.category-card:hover {
+  translate: 0 -6px;
+  scale: 1.015;
+  filter: saturate(1.05);
+}
+
+.category-card:hover::before { opacity: 1; }
+
+.category-icon {
+  transition: transform 500ms var(--ease-spring),
+              box-shadow var(--motion-base) ease;
+}
+
+.category-card:hover .category-icon {
+  transform: translateY(-4px) rotate(-3deg) scale(1.06);
+  box-shadow: 0 18px 34px rgba(17,24,39,.12);
+}
+
+/* Filtros */
+.filter-pill {
+  transition: transform var(--motion-fast) var(--ease-out),
+              background var(--motion-base) ease,
+              color var(--motion-base) ease,
+              border-color var(--motion-base) ease,
+              box-shadow var(--motion-base) ease;
+}
+
+.filter-pill:hover {
+  transform: translateY(-1px);
+  border-color: #cfd5df;
+}
+
+.filter-pill.active {
+  box-shadow: 0 8px 20px rgba(49,87,213,.18);
+}
+
+/* Tarjetas de negocio */
+.business-card {
+  position: relative;
+  isolation: isolate;
+  transition: translate var(--motion-base) var(--ease-out),
+              scale var(--motion-base) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              border-color var(--motion-base) ease;
+}
+
+.business-card:hover {
+  translate: 0 -7px;
+  scale: 1.008;
+  border-color: rgba(49,87,213,.14);
+  box-shadow: 0 25px 54px rgba(17, 24, 39, .13);
+}
+
+.business-image {
+  overflow: hidden;
+}
+
+.business-image::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(110deg, transparent 36%, rgba(255,255,255,.30) 50%, transparent 64%);
+  transform: translateX(-60%) rotate(8deg);
+  transition: transform 700ms var(--ease-out);
+  pointer-events: none;
+}
+
+.business-card:hover .business-image::after {
+  transform: translateX(60%) rotate(8deg);
+}
+
+.image-letter {
+  transition: transform 520ms var(--ease-spring),
+              box-shadow var(--motion-base) ease;
+}
+
+.business-card:hover .image-letter {
+  transform: translateY(-5px) rotate(-4deg) scale(1.05);
+  box-shadow: 0 18px 36px rgba(17,24,39,.13);
+}
+
+.tag {
+  transition: transform var(--motion-base) var(--ease-out),
+              background var(--motion-base) ease;
+}
+
+.business-card:hover .tag {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.98);
+}
+
+/* Estado visual al filtrar */
+.business-card.filter-enter {
+  animation: filterEnter 360ms var(--ease-out) both;
+}
+
+.empty-state {
+  animation: emptyEnter 320ms var(--ease-out) both;
+}
+
+/* Formulario */
+.request-form,
+.estimate-box,
+.selected-business {
+  transition: transform var(--motion-base) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              border-color var(--motion-base) ease,
+              background var(--motion-base) ease;
+}
+
+.request-form:focus-within {
+  box-shadow: 0 24px 58px rgba(17,24,39,.12);
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: #d3d9e3;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  transform: translateY(-1px);
+}
+
+.estimate-box.is-updating {
+  animation: estimatePulse 420ms var(--ease-out);
+}
+
+.selected-business:not(.is-hidden) {
+  animation: selectedEnter 420ms var(--ease-out) both;
+}
+
+.submit-yavoy:hover,
+.profile-yavoy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(49,87,213,.26);
+}
+
+/* Cómo funciona + cobertura */
+.step,
+.coverage-cards > div {
+  transition: translate var(--motion-base) var(--ease-out),
+              scale var(--motion-base) var(--ease-out),
+              box-shadow var(--motion-base) var(--ease-out),
+              border-color var(--motion-base) ease;
+}
+
+.step:hover,
+.coverage-cards > div:hover {
+  translate: 0 -5px;
+  scale: 1.01;
+  border-color: rgba(49,87,213,.14);
+  box-shadow: var(--shadow-md);
+}
+
+.step > span,
+.coverage-cards span {
+  transition: transform 420ms var(--ease-spring),
+              background var(--motion-base) ease,
+              color var(--motion-base) ease;
+}
+
+.step:hover > span,
+.coverage-cards > div:hover span {
+  transform: rotate(-8deg) scale(1.1);
+  background: var(--primary);
+  color: #fff;
+}
+
+.cta-box {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.cta-box::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  right: -170px;
+  top: -210px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.17), transparent 66%);
+  transition: transform 1s var(--ease-out);
+}
+
+.cta-box:hover::before {
+  transform: translate(-24px, 24px) scale(1.08);
+}
+
+/* Modal: fade + scale en desktop. Mantener display permite animar salida. */
+.profile-modal {
+  display: flex;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 240ms ease, visibility 240ms step-end;
+}
+
+.profile-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 240ms ease, visibility 0ms step-start;
+}
+
+.profile-backdrop {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.profile-modal.is-open .profile-backdrop {
+  opacity: 1;
+}
+
+.profile-dialog {
+  opacity: 0;
+  transform: translateY(18px) scale(.96);
+  transition: opacity 300ms ease,
+              transform 420ms var(--ease-out);
+}
+
+.profile-modal.is-open .profile-dialog {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.profile-close {
+  transition: transform var(--motion-base) var(--ease-spring),
+              background var(--motion-base) ease;
+}
+
+.profile-close:hover {
+  transform: rotate(8deg) scale(1.06);
+  background: #fff;
+}
+
+/* Dock móvil: aparece con intención y se oculta al bajar */
+.mobile-dock {
+  transition: transform 380ms var(--ease-out),
+              opacity 260ms ease,
+              box-shadow var(--motion-base) ease;
+}
+
+.mobile-dock.is-hidden-by-scroll {
+  transform: translate(-50%, calc(120% + env(safe-area-inset-bottom)));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mobile-dock.is-emphasized {
+  box-shadow: 0 24px 52px rgba(17,24,39,.22);
+}
+
+/* Keyframes */
+@keyframes heroEnter {
+  from { opacity: 0; transform: translateY(22px); filter: blur(7px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes panelEnter {
+  from { opacity: 0; transform: translateY(18px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes heroOrbA {
+  to { transform: translate(-26px, 34px) scale(1.08); }
+}
+
+@keyframes heroOrbB {
+  to { transform: translate(36px, -18px) scale(.94); }
+}
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(102,214,184,.16); }
+  50% { box-shadow: 0 0 0 11px rgba(102,214,184,.06); }
+}
+
+@keyframes filterEnter {
+  from { opacity: 0; scale: .97; translate: 0 10px; }
+  to { opacity: 1; scale: 1; translate: 0 0; }
+}
+
+@keyframes emptyEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes estimatePulse {
+  0% { transform: scale(1); }
+  42% { transform: scale(1.018); box-shadow: 0 12px 30px rgba(49,87,213,.10); }
+  100% { transform: scale(1); }
+}
+
+@keyframes selectedEnter {
+  from { opacity: 0; transform: translateY(-8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (hover: none) {
+  .category-card:hover,
+  .business-card:hover,
+  .step:hover,
+  .coverage-cards > div:hover,
+  .button:hover,
+  .submit-yavoy:hover,
+  .profile-yavoy:hover {
+    translate: 0 0;
+    scale: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  html { scroll-padding-top: 76px; }
+
+  .hero-copy::before {
+    width: 280px;
+    height: 280px;
+    right: -130px;
+    top: -120px;
+  }
+
+  .hero-copy::after {
+    width: 240px;
+    height: 240px;
+    left: -120px;
+    bottom: -135px;
+  }
+
+  .category-grid {
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+
+  .category-card {
+    scroll-snap-align: center;
+  }
+
+  .filter-row {
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+
+  .filter-pill {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  .business-card {
+    box-shadow: 0 12px 30px rgba(17,24,39,.07);
+  }
+
+  .profile-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .profile-backdrop {
+    backdrop-filter: blur(7px);
+  }
+
+  .profile-dialog {
+    width: 100%;
+    max-height: min(86vh, 760px);
+    border-radius: 28px 28px 0 0;
+    transform: translateY(104%);
+    opacity: 1;
+    box-shadow: 0 -28px 70px rgba(17,24,39,.22);
+  }
+
+  .profile-dialog::before {
+    content: "";
+    position: sticky;
+    top: 9px;
+    z-index: 4;
+    display: block;
+    width: 46px;
+    height: 5px;
+    margin: 9px auto -14px;
+    border-radius: 99px;
+    background: #d8dde5;
+  }
+
+  .profile-modal.is-open .profile-dialog {
+    transform: translateY(0);
+  }
+
+  .profile-close {
+    top: 18px;
+  }
+
+  .mobile-dock {
+    animation: dockEnter 620ms 520ms var(--ease-out) both;
+  }
+
+  @keyframes dockEnter {
+    from { opacity: 0; transform: translate(-50%, 28px) scale(.96); }
+    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+}
+
+/* Accesibilidad: si el usuario pide menos movimiento, lo respetamos. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .reveal-item {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+  }
+}
+
+/* Neutraliza transforms heredados para que la capa nueva use translate/scale sin acumular desplazamientos. */
+.category-card:hover,
+.business-card:hover {
+  transform: none;
+}
