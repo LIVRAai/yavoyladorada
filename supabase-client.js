@@ -5,8 +5,8 @@
 // - No coloques aquí service_role, secretos ni credenciales privadas.
 // - Completa estos dos valores directamente en tu copia/repositorio; no los compartas por chat.
 
-const YAVOY_SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
-const YAVOY_SUPABASE_PUBLISHABLE_KEY = "PEGA_AQUI_TU_PUBLISHABLE_KEY";
+const YAVOY_SUPABASE_URL = "https://upahrzjvpfjfmbcrjrco.supabase.co";
+const YAVOY_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8j64gItbayvv0fieAmEZsg_cY2zTY2f";
 
 function hasSupabaseConfiguration() {
   return (
