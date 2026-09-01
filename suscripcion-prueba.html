@@ -44,8 +44,10 @@
     #result.success { background: #ecfdf3; color: #146c43; }
     #result.error { background: #fff1f0; color: #b42318; }
 
-    button {
+    button,
+    #checkoutLink {
       width: 100%;
+      box-sizing: border-box;
       border: 0;
       border-radius: 12px;
       padding: 14px 18px;
@@ -54,9 +56,13 @@
       font: inherit;
       font-weight: 800;
       cursor: pointer;
+      text-align: center;
+      text-decoration: none;
     }
 
     button:disabled { opacity: .65; cursor: not-allowed; }
+    #checkoutLink { display: block; margin-top: 14px; }
+    #checkoutLink[hidden] { display: none; }
     code { word-break: break-all; }
     a { color: inherit; font-weight: 800; }
   </style>
@@ -79,6 +85,10 @@
     </button>
 
     <div id="result" role="status" aria-live="polite"></div>
+
+    <a id="checkoutLink" href="#" target="_blank" rel="noopener noreferrer" hidden>
+      Abrir checkout de Mercado Pago
+    </a>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -89,6 +99,7 @@
     const sessionState = document.getElementById("sessionState");
     const createButton = document.getElementById("createButton");
     const result = document.getElementById("result");
+    const checkoutLink = document.getElementById("checkoutLink");
 
     function showResult(message, type) {
       result.textContent = message;
@@ -116,6 +127,8 @@
       createButton.disabled = true;
       createButton.textContent = "Creando suscripción pendiente...";
       result.className = "";
+      checkoutLink.hidden = true;
+      checkoutLink.removeAttribute("href");
 
       const { data, error } = await window.yavoyDb.functions.invoke("create-subscription", {
         body: { business_id: BUSINESS_ID }
@@ -146,6 +159,11 @@
         `Checkout disponible: ${data.init_point ? "sí" : "no"}`,
         "success"
       );
+
+      if (data.init_point) {
+        checkoutLink.href = data.init_point;
+        checkoutLink.hidden = false;
+      }
     });
 
     init();
