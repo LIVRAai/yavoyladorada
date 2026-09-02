@@ -74,7 +74,7 @@
       <h2 id="profileName">Emprendimiento</h2>
       <p id="profileDescription"></p>
       <div id="profileDetails" class="summary-list"></div>
-      <iframe id="profileReel" class="profile-reel" title="Contenido del emprendimiento" hidden allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      <iframe id="profileReel" class="profile-reel" title="Contenido del emprendimiento" hidden loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
       <div id="profileActions" class="form-actions" style="margin-top:20px"></div>
     </section>
   </div>
@@ -142,11 +142,29 @@
       }
     }
 
+    // Acepta enlaces copiados desde Instagram aunque incluyan ?utm_source, ?igsi,
+    // fragmentos o barras adicionales. Siempre construye una URL de embed limpia.
     function instagramEmbedUrl(value) {
-      const url = safeHttpUrl(value);
-      if (!url || !url.includes("instagram.com")) return "";
-      if (url.includes("/embed")) return url;
-      return `${url.replace(/\/$/, "")}/embed/`;
+      if (!value) return "";
+
+      try {
+        const url = new URL(value.trim());
+        const hostname = url.hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
+        if (hostname !== "instagram.com") return "";
+
+        const parts = url.pathname.split("/").filter(Boolean);
+        if (parts.length < 2) return "";
+
+        let type = parts[0].toLowerCase();
+        const shortcode = parts[1];
+
+        if (type === "reels") type = "reel";
+        if (!["reel", "p", "tv"].includes(type) || !shortcode) return "";
+
+        return `https://www.instagram.com/${type}/${encodeURIComponent(shortcode)}/embed/`;
+      } catch {
+        return "";
+      }
     }
 
     function whatsappUrl(value, businessName) {
