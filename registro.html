@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3157D5" />
+  <title>Registra tu negocio | YaVoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="negocios.css" />
+</head>
+<body>
+  <header class="business-header">
+    <div class="business-shell business-header-inner">
+      <a class="brand" href="index.html">YaVoy</a>
+      <a class="button ghost" href="login.html">Ya tengo cuenta</a>
+    </div>
+  </header>
+
+  <main class="business-main">
+    <div class="narrow">
+      <section class="card">
+        <span class="eyebrow">Paso 1 de 3</span>
+        <h1>Crea tu cuenta.</h1>
+        <p class="lead">Después registrarás tu negocio y podrás activar el plan YaVoy Negocios por $29.900 COP al mes.</p>
+
+        <form id="signupForm" class="form-grid">
+          <label class="field full">Correo electrónico
+            <input id="email" type="email" autocomplete="email" required />
+          </label>
+          <label class="field full">Contraseña
+            <input id="password" type="password" autocomplete="new-password" minlength="6" required />
+            <small>Mínimo 6 caracteres.</small>
+          </label>
+          <div class="form-actions">
+            <button id="signupButton" class="button primary" type="submit">Crear cuenta y continuar</button>
+          </div>
+        </form>
+
+        <div id="result" class="notice info" hidden></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script>
+    const form = document.getElementById("signupForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const button = document.getElementById("signupButton");
+    const result = document.getElementById("result");
+
+    function show(message, type = "info") {
+      result.textContent = message;
+      result.className = `notice ${type}`;
+      result.hidden = false;
+    }
+
+    async function redirectIfAuthenticated() {
+      if (!window.yavoyDb) return;
+      const { data } = await window.yavoyDb.auth.getSession();
+      if (data.session) window.location.replace("mi-negocio.html");
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!window.yavoyDb) {
+        show("No pudimos conectar con YaVoy.", "error");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Creando cuenta...";
+      result.hidden = true;
+
+      const { data, error } = await window.yavoyDb.auth.signUp({
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login.html?next=negocio.html`
+        }
+      });
+
+      button.disabled = false;
+      button.textContent = "Crear cuenta y continuar";
+
+      if (error) {
+        console.error(error);
+        show(error.message, "error");
+        return;
+      }
+
+      if (data.session) {
+        window.location.assign("negocio.html");
+        return;
+      }
+
+      show("Cuenta creada. Revisa tu correo, confirma la cuenta y luego inicia sesión para continuar con el negocio.", "success");
+    });
+
+    redirectIfAuthenticated();
+  </script>
+</body>
+</html>

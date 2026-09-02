@@ -1,6 +1,15 @@
 // YaVoy — Inicio / presentación
-const YAVOY_WHATSAPP = "573000000000";
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Compatibilidad con la Edge Function ya desplegada: actualmente Mercado Pago
+// puede regresar a /?subscription=return. Desde aquí llevamos al usuario a
+// la pantalla que consulta el estado real del negocio en Supabase.
+(function handleSubscriptionReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("subscription") === "return") {
+    window.location.replace("retorno-pago.html");
+  }
+})();
 
 (function resetInitialScrollPosition() {
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -12,12 +21,13 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
   window.addEventListener("load", goToTop, { once: true });
 })();
 
+// El alta de comercios ya no depende de WhatsApp: entra al flujo de
+// autoregistro, creación de negocio y suscripción.
 const registerBusinessLink = document.getElementById("registerBusinessLink");
 if (registerBusinessLink) {
-  const message = "Hola YaVoy 👋 Quiero registrar mi negocio en el catálogo local. ¿Qué información necesitan?";
-  registerBusinessLink.href = `https://wa.me/${YAVOY_WHATSAPP}?text=${encodeURIComponent(message)}`;
-  registerBusinessLink.target = "_blank";
-  registerBusinessLink.rel = "noopener";
+  registerBusinessLink.href = "registro.html";
+  registerBusinessLink.removeAttribute("target");
+  registerBusinessLink.removeAttribute("rel");
 }
 
 function setupRevealAnimations() {

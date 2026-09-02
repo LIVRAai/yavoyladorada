@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3157D5" />
+  <title>Registra tu negocio | YaVoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="negocios.css" />
+</head>
+<body>
+  <header class="business-header">
+    <div class="business-shell business-header-inner">
+      <a class="brand" href="index.html">YaVoy</a>
+      <a class="button ghost" href="mi-negocio.html">Mi negocio</a>
+    </div>
+  </header>
+
+  <main class="business-main">
+    <div class="business-shell split">
+      <section class="card">
+        <span class="eyebrow">Paso 2 de 3</span>
+        <h1>Cuéntanos sobre tu negocio.</h1>
+        <p class="lead">Esta información será la base de tu perfil público. Podrás editarla después desde Mi negocio.</p>
+
+        <div id="sessionNotice" class="notice info">Validando tu sesión...</div>
+        <div id="existingNotice" class="notice warning" hidden></div>
+
+        <form id="businessForm" class="form-grid" hidden>
+          <label class="field full">Nombre del negocio
+            <input id="name" maxlength="120" required />
+          </label>
+          <label class="field">Categoría
+            <select id="category" required>
+              <option value="">Selecciona una categoría</option>
+              <option value="comida">Comida</option>
+              <option value="hogar">Hogar</option>
+              <option value="belleza">Belleza</option>
+              <option value="moda">Moda</option>
+              <option value="servicios">Servicios</option>
+              <option value="tecnologia">Tecnología</option>
+            </select>
+          </label>
+          <label class="field">Ciudad
+            <select id="city" required>
+              <option value="la-dorada">La Dorada</option>
+              <option value="puerto-salgar">Puerto Salgar</option>
+            </select>
+          </label>
+          <label class="field full">Descripción
+            <textarea id="description" maxlength="500" placeholder="¿Qué ofrece tu negocio?"></textarea>
+          </label>
+          <label class="field full">Ubicación o dirección
+            <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20" />
+          </label>
+          <label class="field">Horario
+            <input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." />
+          </label>
+          <label class="field">WhatsApp
+            <input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" />
+          </label>
+          <label class="field">Teléfono
+            <input id="phone" maxlength="30" inputmode="tel" />
+          </label>
+          <label class="field">Instagram
+            <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
+          </label>
+          <label class="field full">Imagen de portada
+            <input id="image_url" type="url" maxlength="600" placeholder="URL pública de la imagen (opcional)" />
+          </label>
+          <label class="field full">Reel de Instagram
+            <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
+          </label>
+          <div class="form-actions">
+            <button id="saveButton" class="button primary" type="submit">Guardar y continuar al pago</button>
+          </div>
+        </form>
+
+        <div id="result" class="notice info" hidden></div>
+      </section>
+
+      <aside class="stack">
+        <article class="card">
+          <span class="eyebrow">Paso 3 de 3</span>
+          <h2>Activa YaVoy Negocios.</h2>
+          <p>Al guardar el negocio te llevaremos a Mercado Pago para completar la suscripción.</p>
+          <div class="summary-list">
+            <div class="summary-item"><span>Plan</span><strong>YaVoy Negocios</strong></div>
+            <div class="summary-item"><span>Valor</span><strong>$29.900 COP / mes</strong></div>
+            <div class="summary-item"><span>Publicación</span><strong>Automática al confirmar pago</strong></div>
+          </div>
+        </article>
+        <article class="card">
+          <span class="eyebrow">Sin trabajo manual</span>
+          <h3>¿Qué pasa después?</h3>
+          <p>Mercado Pago notifica a YaVoy. Si el cobro queda aprobado, el negocio cambia a <strong>activo</strong> y el catálogo público puede mostrarlo automáticamente.</p>
+        </article>
+      </aside>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script>
+    const sessionNotice = document.getElementById("sessionNotice");
+    const existingNotice = document.getElementById("existingNotice");
+    const form = document.getElementById("businessForm");
+    const saveButton = document.getElementById("saveButton");
+    const result = document.getElementById("result");
+
+    let currentUser = null;
+    let createdBusiness = null;
+
+    function showResult(message, type = "info") {
+      result.textContent = message;
+      result.className = `notice ${type}`;
+      result.hidden = false;
+    }
+
+    function getValue(id) {
+      const value = document.getElementById(id).value.trim();
+      return value || null;
+    }
+
+    async function startSubscription(businessId) {
+      showResult("Negocio guardado. Conectando con Mercado Pago...", "success");
+      saveButton.disabled = true;
+      saveButton.textContent = "Abriendo Mercado Pago...";
+
+      const { data, error } = await window.yavoyDb.functions.invoke("create-subscription", {
+        body: { business_id: businessId }
+      });
+
+      if (error || !data?.ok) {
+        console.error("Error creando suscripción", error || data);
+        saveButton.disabled = false;
+        saveButton.textContent = "Reintentar pago";
+        showResult("Tu negocio quedó guardado, pero no pudimos abrir Mercado Pago. Puedes reintentar desde Mi negocio sin volver a registrarlo.", "warning");
+        return;
+      }
+
+      if (data.init_point) {
+        window.location.assign(data.init_point);
+        return;
+      }
+
+      window.location.assign("retorno-pago.html");
+    }
+
+    async function init() {
+      if (!window.yavoyDb) {
+        sessionNotice.className = "notice error";
+        sessionNotice.textContent = "No pudimos conectar con YaVoy.";
+        return;
+      }
+
+      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
+      if (userError || !userData.user) {
+        window.location.replace("login.html?next=negocio.html");
+        return;
+      }
+      currentUser = userData.user;
+      sessionNotice.className = "notice success";
+      sessionNotice.textContent = `Sesión iniciada como ${currentUser.email}`;
+
+      const { data: existingBusiness, error: existingError } = await window.yavoyDb
+        .from("businesses")
+        .select("id,name,status")
+        .eq("owner_id", currentUser.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingError) {
+        console.error(existingError);
+        showResult("No pudimos validar si ya tienes un negocio registrado.", "error");
+        return;
+      }
+
+      if (existingBusiness) {
+        existingNotice.hidden = false;
+        existingNotice.innerHTML = `Ya tienes <strong>${existingBusiness.name}</strong> registrado. Para evitar duplicados, continúa desde <a href="mi-negocio.html">Mi negocio</a>.`;
+        return;
+      }
+
+      form.hidden = false;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!currentUser) return;
+      if (createdBusiness) {
+        await startSubscription(createdBusiness.id);
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = "Guardando negocio...";
+      result.hidden = true;
+
+      const payload = {
+        owner_id: currentUser.id,
+        name: getValue("name"),
+        category: document.getElementById("category").value,
+        city: document.getElementById("city").value,
+        description: getValue("description"),
+        location: getValue("location"),
+        hours: getValue("hours"),
+        whatsapp: getValue("whatsapp"),
+        phone: getValue("phone"),
+        instagram: getValue("instagram"),
+        image_url: getValue("image_url"),
+        reel_url: getValue("reel_url"),
+        status: "draft"
+      };
+
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .insert(payload)
+        .select("id,name,status")
+        .single();
+
+      if (error) {
+        console.error(error);
+        saveButton.disabled = false;
+        saveButton.textContent = "Guardar y continuar al pago";
+        showResult(`No pudimos guardar el negocio: ${error.message}`, "error");
+        return;
+      }
+
+      createdBusiness = data;
+      await startSubscription(createdBusiness.id);
+    });
+
+    init();
+  </script>
+</body>
+</html>

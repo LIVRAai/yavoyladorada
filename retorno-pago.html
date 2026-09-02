@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3157D5" />
+  <title>Estado de activación | YaVoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="negocios.css" />
+</head>
+<body>
+  <header class="business-header">
+    <div class="business-shell business-header-inner">
+      <a class="brand" href="index.html">YaVoy</a>
+      <a class="button ghost" href="mi-negocio.html">Mi negocio</a>
+    </div>
+  </header>
+
+  <main class="business-main">
+    <div class="narrow">
+      <section class="card">
+        <span class="eyebrow">Mercado Pago</span>
+        <h1 id="title">Estamos verificando tu activación.</h1>
+        <p id="message" class="lead">YaVoy está consultando el estado de tu negocio. La confirmación final depende del webhook de Mercado Pago.</p>
+        <div id="statusNotice" class="notice info">Consultando estado...</div>
+        <div class="form-actions">
+          <button id="refreshButton" class="button secondary" type="button">Volver a consultar</button>
+          <a id="dashboardButton" class="button primary" href="mi-negocio.html">Ir a mi negocio</a>
+          <a id="catalogButton" class="button primary" href="catalogo.html" hidden>Ver mi negocio publicado</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script>
+    const title = document.getElementById("title");
+    const message = document.getElementById("message");
+    const statusNotice = document.getElementById("statusNotice");
+    const refreshButton = document.getElementById("refreshButton");
+    const catalogButton = document.getElementById("catalogButton");
+
+    let attempts = 0;
+    let stopped = false;
+
+    function render(status, businessName) {
+      if (status === "active") {
+        stopped = true;
+        title.textContent = "¡Tu negocio ya está publicado!";
+        message.textContent = `${businessName} quedó activo en YaVoy.`;
+        statusNotice.className = "notice success";
+        statusNotice.textContent = "Pago confirmado y negocio activo.";
+        catalogButton.hidden = false;
+        refreshButton.hidden = true;
+        return;
+      }
+
+      if (status === "suspended") {
+        stopped = true;
+        title.textContent = "La suscripción necesita atención.";
+        message.textContent = "Mercado Pago informó un estado que no permite mantener el negocio publicado.";
+        statusNotice.className = "notice error";
+        statusNotice.textContent = "Puedes reintentar o revisar la suscripción desde Mi negocio.";
+        return;
+      }
+
+      title.textContent = "Estamos verificando tu activación.";
+      message.textContent = `${businessName} está registrado. Esperamos la confirmación de Mercado Pago.`;
+      statusNotice.className = "notice warning";
+      statusNotice.textContent = "Pago pendiente de confirmación. Esto normalmente se actualiza en pocos segundos después de la aprobación.";
+    }
+
+    async function checkStatus() {
+      if (stopped) return;
+      attempts += 1;
+      refreshButton.disabled = true;
+      refreshButton.textContent = "Consultando...";
+
+      if (!window.yavoyDb) {
+        statusNotice.className = "notice error";
+        statusNotice.textContent = "No pudimos conectar con YaVoy.";
+        refreshButton.disabled = false;
+        refreshButton.textContent = "Volver a consultar";
+        return;
+      }
+
+      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
+      if (userError || !userData.user) {
+        window.location.replace("login.html?next=retorno-pago.html");
+        return;
+      }
+
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .select("id,name,status,updated_at")
+        .eq("owner_id", userData.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      refreshButton.disabled = false;
+      refreshButton.textContent = "Volver a consultar";
+
+      if (error || !data) {
+        console.error(error);
+        statusNotice.className = "notice error";
+        statusNotice.textContent = "No pudimos encontrar el negocio asociado a tu cuenta.";
+        return;
+      }
+
+      render(data.status, data.name);
+
+      if (!stopped && attempts < 10) {
+        window.setTimeout(checkStatus, 4000);
+      }
+    }
+
+    refreshButton.addEventListener("click", () => {
+      stopped = false;
+      attempts = 0;
+      checkStatus();
+    });
+
+    checkStatus();
+  </script>
+</body>
+</html>

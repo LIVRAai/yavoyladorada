@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#3157D5" />
+  <meta name="description" content="Catálogo de negocios activos de YaVoy en La Dorada y Puerto Salgar." />
+  <title>Catálogo | YaVoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="negocios.css" />
+</head>
+<body>
+  <header class="business-header">
+    <div class="business-shell business-header-inner">
+      <a class="brand" href="index.html">YaVoy</a>
+      <div class="header-actions">
+        <a class="button ghost hide-mobile" href="login.html">Mi negocio</a>
+        <a class="button primary" href="registro.html">Registrar negocio</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="catalog-hero">
+      <div class="business-shell catalog-hero-grid">
+        <div>
+          <span class="eyebrow">Catálogo local</span>
+          <h1>Descubre negocios cerca de ti.</h1>
+          <p class="lead">Aquí aparecen automáticamente los negocios con suscripción activa en YaVoy.</p>
+        </div>
+        <div class="search-panel">
+          <div class="search-row">
+            <input id="searchInput" type="search" placeholder="Buscar negocio, categoría o servicio" aria-label="Buscar negocios" />
+            <select id="cityFilter" aria-label="Filtrar por ciudad">
+              <option value="todas">Todas las ciudades</option>
+              <option value="la-dorada">La Dorada</option>
+              <option value="puerto-salgar">Puerto Salgar</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-section">
+      <div class="business-shell">
+        <div class="filter-row" id="categoryFilters">
+          <button class="filter-chip active" data-category="todos" type="button">Todos</button>
+          <button class="filter-chip" data-category="comida" type="button">Comida</button>
+          <button class="filter-chip" data-category="hogar" type="button">Hogar</button>
+          <button class="filter-chip" data-category="belleza" type="button">Belleza</button>
+          <button class="filter-chip" data-category="moda" type="button">Moda</button>
+          <button class="filter-chip" data-category="servicios" type="button">Servicios</button>
+          <button class="filter-chip" data-category="tecnologia" type="button">Tecnología</button>
+        </div>
+
+        <div id="catalogNotice" class="notice info">Cargando negocios activos...</div>
+        <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="profileModal" class="modal" aria-hidden="true">
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="profileName">
+      <button id="closeModal" class="modal-close" type="button" aria-label="Cerrar">×</button>
+      <span id="profileEyebrow" class="eyebrow">YaVoy</span>
+      <h2 id="profileName">Negocio</h2>
+      <p id="profileDescription"></p>
+      <div id="profileDetails" class="summary-list"></div>
+      <iframe id="profileReel" class="profile-reel" title="Contenido del negocio" hidden allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      <div id="profileActions" class="form-actions" style="margin-top:20px"></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script>
+    const grid = document.getElementById("catalogGrid");
+    const notice = document.getElementById("catalogNotice");
+    const searchInput = document.getElementById("searchInput");
+    const cityFilter = document.getElementById("cityFilter");
+    const chips = [...document.querySelectorAll(".filter-chip")];
+    const modal = document.getElementById("profileModal");
+    const closeModalButton = document.getElementById("closeModal");
+    const profileName = document.getElementById("profileName");
+    const profileEyebrow = document.getElementById("profileEyebrow");
+    const profileDescription = document.getElementById("profileDescription");
+    const profileDetails = document.getElementById("profileDetails");
+    const profileActions = document.getElementById("profileActions");
+    const profileReel = document.getElementById("profileReel");
+
+    let businesses = [];
+    let currentCategory = "todos";
+
+    const cityLabels = {
+      "la-dorada": "La Dorada",
+      "puerto-salgar": "Puerto Salgar"
+    };
+
+    const categoryLabels = {
+      comida: "Comida",
+      hogar: "Hogar",
+      belleza: "Belleza",
+      moda: "Moda",
+      servicios: "Servicios",
+      tecnologia: "Tecnología"
+    };
+
+    function normalize(value = "") {
+      return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function safeHttpUrl(value) {
+      if (!value) return "";
+      try {
+        const url = new URL(value);
+        return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function instagramEmbedUrl(value) {
+      const url = safeHttpUrl(value);
+      if (!url || !url.includes("instagram.com")) return "";
+      if (url.includes("/embed")) return url;
+      return `${url.replace(/\/$/, "")}/embed/`;
+    }
+
+    function whatsappUrl(value, businessName) {
+      const digits = String(value || "").replace(/\D/g, "");
+      if (digits.length < 10) return "";
+      const text = encodeURIComponent(`Hola, vi ${businessName} en YaVoy y quiero más información.`);
+      return `https://wa.me/${digits}?text=${text}`;
+    }
+
+    function detailRow(label, value) {
+      const row = document.createElement("div");
+      row.className = "summary-item";
+      const span = document.createElement("span");
+      span.textContent = label;
+      const strong = document.createElement("strong");
+      strong.textContent = value;
+      row.append(span, strong);
+      return row;
+    }
+
+    function openProfile(business) {
+      profileName.textContent = business.name;
+      profileEyebrow.textContent = `${categoryLabels[business.category] || "Negocio"} · ${cityLabels[business.city] || business.city}`;
+      profileDescription.textContent = business.description || "Este negocio hace parte del catálogo YaVoy.";
+      profileDetails.innerHTML = "";
+      profileActions.innerHTML = "";
+
+      if (business.location) profileDetails.appendChild(detailRow("Ubicación", business.location));
+      if (business.hours) profileDetails.appendChild(detailRow("Horario", business.hours));
+      if (business.phone) profileDetails.appendChild(detailRow("Teléfono", business.phone));
+
+      const instagram = safeHttpUrl(business.instagram);
+      if (instagram) {
+        const link = document.createElement("a");
+        link.className = "button secondary";
+        link.href = instagram;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Instagram";
+        profileActions.appendChild(link);
+      }
+
+      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
+      if (wa) {
+        const link = document.createElement("a");
+        link.className = "button primary";
+        link.href = wa;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Contactar por WhatsApp";
+        profileActions.appendChild(link);
+      }
+
+      const reel = instagramEmbedUrl(business.reel_url);
+      if (reel) {
+        profileReel.src = reel;
+        profileReel.hidden = false;
+      } else {
+        profileReel.removeAttribute("src");
+        profileReel.hidden = true;
+      }
+
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeProfile() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      profileReel.removeAttribute("src");
+    }
+
+    function createCard(business) {
+      const card = document.createElement("article");
+      card.className = "catalog-card";
+
+      const cover = document.createElement("div");
+      cover.className = "catalog-cover";
+      const imageUrl = safeHttpUrl(business.image_url);
+      if (imageUrl) {
+        cover.style.backgroundImage = `linear-gradient(180deg, rgba(24,35,61,.02), rgba(24,35,61,.18)), url("${imageUrl.replace(/"/g, "%22")}")`;
+      }
+
+      const tag = document.createElement("span");
+      tag.className = "catalog-tag";
+      tag.textContent = categoryLabels[business.category] || business.category || "Negocio";
+      cover.appendChild(tag);
+
+      if (!imageUrl) {
+        const letter = document.createElement("span");
+        letter.className = "catalog-letter";
+        letter.textContent = (business.name || "Y").charAt(0).toUpperCase();
+        cover.appendChild(letter);
+      }
+
+      const body = document.createElement("div");
+      body.className = "catalog-body";
+      const h3 = document.createElement("h3");
+      h3.textContent = business.name;
+      const p = document.createElement("p");
+      p.textContent = business.description || "Negocio activo en YaVoy.";
+
+      const meta = document.createElement("div");
+      meta.className = "catalog-meta";
+      const city = document.createElement("span");
+      city.textContent = `📍 ${cityLabels[business.city] || business.city}`;
+      meta.appendChild(city);
+      if (business.location) {
+        const location = document.createElement("span");
+        location.textContent = business.location;
+        meta.appendChild(location);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "catalog-actions";
+      const profileButton = document.createElement("button");
+      profileButton.type = "button";
+      profileButton.className = "button secondary";
+      profileButton.textContent = "Ver perfil";
+      profileButton.addEventListener("click", () => openProfile(business));
+      actions.appendChild(profileButton);
+
+      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
+      if (wa) {
+        const waLink = document.createElement("a");
+        waLink.className = "button primary";
+        waLink.href = wa;
+        waLink.target = "_blank";
+        waLink.rel = "noopener noreferrer";
+        waLink.textContent = "WhatsApp";
+        actions.appendChild(waLink);
+      }
+
+      body.append(h3, p, meta, actions);
+      card.append(cover, body);
+      return card;
+    }
+
+    function render() {
+      const term = normalize(searchInput.value.trim());
+      const city = cityFilter.value;
+      const filtered = businesses.filter((business) => {
+        const haystack = normalize(`${business.name || ""} ${business.category || ""} ${business.description || ""} ${business.location || ""}`);
+        const matchesSearch = !term || haystack.includes(term);
+        const matchesCity = city === "todas" || business.city === city;
+        const matchesCategory = currentCategory === "todos" || business.category === currentCategory;
+        return matchesSearch && matchesCity && matchesCategory;
+      });
+
+      grid.innerHTML = "";
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = businesses.length ? "No encontramos negocios con esos filtros." : "Todavía no hay negocios activos para mostrar.";
+        grid.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((business) => grid.appendChild(createCard(business)));
+    }
+
+    async function loadBusinesses() {
+      if (!window.yavoyDb) {
+        notice.className = "notice error";
+        notice.textContent = "No pudimos conectar el catálogo con YaVoy.";
+        return;
+      }
+
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .select("id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status")
+        .eq("status", "active")
+        .order("name", { ascending: true });
+
+      if (error) {
+        console.error("Error cargando catálogo", error);
+        notice.className = "notice error";
+        notice.textContent = "No pudimos cargar los negocios en este momento.";
+        return;
+      }
+
+      businesses = data || [];
+      notice.hidden = true;
+      render();
+    }
+
+    chips.forEach((chip) => chip.addEventListener("click", () => {
+      currentCategory = chip.dataset.category;
+      chips.forEach((item) => item.classList.toggle("active", item === chip));
+      render();
+    }));
+    searchInput.addEventListener("input", render);
+    cityFilter.addEventListener("change", render);
+    closeModalButton.addEventListener("click", closeProfile);
+    modal.addEventListener("click", (event) => { if (event.target === modal) closeProfile(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeProfile(); });
+
+    loadBusinesses();
+  </script>
+</body>
+</html>

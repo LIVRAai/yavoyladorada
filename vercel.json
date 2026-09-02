@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/catalogo.html",
+      "destination": "/catalogo-dinamico.html"
+    },
+    {
+      "source": "/catalogo",
+      "destination": "/catalogo-dinamico.html"
+    }
+  ]
+}
