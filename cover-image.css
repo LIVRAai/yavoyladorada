@@ -5,28 +5,28 @@
 }
 .cover-upload-title {
   font-weight: 800;
-  color: var(--blue-dark);
+  color: var(--green-dark);
 }
 .cover-picker {
   position: relative;
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 16px;
+  grid-template-columns: 160px 1fr;
+  gap: 18px;
   align-items: center;
-  padding: 14px;
-  border: 1px dashed #bfc9da;
-  border-radius: 16px;
-  background: #fbfcff;
+  padding: 15px;
+  border: 1px dashed #b9cabd;
+  border-radius: 17px;
+  background: var(--green-pale);
 }
 .cover-preview {
-  width: 150px;
+  width: 160px;
   aspect-ratio: 16 / 10;
-  border-radius: 12px;
+  border-radius: 13px;
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #eef3ff, #e8fbf5);
-  color: #667085;
+  background: linear-gradient(135deg, var(--green-soft), #f3ecdf);
+  color: var(--muted);
   font-size: .82rem;
   text-align: center;
 }
@@ -59,11 +59,12 @@
   min-height: 42px;
   border-radius: 11px;
   padding: 10px 14px;
-  background: #eef3ff;
-  color: #2744a0;
+  background: var(--green-soft);
+  color: var(--green-dark);
   font-weight: 900;
   cursor: pointer;
 }
+.cover-file-button:hover { background: #dcece1; }
 .cover-file-name {
   font-size: .82rem;
   color: var(--muted);
@@ -81,11 +82,6 @@
 }
 
 @media (max-width: 640px) {
-  .cover-picker {
-    grid-template-columns: 1fr;
-  }
-  .cover-preview {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-  }
+  .cover-picker { grid-template-columns: 1fr; }
+  .cover-preview { width: 100%; aspect-ratio: 16 / 9; }
 }
