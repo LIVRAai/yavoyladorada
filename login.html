@@ -3,27 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3157D5" />
-  <title>Inicia sesión | YaVoy</title>
+  <meta name="theme-color" content="#1F6B45" />
+  <title>Mi espacio | Local 💚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
 </head>
 <body>
   <header class="business-header">
     <div class="business-shell business-header-inner">
-      <a class="brand" href="index.html">YaVoy</a>
-      <a class="button ghost" href="registro.html">Crear cuenta</a>
+      <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+      <div class="header-actions">
+        <a class="button ghost hide-mobile" href="catalogo.html">Explorar comunidad</a>
+        <a class="button primary" href="registro.html">Quiero ser parte</a>
+      </div>
     </div>
   </header>
 
   <main class="business-main">
     <div class="narrow">
       <section class="card">
-        <span class="eyebrow">YaVoy Negocios</span>
-        <h1>Inicia sesión.</h1>
-        <p class="lead">Administra tu perfil, tu suscripción y el estado de publicación de tu negocio.</p>
+        <div class="auth-intro">
+          <span class="eyebrow">Mi espacio Local</span>
+          <h1>Qué bueno verte de nuevo.</h1>
+          <p class="lead">Entra para administrar tu perfil, revisar tu membresía y ver el estado de publicación de tu emprendimiento.</p>
+        </div>
 
         <form id="loginForm" class="form-grid">
           <label class="field full">Correo electrónico
@@ -33,7 +38,7 @@
             <input id="password" type="password" autocomplete="current-password" required />
           </label>
           <div class="form-actions">
-            <button id="loginButton" class="button primary" type="submit">Iniciar sesión</button>
+            <button id="loginButton" class="button primary" type="submit">Entrar a mi espacio</button>
           </div>
         </form>
         <div id="result" class="notice info" hidden></div>
@@ -69,12 +74,12 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!window.yavoyDb) {
-        show("No pudimos conectar con YaVoy.", "error");
+        show("No pudimos conectar con Local en este momento.", "error");
         return;
       }
 
       button.disabled = true;
-      button.textContent = "Iniciando sesión...";
+      button.textContent = "Entrando...";
       result.hidden = true;
 
       const { data, error } = await window.yavoyDb.auth.signInWithPassword({
@@ -83,7 +88,7 @@
       });
 
       button.disabled = false;
-      button.textContent = "Iniciar sesión";
+      button.textContent = "Entrar a mi espacio";
 
       if (error) {
         console.error(error);
