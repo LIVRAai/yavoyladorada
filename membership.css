@@ -1,0 +1,149 @@
+/* Local 💚 — propuesta de valor de membresía */
+.membership-section {
+  padding: 76px 0;
+}
+
+.membership-value-shell {
+  background: var(--green-dark);
+  color: #fff;
+  border-radius: 32px;
+  padding: 36px;
+  box-shadow: 0 28px 70px rgba(23,51,37,.16);
+}
+
+.membership-value-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr);
+  gap: 34px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.membership-value-head .eyebrow { color: #bfe4ca; }
+.membership-value-head h2 { color: #fff; margin-bottom: 12px; }
+.membership-value-head p { color: rgba(255,255,255,.76); margin: 0; max-width: 720px; }
+
+.membership-price-block {
+  justify-self: end;
+  text-align: right;
+}
+
+.membership-price-block .membership-price {
+  color: #fff;
+  font-size: 1.65rem;
+}
+
+.membership-price-note {
+  color: rgba(255,255,255,.62);
+  font-size: .9rem;
+  margin-top: 4px;
+}
+
+.membership-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.membership-benefit {
+  min-height: 190px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 20px;
+  background: rgba(255,255,255,.075);
+}
+
+.membership-benefit-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 24px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.11);
+  font-size: 1.15rem;
+}
+
+.membership-benefit h3 {
+  color: #fff;
+  margin-bottom: 7px;
+  font-size: 1.12rem;
+}
+
+.membership-benefit p {
+  color: rgba(255,255,255,.70);
+  margin: 0;
+  font-size: .94rem;
+  line-height: 1.55;
+}
+
+.local-sessions-callout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 15px;
+  align-items: start;
+  margin-top: 18px;
+  padding: 17px 18px;
+  border-radius: 16px;
+  background: var(--green-pale);
+  border: 1px solid var(--border);
+}
+
+.local-sessions-callout strong {
+  display: block;
+  color: var(--green-dark);
+  margin-bottom: 4px;
+}
+
+.local-sessions-callout p {
+  margin: 0;
+  font-size: .91rem;
+  line-height: 1.55;
+}
+
+.local-sessions-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--green-soft);
+}
+
+.membership-mini-list {
+  display: grid;
+  gap: 9px;
+  margin: 18px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.membership-mini-list li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 8px;
+  align-items: start;
+  color: var(--green-dark);
+  font-size: .91rem;
+  line-height: 1.45;
+}
+
+.membership-mini-list li::before {
+  content: "✓";
+  color: var(--green);
+  font-weight: 900;
+}
+
+@media (max-width: 960px) {
+  .membership-benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  .membership-section { padding: 48px 0; }
+  .membership-value-shell { padding: 22px; border-radius: 23px; }
+  .membership-value-head { grid-template-columns: 1fr; gap: 18px; }
+  .membership-price-block { justify-self: start; text-align: left; }
+  .membership-benefits-grid { grid-template-columns: 1fr; }
+  .membership-benefit { min-height: 0; }
+  .local-sessions-callout { grid-template-columns: 1fr; }
+}
