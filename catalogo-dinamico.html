@@ -3,21 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3157D5" />
-  <meta name="description" content="Catálogo de negocios activos de YaVoy en La Dorada y Puerto Salgar." />
-  <title>Catálogo | YaVoy</title>
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="description" content="Explora los emprendimientos que hacen parte de Local 💚." />
+  <title>Explorar | Local 💚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
 </head>
 <body>
   <header class="business-header">
     <div class="business-shell business-header-inner">
-      <a class="brand" href="index.html">YaVoy</a>
+      <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a class="nav-emphasis" href="catalogo.html">Explorar</a>
+        <a href="index.html#comunidad">Nuestra comunidad</a>
+        <a href="index.html#como-funciona">Cómo funciona</a>
+        <a href="registro.html">Soy emprendimiento</a>
+      </nav>
       <div class="header-actions">
-        <a class="button ghost hide-mobile" href="login.html">Mi negocio</a>
-        <a class="button primary" href="registro.html">Registrar negocio</a>
+        <a class="button ghost hide-mobile" href="login.html">Mi espacio</a>
+        <a class="button primary" href="registro.html">Quiero ser parte</a>
       </div>
     </div>
   </header>
@@ -26,13 +32,13 @@
     <section class="catalog-hero">
       <div class="business-shell catalog-hero-grid">
         <div>
-          <span class="eyebrow">Catálogo local</span>
-          <h1>Descubre negocios cerca de ti.</h1>
-          <p class="lead">Aquí aparecen automáticamente los negocios con suscripción activa en YaVoy.</p>
+          <span class="eyebrow">Emprendimientos de nuestra región</span>
+          <h1>Explora la comunidad Local.</h1>
+          <p class="lead">Descubre proyectos, productos, servicios e historias que están creciendo cerca de ti.</p>
         </div>
         <div class="search-panel">
           <div class="search-row">
-            <input id="searchInput" type="search" placeholder="Buscar negocio, categoría o servicio" aria-label="Buscar negocios" />
+            <input id="searchInput" type="search" placeholder="Buscar emprendimiento, categoría o servicio" aria-label="Buscar emprendimientos" />
             <select id="cityFilter" aria-label="Filtrar por ciudad">
               <option value="todas">Todas las ciudades</option>
               <option value="la-dorada">La Dorada</option>
@@ -55,7 +61,7 @@
           <button class="filter-chip" data-category="tecnologia" type="button">Tecnología</button>
         </div>
 
-        <div id="catalogNotice" class="notice info">Cargando negocios activos...</div>
+        <div id="catalogNotice" class="notice info">Cargando emprendimientos de la comunidad...</div>
         <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
       </div>
     </section>
@@ -64,14 +70,28 @@
   <div id="profileModal" class="modal" aria-hidden="true">
     <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="profileName">
       <button id="closeModal" class="modal-close" type="button" aria-label="Cerrar">×</button>
-      <span id="profileEyebrow" class="eyebrow">YaVoy</span>
-      <h2 id="profileName">Negocio</h2>
+      <span id="profileEyebrow" class="eyebrow">Local 💚</span>
+      <h2 id="profileName">Emprendimiento</h2>
       <p id="profileDescription"></p>
       <div id="profileDetails" class="summary-list"></div>
-      <iframe id="profileReel" class="profile-reel" title="Contenido del negocio" hidden allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+      <iframe id="profileReel" class="profile-reel" title="Contenido del emprendimiento" hidden allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
       <div id="profileActions" class="form-actions" style="margin-top:20px"></div>
     </section>
   </div>
+
+  <footer class="local-footer">
+    <div class="business-shell footer-grid">
+      <div>
+        <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+        <p>Conoce, comparte y apoya emprendimientos de nuestra región.</p>
+      </div>
+      <nav class="footer-links" aria-label="Enlaces del pie de página">
+        <a href="index.html#comunidad">Nuestra comunidad</a>
+        <a href="registro.html">Quiero ser parte</a>
+        <a href="login.html">Mi espacio</a>
+      </nav>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
@@ -132,7 +152,7 @@
     function whatsappUrl(value, businessName) {
       const digits = String(value || "").replace(/\D/g, "");
       if (digits.length < 10) return "";
-      const text = encodeURIComponent(`Hola, vi ${businessName} en YaVoy y quiero más información.`);
+      const text = encodeURIComponent(`Hola, vi ${businessName} en Local 💚 y quiero más información.`);
       return `https://wa.me/${digits}?text=${text}`;
     }
 
@@ -149,8 +169,8 @@
 
     function openProfile(business) {
       profileName.textContent = business.name;
-      profileEyebrow.textContent = `${categoryLabels[business.category] || "Negocio"} · ${cityLabels[business.city] || business.city}`;
-      profileDescription.textContent = business.description || "Este negocio hace parte del catálogo YaVoy.";
+      profileEyebrow.textContent = `${categoryLabels[business.category] || "Emprendimiento"} · ${cityLabels[business.city] || business.city}`;
+      profileDescription.textContent = business.description || "Este emprendimiento hace parte de Local 💚.";
       profileDetails.innerHTML = "";
       profileActions.innerHTML = "";
 
@@ -165,7 +185,7 @@
         link.href = instagram;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.textContent = "Instagram";
+        link.textContent = "Ver Instagram";
         profileActions.appendChild(link);
       }
 
@@ -176,7 +196,7 @@
         link.href = wa;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.textContent = "Contactar por WhatsApp";
+        link.textContent = "Contactar";
         profileActions.appendChild(link);
       }
 
@@ -207,18 +227,18 @@
       cover.className = "catalog-cover";
       const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
       if (imageUrl) {
-        cover.style.backgroundImage = `linear-gradient(180deg, rgba(24,35,61,.02), rgba(24,35,61,.18)), url("${imageUrl.replace(/"/g, "%22")}")`;
+        cover.style.backgroundImage = `linear-gradient(180deg, rgba(23,51,37,.02), rgba(23,51,37,.16)), url("${imageUrl.replace(/"/g, "%22")}")`;
       }
 
       const tag = document.createElement("span");
       tag.className = "catalog-tag";
-      tag.textContent = categoryLabels[business.category] || business.category || "Negocio";
+      tag.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
       cover.appendChild(tag);
 
       if (!imageUrl) {
         const letter = document.createElement("span");
         letter.className = "catalog-letter";
-        letter.textContent = (business.name || "Y").charAt(0).toUpperCase();
+        letter.textContent = (business.name || "L").charAt(0).toUpperCase();
         cover.appendChild(letter);
       }
 
@@ -227,7 +247,7 @@
       const h3 = document.createElement("h3");
       h3.textContent = business.name;
       const p = document.createElement("p");
-      p.textContent = business.description || "Negocio activo en YaVoy.";
+      p.textContent = business.description || "Emprendimiento miembro de Local 💚.";
 
       const meta = document.createElement("div");
       meta.className = "catalog-meta";
@@ -245,7 +265,7 @@
       const profileButton = document.createElement("button");
       profileButton.type = "button";
       profileButton.className = "button secondary";
-      profileButton.textContent = "Ver perfil";
+      profileButton.textContent = "Conocer";
       profileButton.addEventListener("click", () => openProfile(business));
       actions.appendChild(profileButton);
 
@@ -256,7 +276,7 @@
         waLink.href = wa;
         waLink.target = "_blank";
         waLink.rel = "noopener noreferrer";
-        waLink.textContent = "WhatsApp";
+        waLink.textContent = "Contactar";
         actions.appendChild(waLink);
       }
 
@@ -280,7 +300,7 @@
       if (!filtered.length) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = businesses.length ? "No encontramos negocios con esos filtros." : "Todavía no hay negocios activos para mostrar.";
+        empty.textContent = businesses.length ? "No encontramos emprendimientos con esos filtros." : "La comunidad todavía no tiene emprendimientos publicados.";
         grid.appendChild(empty);
         return;
       }
@@ -291,7 +311,7 @@
     async function loadBusinesses() {
       if (!window.yavoyDb) {
         notice.className = "notice error";
-        notice.textContent = "No pudimos conectar el catálogo con YaVoy.";
+        notice.textContent = "No pudimos conectar con Local en este momento.";
         return;
       }
 
@@ -302,9 +322,9 @@
         .order("name", { ascending: true });
 
       if (error) {
-        console.error("Error cargando catálogo", error);
+        console.error("Error cargando comunidad", error);
         notice.className = "notice error";
-        notice.textContent = "No pudimos cargar los negocios en este momento.";
+        notice.textContent = "No pudimos cargar los emprendimientos en este momento.";
         return;
       }
 
