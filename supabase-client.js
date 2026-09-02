@@ -6,12 +6,32 @@
 // - Completa estos dos valores directamente en tu copia/repositorio; no los compartas por chat.
 
 (function loadResponsiveLayer() {
-  if (document.querySelector('link[data-local-responsive="true"]')) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "responsive.css";
-  link.dataset.localResponsive = "true";
-  document.head.appendChild(link);
+  if (!document.querySelector('link[data-local-responsive="true"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "responsive.css";
+    link.dataset.localResponsive = "true";
+    document.head.appendChild(link);
+  }
+
+  const isExplorePage = window.location.pathname.includes("catalogo");
+  if (!isExplorePage) return;
+
+  if (!document.querySelector('link[data-local-explore="true"]')) {
+    const exploreLink = document.createElement("link");
+    exploreLink.rel = "stylesheet";
+    exploreLink.href = "explore-ux.css";
+    exploreLink.dataset.localExplore = "true";
+    document.head.appendChild(exploreLink);
+  }
+
+  if (!document.querySelector('script[data-local-explore="true"]')) {
+    const exploreScript = document.createElement("script");
+    exploreScript.src = "explore-ux.js";
+    exploreScript.defer = true;
+    exploreScript.dataset.localExplore = "true";
+    document.head.appendChild(exploreScript);
+  }
 })();
 
 const YAVOY_SUPABASE_URL = "https://upahrzjvpfjfmbcrjrco.supabase.co";
