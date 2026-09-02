@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
+  <link rel="stylesheet" href="cover-image.css" />
 </head>
 <body>
   <header class="business-header">
@@ -67,9 +68,24 @@
           <label class="field">Instagram
             <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
           </label>
-          <label class="field full">Imagen de portada
-            <input id="image_url" type="url" maxlength="600" placeholder="URL pública de la imagen (opcional)" />
-          </label>
+
+          <div class="cover-upload">
+            <span class="cover-upload-title">Foto de portada</span>
+            <div class="cover-picker">
+              <div class="cover-preview" id="coverPreview">
+                <span id="coverPlaceholder">Tu foto aparecerá aquí</span>
+                <img id="coverPreviewImage" alt="Vista previa de la portada" hidden />
+              </div>
+              <div class="cover-controls">
+                <input class="cover-file-input" id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" />
+                <label class="cover-file-button" for="coverFile">Seleccionar foto</label>
+                <p>Recomendado: foto horizontal. JPG, PNG o WEBP, máximo 10 MB.</p>
+                <span class="cover-file-name" id="coverFileName">No has seleccionado una foto.</span>
+                <button class="cover-remove" id="removeCover" type="button" hidden>Quitar foto</button>
+              </div>
+            </div>
+          </div>
+
           <label class="field full">Reel de Instagram
             <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
           </label>
@@ -103,15 +119,22 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
+  <script src="cover-image.js"></script>
   <script>
     const sessionNotice = document.getElementById("sessionNotice");
     const existingNotice = document.getElementById("existingNotice");
     const form = document.getElementById("businessForm");
     const saveButton = document.getElementById("saveButton");
     const result = document.getElementById("result");
+    const coverFile = document.getElementById("coverFile");
+    const coverPreviewImage = document.getElementById("coverPreviewImage");
+    const coverPlaceholder = document.getElementById("coverPlaceholder");
+    const coverFileName = document.getElementById("coverFileName");
+    const removeCover = document.getElementById("removeCover");
 
     let currentUser = null;
     let createdBusiness = null;
+    let selectedCoverData = null;
 
     function showResult(message, type = "info") {
       result.textContent = message;
@@ -123,6 +146,41 @@
       const value = document.getElementById(id).value.trim();
       return value || null;
     }
+
+    function renderCover(source, fileName = "") {
+      const safeSource = window.YaVoyCoverImage?.isSafeImageSource(source) || "";
+      coverPreviewImage.hidden = !safeSource;
+      coverPlaceholder.hidden = Boolean(safeSource);
+      removeCover.hidden = !safeSource;
+      if (safeSource) coverPreviewImage.src = safeSource;
+      else coverPreviewImage.removeAttribute("src");
+      coverFileName.textContent = fileName || (safeSource ? "Foto lista para guardar." : "No has seleccionado una foto.");
+    }
+
+    coverFile.addEventListener("change", async () => {
+      const file = coverFile.files?.[0];
+      if (!file) return;
+      coverFile.disabled = true;
+      coverFileName.textContent = "Preparando imagen...";
+      try {
+        selectedCoverData = await window.YaVoyCoverImage.compressFile(file);
+        renderCover(selectedCoverData, file.name);
+      } catch (error) {
+        console.error(error);
+        selectedCoverData = null;
+        coverFile.value = "";
+        renderCover("");
+        showResult(error.message || "No pudimos preparar la imagen.", "error");
+      } finally {
+        coverFile.disabled = false;
+      }
+    });
+
+    removeCover.addEventListener("click", () => {
+      selectedCoverData = null;
+      coverFile.value = "";
+      renderCover("");
+    });
 
     async function startSubscription(businessId) {
       showResult("Negocio guardado. Conectando con Mercado Pago...", "success");
@@ -211,7 +269,7 @@
         whatsapp: getValue("whatsapp"),
         phone: getValue("phone"),
         instagram: getValue("instagram"),
-        image_url: getValue("image_url"),
+        image_url: selectedCoverData,
         reel_url: getValue("reel_url"),
         status: "draft"
       };
