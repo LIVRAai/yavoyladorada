@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
+  <link rel="stylesheet" href="cover-image.css" />
 </head>
 <body>
   <header class="business-header">
@@ -92,10 +93,24 @@
               <label class="field">Instagram
                 <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
               </label>
-              <label class="field full">URL de imagen de portada
-                <input id="image_url" type="url" maxlength="600" placeholder="https://..." />
-                <small>Por ahora usamos una URL pública de imagen.</small>
-              </label>
+
+              <div class="cover-upload">
+                <span class="cover-upload-title">Foto de portada</span>
+                <div class="cover-picker">
+                  <div class="cover-preview">
+                    <span id="coverPlaceholder">Tu foto aparecerá aquí</span>
+                    <img id="coverPreviewImage" alt="Vista previa de la portada" hidden />
+                  </div>
+                  <div class="cover-controls">
+                    <input class="cover-file-input" id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" />
+                    <label class="cover-file-button" for="coverFile">Cambiar foto</label>
+                    <p>Recomendado: foto horizontal. JPG, PNG o WEBP, máximo 10 MB.</p>
+                    <span class="cover-file-name" id="coverFileName">Sin foto de portada.</span>
+                    <button class="cover-remove" id="removeCover" type="button" hidden>Quitar foto</button>
+                  </div>
+                </div>
+              </div>
+
               <label class="field full">URL de Reel de Instagram
                 <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
               </label>
@@ -131,6 +146,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
+  <script src="cover-image.js"></script>
   <script>
     const loadingNotice = document.getElementById("loadingNotice");
     const errorNotice = document.getElementById("errorNotice");
@@ -143,12 +159,19 @@
     const paymentButton = document.getElementById("paymentButton");
     const catalogButton = document.getElementById("catalogButton");
     const paymentNotice = document.getElementById("paymentNotice");
+    const coverFile = document.getElementById("coverFile");
+    const coverPreviewImage = document.getElementById("coverPreviewImage");
+    const coverPlaceholder = document.getElementById("coverPlaceholder");
+    const coverFileName = document.getElementById("coverFileName");
+    const removeCover = document.getElementById("removeCover");
 
     let currentUser = null;
     let currentBusiness = null;
     let currentSubscription = null;
+    let pendingCoverData = null;
+    let removeCoverRequested = false;
 
-    const fields = ["name", "category", "city", "description", "location", "hours", "whatsapp", "phone", "instagram", "image_url", "reel_url"];
+    const fields = ["name", "category", "city", "description", "location", "hours", "whatsapp", "phone", "instagram", "reel_url"];
 
     const statusInfo = {
       draft: { label: "Borrador", className: "status-draft", text: "Completa tu perfil y activa la suscripción para publicarlo." },
@@ -176,11 +199,49 @@
       errorNotice.hidden = false;
     }
 
+    function renderCover(source, message = "") {
+      const safeSource = window.YaVoyCoverImage?.isSafeImageSource(source) || "";
+      coverPreviewImage.hidden = !safeSource;
+      coverPlaceholder.hidden = Boolean(safeSource);
+      removeCover.hidden = !safeSource;
+      if (safeSource) coverPreviewImage.src = safeSource;
+      else coverPreviewImage.removeAttribute("src");
+      coverFileName.textContent = message || (safeSource ? "Foto de portada actual." : "Sin foto de portada.");
+    }
+
     function fillForm() {
       fields.forEach((field) => {
         document.getElementById(field).value = currentBusiness[field] || "";
       });
+      renderCover(currentBusiness.image_url);
     }
+
+    coverFile.addEventListener("change", async () => {
+      const file = coverFile.files?.[0];
+      if (!file) return;
+      coverFile.disabled = true;
+      coverFileName.textContent = "Preparando imagen...";
+      try {
+        pendingCoverData = await window.YaVoyCoverImage.compressFile(file);
+        removeCoverRequested = false;
+        renderCover(pendingCoverData, `${file.name} · lista para guardar`);
+      } catch (error) {
+        console.error(error);
+        pendingCoverData = null;
+        coverFile.value = "";
+        renderCover(currentBusiness?.image_url || "");
+        showError(error.message || "No pudimos preparar la imagen.");
+      } finally {
+        coverFile.disabled = false;
+      }
+    });
+
+    removeCover.addEventListener("click", () => {
+      pendingCoverData = null;
+      removeCoverRequested = true;
+      coverFile.value = "";
+      renderCover("", "La foto se quitará cuando guardes los cambios.");
+    });
 
     function renderStatus() {
       const info = statusInfo[currentBusiness.status] || statusInfo.draft;
@@ -261,6 +322,7 @@
       saveButton.disabled = true;
       saveButton.textContent = "Guardando...";
       saveNotice.hidden = true;
+      errorNotice.hidden = true;
 
       const payload = {};
       fields.forEach((field) => {
@@ -270,6 +332,7 @@
       payload.name = document.getElementById("name").value.trim();
       payload.category = document.getElementById("category").value;
       payload.city = document.getElementById("city").value;
+      payload.image_url = removeCoverRequested ? null : (pendingCoverData || currentBusiness.image_url || null);
       payload.updated_at = new Date().toISOString();
 
       const { data, error } = await window.yavoyDb
@@ -288,6 +351,9 @@
       }
 
       currentBusiness = data;
+      pendingCoverData = null;
+      removeCoverRequested = false;
+      coverFile.value = "";
       fillForm();
       renderStatus();
       saveNotice.textContent = "Cambios guardados correctamente.";
