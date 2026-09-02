@@ -1,1 +1,259 @@
-/* placeholder */
+/* Local 💚 — UX específica de Explorar */
+
+/* Encabezado y herramientas de descubrimiento */
+.catalog-hero {
+  padding: 48px 0 18px;
+}
+
+.catalog-hero-grid {
+  grid-template-columns: 1fr !important;
+  gap: 24px;
+  align-items: start;
+}
+
+.catalog-hero h1 {
+  max-width: 780px;
+  margin-bottom: 14px;
+}
+
+.catalog-hero .lead {
+  max-width: 720px;
+  margin-bottom: 0;
+}
+
+.search-panel {
+  width: 100%;
+  max-width: none !important;
+  justify-self: stretch !important;
+  padding: 10px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(34,70,48,.06);
+  border-color: rgba(199, 214, 203, .85);
+}
+
+.search-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-row input,
+.search-row select {
+  min-height: 54px;
+  margin: 0;
+}
+
+.search-row input {
+  width: 100%;
+  min-width: 0;
+  padding-left: 46px;
+  background-image: none;
+}
+
+.search-row select {
+  width: 230px;
+  max-width: 230px;
+}
+
+.search-input-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.search-input-shell::before {
+  content: "⌕";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-53%);
+  z-index: 2;
+  color: var(--green);
+  font-size: 1.55rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.catalog-section {
+  padding-top: 4px;
+}
+
+.explore-toolbar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 12px;
+}
+
+.explore-toolbar-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.explore-toolbar-title {
+  color: var(--green-dark);
+  font-weight: 900;
+  font-size: .96rem;
+}
+
+.explore-result-count {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.explore-clear {
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.explore-clear:hover {
+  text-decoration: underline;
+}
+
+.filter-row {
+  margin: 0 0 22px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid rgba(223,231,223,.9);
+}
+
+.filter-chip {
+  min-height: 42px;
+  padding: 9px 15px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: #b8cbbd;
+}
+
+.filter-chip.active {
+  box-shadow: 0 7px 18px rgba(31,107,69,.14);
+}
+
+.catalog-grid {
+  align-items: stretch;
+}
+
+.catalog-card {
+  height: 100%;
+}
+
+.catalog-cover {
+  aspect-ratio: 16 / 9;
+  min-height: 0 !important;
+}
+
+.catalog-body h3 {
+  margin-top: 0;
+}
+
+/* Escritorio */
+@media (min-width: 981px) {
+  .catalog-hero {
+    padding-top: 54px;
+  }
+
+  .catalog-section {
+    padding-bottom: 92px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+/* Laptop */
+@media (min-width: 761px) and (max-width: 980px) {
+  .search-row {
+    grid-template-columns: minmax(0, 1fr) 210px;
+  }
+
+  .search-row select {
+    width: 210px;
+    max-width: 210px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Celular */
+@media (max-width: 760px) {
+  .catalog-hero {
+    padding: 28px 0 14px;
+  }
+
+  .catalog-hero-grid {
+    gap: 16px;
+  }
+
+  .search-panel {
+    padding: 9px;
+    border-radius: 16px;
+  }
+
+  .search-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .search-row select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .search-row input,
+  .search-row select {
+    min-height: 50px;
+  }
+
+  .search-row input {
+    padding-left: 43px;
+  }
+
+  .search-input-shell::before {
+    left: 14px;
+  }
+
+  .explore-toolbar-meta {
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .explore-toolbar-title {
+    font-size: .9rem;
+  }
+
+  .explore-result-count {
+    font-size: .84rem;
+  }
+
+  .explore-clear {
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+
+  .filter-row {
+    margin-inline: -12px;
+    padding: 4px 12px 14px;
+    border-bottom: 0;
+  }
+
+  .catalog-section {
+    padding-top: 4px;
+  }
+
+  .catalog-grid {
+    gap: 16px;
+  }
+}
