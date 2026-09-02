@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MONTHLY_AMOUNT_COP = 29900;
-const RETURN_URL = "https://yavoyladorada.vercel.app/?subscription=return";
+const RETURN_URL = "https://yavoyladorada.vercel.app/retorno-pago.html";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
