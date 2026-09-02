@@ -1,39 +1,71 @@
-# YaVoy La Dorada
+# Local 💚
 
-YaVoy es un catálogo local para La Dorada y Puerto Salgar con un flujo de autoregistro para negocios y suscripción mensual mediante Mercado Pago.
+Local 💚 es una comunidad de emprendimientos de La Dorada, Puerto Salgar y la región. Su propósito es **visibilizar, apoyar, conectar y profesionalizar** proyectos locales.
 
-## Flujo de negocios
+El producto combina una experiencia pública para descubrir emprendimientos con un espacio privado donde cada miembro administra su perfil y su membresía.
 
-1. El comercio crea una cuenta en `registro.html` usando Supabase Auth.
-2. Inicia sesión y registra su negocio en `negocio.html`.
-3. El negocio se guarda inicialmente con estado `draft`.
-4. La página invoca la Edge Function `create-subscription` con el `business_id` recién creado.
-5. Mercado Pago crea una suscripción mensual de **$29.900 COP** y devuelve el checkout.
-6. El negocio pasa a `pending_payment`.
-7. El webhook `mercadopago-webhook` procesa los eventos de Mercado Pago.
-8. Cuando se confirma un pago aprobado, el negocio pasa a `active`.
-9. El catálogo público solo consulta negocios con `status = active`.
+## Experiencia principal
 
-Resultado esperado:
+### Persona que descubre
 
 ```text
-Cuenta → Negocio → Mercado Pago → Webhook → active → Catálogo público
+Inicio → Explorar comunidad → Ver perfil → Contactar / apoyar
+```
+
+### Emprendimiento
+
+```text
+Inicio → Quiero ser parte → Crear cuenta → Crear perfil → Activar membresía → Mi espacio → Publicado
 ```
 
 ## Páginas principales
 
-- `index.html`: página de presentación.
-- `registro.html`: creación de cuenta de comercio.
-- `login.html`: autenticación.
-- `negocio.html`: alta inicial del negocio y entrada al checkout.
-- `mi-negocio.html`: panel del comercio para editar perfil, revisar estado y continuar/reactivar pagos.
-- `retorno-pago.html`: pantalla de verificación después de Mercado Pago.
-- `catalogo-dinamico.html`: catálogo conectado a Supabase.
-- `catalogo.html`: versión histórica del catálogo; en Vercel se reescribe hacia `catalogo-dinamico.html`.
+- `index.html`: propuesta de valor y concepto de comunidad.
+- `catalogo.html`: entrada a la experiencia de exploración.
+- `catalogo-dinamico.html`: comunidad pública conectada a Supabase.
+- `registro.html`: creación de cuenta.
+- `login.html`: acceso a Mi espacio.
+- `negocio.html`: creación inicial del perfil del emprendimiento.
+- `mi-negocio.html`: administración del perfil, membresía y estado de publicación.
+- `retorno-pago.html`: verificación de activación después de Mercado Pago.
 
-## Datos del perfil comercial
+Los nombres técnicos históricos (`businesses`, `business_subscriptions`, `business_id`, etc.) se conservan para evitar migraciones innecesarias. En la experiencia de usuario se habla de **emprendimientos, perfiles, comunidad y membresía**.
 
-El flujo utiliza los campos existentes de `businesses`:
+## Membresía
+
+Valor actual: **$29.900 COP / mes**.
+
+La Edge Function `create-subscription` crea o reutiliza una membresía mediante Mercado Pago y utiliza el concepto:
+
+```text
+Local 💚 - Membresía mensual
+```
+
+Flujo técnico:
+
+```text
+Cuenta → Perfil → Mercado Pago → Webhook → active → Publicado en Local
+```
+
+## Estados
+
+Estados técnicos de `businesses`:
+
+- `draft`: perfil creado, todavía no publicado.
+- `pending_payment`: activación pendiente.
+- `active`: perfil publicado.
+- `suspended`: publicación pausada.
+
+Estados técnicos de `business_subscriptions`:
+
+- `pending`
+- `authorized`
+- `paused`
+- `cancelled`
+
+## Perfil de emprendimiento
+
+Se utilizan los campos existentes:
 
 - `owner_id`
 - `name`
@@ -49,102 +81,30 @@ El flujo utiliza los campos existentes de `businesses`:
 - `whatsapp`
 - `status`
 
-Estados del negocio:
+La foto de portada se selecciona desde el dispositivo y se optimiza antes de guardarse en `image_url` para el MVP.
 
-- `draft`
-- `pending_payment`
-- `active`
-- `suspended`
+## Seguridad
 
-## Suscripciones
+El frontend utiliza únicamente la URL y la Publishable Key de Supabase.
 
-Tabla: `business_subscriptions`.
-
-Datos principales:
-
-- `business_id`
-- `provider`
-- `mp_preapproval_id`
-- `mp_plan_id`
-- `status`
-- `amount_cop`
-- `last_payment_date`
-- `next_payment_date`
-
-Estados de suscripción usados por la aplicación:
-
-- `pending`
-- `authorized`
-- `paused`
-- `cancelled`
-
-## Supabase y seguridad
-
-El cliente web utiliza únicamente la URL y la Publishable Key de Supabase desde `supabase-client.js`.
-
-Nunca se deben publicar en el frontend:
+Nunca deben publicarse:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `MERCADOPAGO_ACCESS_TOKEN`
 - `MERCADOPAGO_WEBHOOK_SECRET`
 
-Esos valores deben permanecer como secretos de las Edge Functions.
+RLS debe mantener que:
 
-RLS debe mantener estas reglas:
+- el público solo pueda leer perfiles `active`;
+- cada usuario autenticado pueda crear, consultar y editar sus propios perfiles;
+- cada propietario pueda consultar la membresía asociada a su perfil.
 
-- el público puede leer únicamente negocios `active`;
-- cada usuario autenticado puede crear, consultar y editar únicamente sus propios negocios;
-- cada propietario puede consultar la suscripción asociada a sus negocios.
+## Infraestructura
 
-## Edge Functions
-
-### `create-subscription`
-
-- exige usuario autenticado;
-- comprueba que el negocio pertenece al usuario;
-- crea o reutiliza la suscripción de Mercado Pago;
-- utiliza $29.900 COP / mes;
-- cambia el negocio a `pending_payment`;
-- devuelve `init_point` para abrir el checkout.
-
-### `mercadopago-webhook`
-
-- valida la firma del webhook;
-- consulta la fuente real en Mercado Pago;
-- actualiza `business_subscriptions`;
-- registra fechas de pago;
-- cambia el negocio a `active` cuando existe un pago aprobado;
-- suspende el negocio cuando corresponde.
-
-## Retorno de Mercado Pago
-
-La versión del repositorio usa:
+El dominio técnico actual se mantiene temporalmente en:
 
 ```text
-https://yavoyladorada.vercel.app/retorno-pago.html
+https://yavoyladorada.vercel.app/
 ```
 
-Por compatibilidad con una versión anterior ya desplegada, `home.js` también detecta:
-
-```text
-/?subscription=return
-```
-
-y redirige al usuario a `retorno-pago.html`.
-
-## Vercel
-
-`vercel.json` reescribe:
-
-```text
-/catalogo.html → /catalogo-dinamico.html
-/catalogo      → /catalogo-dinamico.html
-```
-
-Esto permite conservar los enlaces existentes mientras el catálogo público pasa a ser dinámico.
-
-## Configuración de cliente
-
-`supabase-client.js` contiene exclusivamente valores públicos del cliente Supabase.
-
-No agregar secretos al repositorio.
+Esto evita romper callbacks y configuración existente mientras se define el dominio definitivo de Local 💚.
