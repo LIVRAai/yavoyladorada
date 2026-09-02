@@ -2,519 +2,160 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#3157D5" />
-  <meta name="description" content="YaVoy conecta personas, negocios locales y domicilios en La Dorada y Puerto Salgar." />
-  <title>YaVoy | Lo encuentras. Te lo llevamos.</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="description" content="Local 💚 es una comunidad de emprendimientos que busca visibilizar, apoyar, conectar y profesionalizar lo local." />
+  <title>Local 💚 | Comunidad de emprendimientos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700&display=swap"
-    rel="stylesheet"
-  >
-
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="negocios.css" />
 </head>
-
-<body class="home-page">
-
-  <header class="site-header">
-    <div class="container header-inner">
-
-      <!-- Espacio de marca intencionalmente en blanco -->
-
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a href="#que-es">Qué es</a>
+<body>
+  <header class="business-header">
+    <div class="business-shell business-header-inner">
+      <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="catalogo.html">Explorar</a>
+        <a href="#comunidad">Nuestra comunidad</a>
         <a href="#como-funciona">Cómo funciona</a>
-        <a href="#para-quien">Para quién</a>
-        <a class="nav-cta" href="catalogo.html">Explorar YaVoy</a>
+        <a class="nav-emphasis" href="registro.html">Soy emprendimiento</a>
       </nav>
-
+      <div class="header-actions">
+        <a class="button ghost hide-mobile" href="login.html">Mi espacio</a>
+        <a class="button primary" href="catalogo.html">Explorar</a>
+      </div>
     </div>
   </header>
 
-
-  <main id="inicio">
-
-    <!-- HERO -->
-    <section class="hero home-hero">
-
-      <div class="container hero-grid">
-
-        <div class="hero-copy">
-
-          <span class="eyebrow">
-            <span class="eyebrow-dot"></span>
-            La Dorada + Puerto Salgar
-          </span>
-
-          <h1>
-            Lo encuentras aquí.
-            <em>YaVoy por ello.</em>
-          </h1>
-
-          <p class="hero-description">
-            Descubre negocios, productos y servicios locales y,
-            cuando encuentres lo que necesitas, pide que YaVoy
-            lo recoja y te lo lleve.
-          </p>
-
-          <div class="hero-actions home-actions">
-
-            <a
-              class="button primary large"
-              href="catalogo.html"
-            >
-              Explorar catálogo →
-            </a>
-
-            <a
-              class="button secondary large"
-              href="#como-funciona"
-            >
-              Conocer cómo funciona
-            </a>
-
+  <main class="home-main">
+    <section class="local-hero">
+      <div class="business-shell local-hero-grid">
+        <div class="local-hero-copy">
+          <span class="local-kicker">La Dorada + Puerto Salgar</span>
+          <h1>Lo local merece <em>ser visto.</em></h1>
+          <p>Local 💚 es una comunidad creada para que los emprendimientos de nuestra región tengan más visibilidad, conexiones, herramientas y oportunidades para crecer.</p>
+          <div class="hero-actions">
+            <a class="button primary large" href="catalogo.html">Explorar emprendimientos →</a>
+            <a class="button secondary large" href="registro.html">Quiero ser parte</a>
           </div>
-
         </div>
 
-
-        <aside
-          class="hero-panel"
-          aria-label="Propuesta de valor de YaVoy"
-        >
-
-          <div class="hero-panel-top">
-            <span class="status-dot"></span>
-            <span>Central local</span>
+        <aside class="community-panel" aria-label="Propósito de Local">
+          <span class="eyebrow">Una comunidad, no solo un directorio</span>
+          <h2>Conectar personas con historias, talento y proyectos locales.</h2>
+          <p>Queremos hacer más fácil descubrir quién está emprendiendo cerca, apoyar su trabajo y fortalecer la manera en que cada proyecto se presenta al mundo.</p>
+          <div class="community-pills">
+            <span>Visibilizar</span>
+            <span>Apoyar</span>
+            <span>Conectar</span>
+            <span>Profesionalizar</span>
           </div>
-
-
-          <div class="metric">
-
-            <strong>
-              Descubre. Pide. Recibe.
-            </strong>
-
-            <p>
-              Una forma sencilla de conectar lo que necesitas
-              con negocios cercanos y una entrega local.
-            </p>
-
-          </div>
-
-
-          <div class="mini-flow">
-
-            <div>
-              <span>01</span>
-              <strong>Encuentra</strong>
-              <small>Negocios y servicios</small>
-            </div>
-
-            <div>
-              <span>02</span>
-              <strong>Pide</strong>
-              <small>Desde el catálogo</small>
-            </div>
-
-            <div>
-              <span>03</span>
-              <strong>Recibe</strong>
-              <small>En tu ubicación</small>
-            </div>
-
-          </div>
-
-
-          <div class="panel-note">
-            <span>●</span>
-            <p>
-              La tarifa y disponibilidad se confirman
-              antes de iniciar cada servicio.
-            </p>
-          </div>
-
         </aside>
-
       </div>
-
     </section>
 
-
-    <!-- QUÉ ES -->
-    <section
-      class="section compact"
-      id="que-es"
-    >
-
-      <div class="container intro-grid">
-
-        <div class="intro-copy">
-
-          <span class="eyebrow plain">
-            Qué es YaVoy
-          </span>
-
-          <h2>
-            Lo local, más fácil de encontrar y mover.
-          </h2>
-
-        </div>
-
-
-        <div class="intro-statement">
-
-          <p>
-            YaVoy reúne un <strong>catálogo local</strong> y una
-            <strong>central de domicilios y mandados</strong>.
-            Puedes descubrir un negocio, conocer su oferta
-            y, si necesitas entrega, solicitar que YaVoy haga la recogida.
-          </p>
-
-          <a
-            class="inline-link"
-            href="catalogo.html"
-          >
-            Ver lo que hay cerca →
-          </a>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- CÓMO FUNCIONA -->
-    <section
-      class="section section-soft"
-      id="como-funciona"
-    >
-
-      <div class="container">
-
-        <div class="section-heading">
-
+    <section class="local-section soft" id="comunidad">
+      <div class="business-shell">
+        <div class="section-heading-local">
           <div>
-
-            <span class="eyebrow plain">
-              Simple
-            </span>
-
-            <h2>
-              Así funciona YaVoy.
-            </h2>
-
+            <span class="eyebrow">Lo que mueve a Local</span>
+            <h2>Cuatro formas de fortalecer lo que nace aquí.</h2>
           </div>
-
-
-          <p>
-            El catálogo ayuda a descubrir.
-            La central ayuda a mover.
-            El proceso sigue siendo sencillo.
-          </p>
-
+          <p>Local busca convertirse en un punto de encuentro entre quienes emprenden y quienes quieren consumir, recomendar, colaborar o descubrir proyectos de su región.</p>
         </div>
 
-
-        <div class="steps home-steps">
-
-          <div class="step">
-            <span>01</span>
-            <h3>Encuentra</h3>
-            <p>
-              Explora negocios, productos y servicios locales
-              desde un solo lugar.
-            </p>
-          </div>
-
-          <div class="step">
-            <span>02</span>
-            <h3>Solicita</h3>
-            <p>
-              Elige “Pedir Domicilio” o cuéntanos directamente
-              qué necesitas.
-            </p>
-          </div>
-
-          <div class="step">
-            <span>03</span>
-            <h3>Confirmamos</h3>
-            <p>
-              Validamos disponibilidad, tarifa y condiciones
-              antes de iniciar.
-            </p>
-          </div>
-
-          <div class="step">
-            <span>04</span>
-            <h3>Recibe</h3>
-            <p>
-              Un domiciliario recoge y lleva el pedido
-              al punto acordado.
-            </p>
-          </div>
-
+        <div class="pillar-grid">
+          <article class="pillar-card">
+            <span class="pillar-number">01</span>
+            <h3>Visibilizar</h3>
+            <p>Dar a cada emprendimiento un espacio claro, atractivo y fácil de compartir para mostrar lo que hace.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-number">02</span>
+            <h3>Apoyar</h3>
+            <p>Facilitar que más personas conozcan, recomienden y elijan productos y servicios creados localmente.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-number">03</span>
+            <h3>Conectar</h3>
+            <p>Acercar emprendimientos con clientes, otros proyectos y futuras oportunidades de colaboración.</p>
+          </article>
+          <article class="pillar-card">
+            <span class="pillar-number">04</span>
+            <h3>Profesionalizar</h3>
+            <p>Ayudar a mejorar la presencia digital, la información comercial y la forma en que cada marca se presenta.</p>
+          </article>
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- PARA QUIÉN -->
-    <section
-      class="section"
-      id="para-quien"
-    >
-
-      <div class="container">
-
-        <div class="section-heading">
-
+    <section class="local-section" id="como-funciona">
+      <div class="business-shell">
+        <div class="section-heading-local">
           <div>
-
-            <span class="eyebrow plain">
-              Un ecosistema local
-            </span>
-
-            <h2>
-              Tres formas de usar YaVoy.
-            </h2>
-
+            <span class="eyebrow">Una experiencia simple</span>
+            <h2>Descubre, conecta y haz parte de la comunidad.</h2>
           </div>
-
-
-          <p>
-            La plataforma conecta demanda, comercios y entregas
-            sin hacer más complejo el proceso.
-          </p>
-
+          <p>La navegación está pensada para que una persona encuentre rápido un emprendimiento y para que quien emprende pueda administrar su presencia desde un solo espacio.</p>
         </div>
 
-
-        <div class="audience-grid">
-
-          <!-- PERSONAS -->
-          <article class="audience-card audience-person">
-
-            <span class="audience-number">
-              01
-            </span>
-
-            <div class="audience-icon">
-              ⌕
-            </div>
-
-            <h3>
-              Para personas
-            </h3>
-
-            <p>
-              Encuentra algo cerca, revisa su perfil y pide una entrega
-              sin tener que resolver quién lo transporta.
-            </p>
-
-            <a href="catalogo.html">
-              Explorar catálogo →
-            </a>
-
+        <div class="journey-grid">
+          <article class="journey-card">
+            <span>PARA QUIEN DESCUBRE</span>
+            <h3>Explora la comunidad</h3>
+            <p>Busca por categoría o ciudad, conoce la historia y la oferta de cada emprendimiento y contáctalo directamente.</p>
           </article>
-
-
-          <!-- NEGOCIOS -->
-          <article class="audience-card audience-business">
-
-            <span class="audience-number">
-              02
-            </span>
-
-            <div class="audience-icon">
-              ↗
-            </div>
-
-            <h3>
-              Para negocios
-            </h3>
-
-            <p>
-              Haz que más personas descubran tu negocio y puedan convertir
-              ese descubrimiento en una solicitud.
-            </p>
-
-            <a
-              id="registerBusinessLink"
-              href="#"
-            >
-              Quiero aparecer en YaVoy →
-            </a>
-
+          <article class="journey-card">
+            <span>PARA QUIEN EMPRENDE</span>
+            <h3>Crea tu perfil</h3>
+            <p>Registra la información de tu proyecto, foto de portada, redes, ubicación y datos de contacto.</p>
           </article>
-
-
-          <!-- ENTREGAS -->
-          <article class="audience-card audience-driver">
-
-            <span class="audience-number">
-              03
-            </span>
-
-            <div class="audience-icon">
-              →
-            </div>
-
-            <h3>
-              Para entregas
-            </h3>
-
-            <p>
-              La central organiza solicitudes y conecta cada servicio
-              con una persona disponible para realizarlo.
-            </p>
-
-            <a href="catalogo.html#pedir">
-              Ver cómo se solicita →
-            </a>
-
+          <article class="journey-card">
+            <span>PARA CRECER</span>
+            <h3>Activa tu membresía</h3>
+            <p>Con tu membresía activa, tu emprendimiento puede publicarse en Local y hacer parte de las iniciativas de la comunidad.</p>
           </article>
-
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- COBERTURA -->
-    <section
-      class="section"
-      id="cobertura"
-    >
-
-      <div class="container coverage-grid">
-
+    <section class="local-section">
+      <div class="business-shell membership-banner">
         <div>
-
-          <span class="eyebrow plain">
-            Cobertura inicial
-          </span>
-
-          <h2>
-            Dos ciudades. Una sola central.
-          </h2>
-
-          <p>
-            YaVoy inicia en La Dorada y Puerto Salgar.
-            Los recorridos especiales o fuera del perímetro
-            se confirman manualmente.
-          </p>
-
+          <span class="eyebrow">Para emprendimientos</span>
+          <h2>Tu espacio en Local 💚 por $29.900 al mes.</h2>
+          <p>Incluye tu perfil dentro de la comunidad y la posibilidad de administrar tu información desde tu propio espacio. Este es el punto de partida para futuras herramientas de visibilidad y profesionalización.</p>
         </div>
-
-
-        <div class="coverage-cards">
-
-          <div>
-            <span>01</span>
-            <strong>La Dorada</strong>
-            <small>Caldas</small>
-          </div>
-
-          <div>
-            <span>02</span>
-            <strong>Puerto Salgar</strong>
-            <small>Cundinamarca</small>
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- CTA FINAL -->
-    <section class="cta-section home-final-cta">
-
-      <div class="container cta-box">
-
         <div>
-
-          <span class="eyebrow light">
-            Explora
-          </span>
-
-          <h2>
-            ¿Qué necesitas hoy?
-          </h2>
-
-          <p>
-            Busca un negocio, un producto o un servicio local
-            y pide que YaVoy lo lleve hasta ti.
-          </p>
-
+          <div class="membership-price">$29.900 COP / mes</div>
+          <div class="hero-actions" style="margin-top:16px">
+            <a class="button primary" href="registro.html">Quiero ser parte</a>
+            <a class="button ghost" href="login.html">Ya soy miembro</a>
+          </div>
         </div>
-
-
-        <a
-          class="cta-button"
-          href="catalogo.html"
-        >
-          Abrir catálogo →
-        </a>
-
       </div>
-
     </section>
-
   </main>
 
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-
-    <div class="container footer-inner">
-
+  <footer class="local-footer">
+    <div class="business-shell footer-grid">
       <div>
-
-        <strong>
-          YaVoy
-        </strong>
-
-        <p>
-          Catálogo local + central de domicilios
-          para La Dorada y Puerto Salgar.
-        </p>
-
+        <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+        <p>Una comunidad para visibilizar, apoyar, conectar y profesionalizar emprendimientos de La Dorada, Puerto Salgar y nuestra región.</p>
       </div>
-
-
-      <div class="footer-links">
-
-        <a href="#que-es">
-          Qué es
-        </a>
-
-        <a href="#como-funciona">
-          Cómo funciona
-        </a>
-
-        <a href="catalogo.html">
-          Catálogo
-        </a>
-
-      </div>
-
+      <nav class="footer-links" aria-label="Enlaces del pie de página">
+        <a href="catalogo.html">Explorar</a>
+        <a href="#comunidad">Comunidad</a>
+        <a href="registro.html">Soy emprendimiento</a>
+        <a href="login.html">Mi espacio</a>
+      </nav>
     </div>
-
   </footer>
 
-
-  <script src="home.js"></script>
-
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("subscription") === "return") window.location.replace("retorno-pago.html");
+  </script>
 </body>
 </html>
