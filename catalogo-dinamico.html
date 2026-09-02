@@ -75,6 +75,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
+  <script src="cover-image.js"></script>
   <script>
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
@@ -204,7 +205,7 @@
 
       const cover = document.createElement("div");
       cover.className = "catalog-cover";
-      const imageUrl = safeHttpUrl(business.image_url);
+      const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
       if (imageUrl) {
         cover.style.backgroundImage = `linear-gradient(180deg, rgba(24,35,61,.02), rgba(24,35,61,.18)), url("${imageUrl.replace(/"/g, "%22")}")`;
       }
