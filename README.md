@@ -1,132 +1,150 @@
-# YaVoy — MVP V1
+# YaVoy La Dorada
 
-Primera versión funcional de **YaVoy**, pensada como una combinación de:
+YaVoy es un catálogo local para La Dorada y Puerto Salgar con un flujo de autoregistro para negocios y suscripción mensual mediante Mercado Pago.
 
-1. **Catálogo local** de negocios, productos y servicios.
-2. **Central de domicilios y mandados** para La Dorada y Puerto Salgar.
+## Flujo de negocios
 
+1. El comercio crea una cuenta en `registro.html` usando Supabase Auth.
+2. Inicia sesión y registra su negocio en `negocio.html`.
+3. El negocio se guarda inicialmente con estado `draft`.
+4. La página invoca la Edge Function `create-subscription` con el `business_id` recién creado.
+5. Mercado Pago crea una suscripción mensual de **$29.900 COP** y devuelve el checkout.
+6. El negocio pasa a `pending_payment`.
+7. El webhook `mercadopago-webhook` procesa los eventos de Mercado Pago.
+8. Cuando se confirma un pago aprobado, el negocio pasa a `active`.
+9. El catálogo público solo consulta negocios con `status = active`.
 
-## Identidad visual
+Resultado esperado:
 
-Paleta principal de YaVoy:
-
-- Azul cobalto: `#3157D5`
-- Azul noche: `#18233D`
-- Menta: `#66D6B8`
-- Fondo: `#F5F7FB`
-- Blanco: `#FFFFFF`
-- Texto: `#20242C`
-
-La interfaz evita el naranja como color de marca para diferenciar visualmente YaVoy de otras plataformas de domicilios.
-
-## Propuesta de valor
-
-YaVoy no funciona solamente como mensajería. El catálogo permite descubrir negocios locales y, desde cada ficha, convertir ese descubrimiento en una solicitud de recogida y entrega.
-
-## Flujo del MVP
-
-- El usuario busca en el catálogo.
-- Puede revisar el perfil del negocio o tocar **Pedir Domicilio**.
-- YaVoy precarga el negocio como origen del servicio.
-- El usuario agrega destino y detalle.
-- La web calcula una **tarifa de referencia**.
-- El pedido se envía a la central por WhatsApp.
-- La central confirma disponibilidad y valor final antes de iniciar.
-
-## Configuración obligatoria
-
-En `script.js`, cambia:
-
-```js
-const YAVOY_WHATSAPP = "573000000000";
+```text
+Cuenta → Negocio → Mercado Pago → Webhook → active → Catálogo público
 ```
 
-por el número real de la central.
+## Páginas principales
 
-## Tarifas provisionales
+- `index.html`: página de presentación.
+- `registro.html`: creación de cuenta de comercio.
+- `login.html`: autenticación.
+- `negocio.html`: alta inicial del negocio y entrada al checkout.
+- `mi-negocio.html`: panel del comercio para editar perfil, revisar estado y continuar/reactivar pagos.
+- `retorno-pago.html`: pantalla de verificación después de Mercado Pago.
+- `catalogo-dinamico.html`: catálogo conectado a Supabase.
+- `catalogo.html`: versión histórica del catálogo; en Vercel se reescribe hacia `catalogo-dinamico.html`.
 
-También en `script.js`:
+## Datos del perfil comercial
 
-```js
-const RATES = {
-  sameCity: 6000,
-  crossCity: 8000,
-  compraExtra: 2000,
-  mandadoExtra: 2000
-};
-```
+El flujo utiliza los campos existentes de `businesses`:
 
-Estos valores son únicamente una configuración inicial del MVP y pueden modificarse sin tocar el resto de la página.
+- `owner_id`
+- `name`
+- `category`
+- `city`
+- `description`
+- `location`
+- `hours`
+- `instagram`
+- `image_url`
+- `reel_url`
+- `phone`
+- `whatsapp`
+- `status`
 
-## Agregar negocios
+Estados del negocio:
 
-Cada negocio es un `<article class="business-card">` dentro de `catalogo.html`.
+- `draft`
+- `pending_payment`
+- `active`
+- `suspended`
+
+## Suscripciones
+
+Tabla: `business_subscriptions`.
 
 Datos principales:
 
-- `data-category`
-- `data-city`: `la-dorada` o `puerto-salgar`
-- `data-city-label`
-- `data-search`
-- `data-name`
-- `data-description`
-- `data-location`
-- `data-hours`
-- `data-instagram`
-- `data-reel`
+- `business_id`
+- `provider`
+- `mp_preapproval_id`
+- `mp_plan_id`
+- `status`
+- `amount_cop`
+- `last_payment_date`
+- `next_payment_date`
 
-El botón **Pedir Domicilio** funciona automáticamente al copiar la estructura de una tarjeta existente.
+Estados de suscripción usados por la aplicación:
 
-## Alcance deliberadamente fuera de V1
+- `pending`
+- `authorized`
+- `paused`
+- `cancelled`
 
-Todavía no incluye:
+## Supabase y seguridad
 
-- Geolocalización o cálculo real por kilómetros.
-- Pagos en línea.
-- Registro de usuarios.
-- Base de datos de pedidos.
-- Asignación automática de domiciliarios.
-- Seguimiento en tiempo real.
-- Panel administrativo.
+El cliente web utiliza únicamente la URL y la Publishable Key de Supabase desde `supabase-client.js`.
 
-La intención es validar primero catálogo + demanda + operación por WhatsApp.
+Nunca se deben publicar en el frontend:
 
-## Archivos
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `MERCADOPAGO_ACCESS_TOKEN`
+- `MERCADOPAGO_WEBHOOK_SECRET`
 
-- `index.html`
-- `styles.css`
-- `script.js`
-- `README.md`
+Esos valores deben permanecer como secretos de las Edge Functions.
 
-Se puede publicar como sitio estático en Vercel, Netlify, GitHub Pages o un hosting tradicional.
+RLS debe mantener estas reglas:
 
-## Optimización móvil
+- el público puede leer únicamente negocios `active`;
+- cada usuario autenticado puede crear, consultar y editar únicamente sus propios negocios;
+- cada propietario puede consultar la suscripción asociada a sus negocios.
 
-Esta versión incluye ajustes específicos para celular:
-- barra inferior fija con accesos a Catálogo y Pedir un YaVoy;
-- categorías y filtros en carrusel horizontal;
-- tarjetas de negocio compactas con acciones “Ver perfil” y “Pedir Domicilio”;
-- campos de formulario a 16 px para evitar zoom automático en iPhone;
-- controles táctiles de al menos 42–48 px;
-- formulario y perfil adaptados a una sola columna;
-- soporte de `safe-area` para iPhone;
-- tipografía, espaciado y hero reducidos para pantallas pequeñas;
-- perfil de negocio presentado como panel inferior en móvil.
+## Edge Functions
 
+### `create-subscription`
 
-## V4 — estructura de dos páginas
+- exige usuario autenticado;
+- comprueba que el negocio pertenece al usuario;
+- crea o reutiliza la suscripción de Mercado Pago;
+- utiliza $29.900 COP / mes;
+- cambia el negocio a `pending_payment`;
+- devuelve `init_point` para abrir el checkout.
 
-La experiencia se separa en dos niveles:
+### `mercadopago-webhook`
 
-- `index.html`: presentación de YaVoy, propuesta de valor, funcionamiento, públicos y cobertura.
-- `catalogo.html`: buscador, categorías, filtros, negocios, perfiles y solicitud de YaVoy.
-- `home.js`: interacciones y animaciones exclusivas del inicio.
-- `script.js`: lógica funcional del catálogo y pedidos.
+- valida la firma del webhook;
+- consulta la fuente real en Mercado Pago;
+- actualiza `business_subscriptions`;
+- registra fechas de pago;
+- cambia el negocio a `active` cuando existe un pago aprobado;
+- suspende el negocio cuando corresponde.
 
-La navegación directa con hash se respeta (`catalogo.html#pedir`), mientras que las aperturas normales evitan restaurar posiciones antiguas de scroll en móvil.
+## Retorno de Mercado Pago
 
-## Ajuste móvil — Reel en perfil
+La versión del repositorio usa:
 
-- El Reel del negocio ahora también se muestra en tablet y móvil.
-- En móvil, el perfil conserva su presentación como panel inferior y permite desplazarse verticalmente entre Reel e información del negocio.
-- El iframe del Reel se carga únicamente cuando se abre un perfil con `data-reel` configurado.
+```text
+https://yavoyladorada.vercel.app/retorno-pago.html
+```
+
+Por compatibilidad con una versión anterior ya desplegada, `home.js` también detecta:
+
+```text
+/?subscription=return
+```
+
+y redirige al usuario a `retorno-pago.html`.
+
+## Vercel
+
+`vercel.json` reescribe:
+
+```text
+/catalogo.html → /catalogo-dinamico.html
+/catalogo      → /catalogo-dinamico.html
+```
+
+Esto permite conservar los enlaces existentes mientras el catálogo público pasa a ser dinámico.
+
+## Configuración de cliente
+
+`supabase-client.js` contiene exclusivamente valores públicos del cliente Supabase.
+
+No agregar secretos al repositorio.
