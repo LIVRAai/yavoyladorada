@@ -5,13 +5,29 @@
 // - No coloques aquí service_role, secretos ni credenciales privadas.
 // - Completa estos dos valores directamente en tu copia/repositorio; no los compartas por chat.
 
-(function loadResponsiveLayer() {
+(function loadExperienceLayers() {
   if (!document.querySelector('link[data-local-responsive="true"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "responsive.css";
     link.dataset.localResponsive = "true";
     document.head.appendChild(link);
+  }
+
+  if (!document.querySelector('link[data-local-membership="true"]')) {
+    const membershipLink = document.createElement("link");
+    membershipLink.rel = "stylesheet";
+    membershipLink.href = "membership.css";
+    membershipLink.dataset.localMembership = "true";
+    document.head.appendChild(membershipLink);
+  }
+
+  if (!document.querySelector('script[data-local-membership="true"]')) {
+    const membershipScript = document.createElement("script");
+    membershipScript.src = "membership-copy.js";
+    membershipScript.defer = true;
+    membershipScript.dataset.localMembership = "true";
+    document.head.appendChild(membershipScript);
   }
 
   const isExplorePage = window.location.pathname.includes("catalogo");
