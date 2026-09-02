@@ -3,34 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3157D5" />
-  <title>Registra tu negocio | YaVoy</title>
+  <meta name="theme-color" content="#1F6B45" />
+  <title>Crea tu perfil | Local 💚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="cover-image.css" />
 </head>
 <body>
   <header class="business-header">
     <div class="business-shell business-header-inner">
-      <a class="brand" href="index.html">YaVoy</a>
-      <a class="button ghost" href="mi-negocio.html">Mi negocio</a>
+      <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
+      <div class="header-actions">
+        <a class="button ghost hide-mobile" href="catalogo.html">Explorar comunidad</a>
+        <a class="button ghost" href="mi-negocio.html">Mi espacio</a>
+      </div>
     </div>
   </header>
 
   <main class="business-main">
     <div class="business-shell split">
       <section class="card">
-        <span class="eyebrow">Paso 2 de 3</span>
-        <h1>Cuéntanos sobre tu negocio.</h1>
-        <p class="lead">Esta información será la base de tu perfil público. Podrás editarla después desde Mi negocio.</p>
+        <span class="eyebrow">Paso 2 de 3 · Tu perfil</span>
+        <h1>Presenta tu emprendimiento.</h1>
+        <p class="lead">Cuéntale a la comunidad qué haces, dónde estás y cómo pueden encontrarte. Esta información será la base de tu perfil público en Local 💚.</p>
 
         <div id="sessionNotice" class="notice info">Validando tu sesión...</div>
         <div id="existingNotice" class="notice warning" hidden></div>
 
         <form id="businessForm" class="form-grid" hidden>
-          <label class="field full">Nombre del negocio
+          <label class="field full">Nombre del emprendimiento
             <input id="name" maxlength="120" required />
           </label>
           <label class="field">Categoría
@@ -50,8 +53,8 @@
               <option value="puerto-salgar">Puerto Salgar</option>
             </select>
           </label>
-          <label class="field full">Descripción
-            <textarea id="description" maxlength="500" placeholder="¿Qué ofrece tu negocio?"></textarea>
+          <label class="field full">¿Qué haces?
+            <textarea id="description" maxlength="500" placeholder="Cuenta brevemente qué ofrece tu emprendimiento y qué lo hace especial"></textarea>
           </label>
           <label class="field full">Ubicación o dirección
             <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20" />
@@ -79,7 +82,7 @@
               <div class="cover-controls">
                 <input class="cover-file-input" id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" />
                 <label class="cover-file-button" for="coverFile">Seleccionar foto</label>
-                <p>Recomendado: foto horizontal. JPG, PNG o WEBP, máximo 10 MB.</p>
+                <p>Elige una imagen que represente bien tu marca. Recomendado: formato horizontal. JPG, PNG o WEBP, máximo 10 MB.</p>
                 <span class="cover-file-name" id="coverFileName">No has seleccionado una foto.</span>
                 <button class="cover-remove" id="removeCover" type="button" hidden>Quitar foto</button>
               </div>
@@ -90,7 +93,7 @@
             <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
           </label>
           <div class="form-actions">
-            <button id="saveButton" class="button primary" type="submit">Guardar y continuar al pago</button>
+            <button id="saveButton" class="button primary" type="submit">Guardar perfil y continuar</button>
           </div>
         </form>
 
@@ -99,19 +102,19 @@
 
       <aside class="stack">
         <article class="card">
-          <span class="eyebrow">Paso 3 de 3</span>
-          <h2>Activa YaVoy Negocios.</h2>
-          <p>Al guardar el negocio te llevaremos a Mercado Pago para completar la suscripción.</p>
+          <span class="eyebrow">Paso 3 de 3 · Membresía</span>
+          <h2>Activa tu presencia en Local.</h2>
+          <p>Después de guardar tu perfil podrás completar la membresía a través de Mercado Pago.</p>
           <div class="summary-list">
-            <div class="summary-item"><span>Plan</span><strong>YaVoy Negocios</strong></div>
+            <div class="summary-item"><span>Membresía</span><strong>Local 💚</strong></div>
             <div class="summary-item"><span>Valor</span><strong>$29.900 COP / mes</strong></div>
-            <div class="summary-item"><span>Publicación</span><strong>Automática al confirmar pago</strong></div>
+            <div class="summary-item"><span>Publicación</span><strong>Al confirmar activación</strong></div>
           </div>
         </article>
         <article class="card">
-          <span class="eyebrow">Sin trabajo manual</span>
-          <h3>¿Qué pasa después?</h3>
-          <p>Mercado Pago notifica a YaVoy. Si el cobro queda aprobado, el negocio cambia a <strong>activo</strong> y el catálogo público puede mostrarlo automáticamente.</p>
+          <span class="eyebrow">Lo que estás construyendo</span>
+          <h3>Más que una ficha.</h3>
+          <p>Tu perfil será tu espacio dentro de una comunidad que busca dar visibilidad, conectar oportunidades y ayudar a profesionalizar los emprendimientos locales.</p>
         </article>
       </aside>
     </div>
@@ -183,7 +186,7 @@
     });
 
     async function startSubscription(businessId) {
-      showResult("Negocio guardado. Conectando con Mercado Pago...", "success");
+      showResult("Perfil guardado. Conectando con Mercado Pago para activar tu membresía...", "success");
       saveButton.disabled = true;
       saveButton.textContent = "Abriendo Mercado Pago...";
 
@@ -192,10 +195,10 @@
       });
 
       if (error || !data?.ok) {
-        console.error("Error creando suscripción", error || data);
+        console.error("Error creando membresía", error || data);
         saveButton.disabled = false;
-        saveButton.textContent = "Reintentar pago";
-        showResult("Tu negocio quedó guardado, pero no pudimos abrir Mercado Pago. Puedes reintentar desde Mi negocio sin volver a registrarlo.", "warning");
+        saveButton.textContent = "Reintentar activación";
+        showResult("Tu perfil quedó guardado, pero no pudimos abrir Mercado Pago. Puedes continuar después desde Mi espacio.", "warning");
         return;
       }
 
@@ -210,7 +213,7 @@
     async function init() {
       if (!window.yavoyDb) {
         sessionNotice.className = "notice error";
-        sessionNotice.textContent = "No pudimos conectar con YaVoy.";
+        sessionNotice.textContent = "No pudimos conectar con Local en este momento.";
         return;
       }
 
@@ -233,13 +236,13 @@
 
       if (existingError) {
         console.error(existingError);
-        showResult("No pudimos validar si ya tienes un negocio registrado.", "error");
+        showResult("No pudimos validar si ya tienes un emprendimiento registrado.", "error");
         return;
       }
 
       if (existingBusiness) {
         existingNotice.hidden = false;
-        existingNotice.innerHTML = `Ya tienes <strong>${existingBusiness.name}</strong> registrado. Para evitar duplicados, continúa desde <a href="mi-negocio.html">Mi negocio</a>.`;
+        existingNotice.innerHTML = `Ya tienes <strong>${existingBusiness.name}</strong> registrado. Para evitar duplicados, continúa desde <a href="mi-negocio.html">Mi espacio</a>.`;
         return;
       }
 
@@ -255,7 +258,7 @@
       }
 
       saveButton.disabled = true;
-      saveButton.textContent = "Guardando negocio...";
+      saveButton.textContent = "Guardando tu perfil...";
       result.hidden = true;
 
       const payload = {
@@ -283,8 +286,8 @@
       if (error) {
         console.error(error);
         saveButton.disabled = false;
-        saveButton.textContent = "Guardar y continuar al pago";
-        showResult(`No pudimos guardar el negocio: ${error.message}`, "error");
+        saveButton.textContent = "Guardar perfil y continuar";
+        showResult(`No pudimos guardar el perfil: ${error.message}`, "error");
         return;
       }
 

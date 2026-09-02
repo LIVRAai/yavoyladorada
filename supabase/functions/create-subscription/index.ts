@@ -27,13 +27,8 @@ function mapSubscriptionStatus(status: string | undefined) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
-  if (req.method !== "POST") {
-    return jsonResponse({ ok: false, error: "method_not_allowed" }, 405);
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return jsonResponse({ ok: false, error: "method_not_allowed" }, 405);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -44,36 +39,18 @@ Deno.serve(async (req) => {
   }
 
   const authorization = req.headers.get("Authorization") || "";
-  const accessToken = authorization.startsWith("Bearer ")
-    ? authorization.slice(7)
-    : "";
-
-  if (!accessToken) {
-    return jsonResponse({ ok: false, error: "authentication_required" }, 401);
-  }
+  const accessToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  if (!accessToken) return jsonResponse({ ok: false, error: "authentication_required" }, 401);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false
-    }
+    auth: { persistSession: false, autoRefreshToken: false }
   });
 
-  const {
-    data: { user },
-    error: userError
-  } = await admin.auth.getUser(accessToken);
-
-  if (userError || !user) {
-    return jsonResponse({ ok: false, error: "invalid_session" }, 401);
-  }
-
-  if (!user.email) {
-    return jsonResponse({ ok: false, error: "user_email_required" }, 400);
-  }
+  const { data: { user }, error: userError } = await admin.auth.getUser(accessToken);
+  if (userError || !user) return jsonResponse({ ok: false, error: "invalid_session" }, 401);
+  if (!user.email) return jsonResponse({ ok: false, error: "user_email_required" }, 400);
 
   let payload: { business_id?: string };
-
   try {
     payload = await req.json();
   } catch {
@@ -81,10 +58,7 @@ Deno.serve(async (req) => {
   }
 
   const businessId = payload.business_id?.trim();
-
-  if (!businessId) {
-    return jsonResponse({ ok: false, error: "business_id_required" }, 400);
-  }
+  if (!businessId) return jsonResponse({ ok: false, error: "business_id_required" }, 400);
 
   const { data: business, error: businessError } = await admin
     .from("businesses")
@@ -96,14 +70,8 @@ Deno.serve(async (req) => {
     console.error("Error reading business", businessError);
     return jsonResponse({ ok: false, error: "business_lookup_failed" }, 500);
   }
-
-  if (!business) {
-    return jsonResponse({ ok: false, error: "business_not_found" }, 404);
-  }
-
-  if (business.owner_id !== user.id) {
-    return jsonResponse({ ok: false, error: "business_forbidden" }, 403);
-  }
+  if (!business) return jsonResponse({ ok: false, error: "business_not_found" }, 404);
+  if (business.owner_id !== user.id) return jsonResponse({ ok: false, error: "business_forbidden" }, 403);
 
   const { data: existingSubscription, error: existingSubscriptionError } = await admin
     .from("business_subscriptions")
@@ -116,17 +84,10 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: false, error: "subscription_lookup_failed" }, 500);
   }
 
-  if (
-    existingSubscription?.mp_preapproval_id &&
-    existingSubscription.status !== "cancelled"
-  ) {
+  if (existingSubscription?.mp_preapproval_id && existingSubscription.status !== "cancelled") {
     const currentResponse = await fetch(
       `https://api.mercadopago.com/preapproval/${encodeURIComponent(existingSubscription.mp_preapproval_id)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${mercadoPagoToken}`
-        }
-      }
+      { headers: { Authorization: `Bearer ${mercadoPagoToken}` } }
     );
 
     if (!currentResponse.ok) {
@@ -135,7 +96,6 @@ Deno.serve(async (req) => {
     }
 
     const currentSubscription = await currentResponse.json();
-
     if (currentSubscription.status !== "cancelled") {
       return jsonResponse({
         ok: true,
@@ -156,7 +116,7 @@ Deno.serve(async (req) => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      reason: "YaVoy Negocios - Suscripción mensual",
+      reason: "Local 💚 - Membresía mensual",
       external_reference: businessId,
       payer_email: user.email,
       back_url: RETURN_URL,
@@ -171,40 +131,31 @@ Deno.serve(async (req) => {
   });
 
   const mercadoPagoData = await mercadoPagoResponse.json().catch(() => null);
-
   if (!mercadoPagoResponse.ok || !mercadoPagoData?.id) {
     console.error("Mercado Pago subscription creation failed", {
       status: mercadoPagoResponse.status,
       response: mercadoPagoData
     });
-
-    return jsonResponse(
-      {
-        ok: false,
-        error: "mercadopago_subscription_creation_failed",
-        mercadopago_status: mercadoPagoResponse.status,
-        mercadopago_message: mercadoPagoData?.message || null
-      },
-      502
-    );
+    return jsonResponse({
+      ok: false,
+      error: "mercadopago_subscription_creation_failed",
+      mercadopago_status: mercadoPagoResponse.status,
+      mercadopago_message: mercadoPagoData?.message || null
+    }, 502);
   }
 
   const now = new Date().toISOString();
-
   const { error: subscriptionSaveError } = await admin
     .from("business_subscriptions")
-    .upsert(
-      {
-        business_id: businessId,
-        provider: "mercadopago",
-        mp_preapproval_id: mercadoPagoData.id,
-        status: mapSubscriptionStatus(mercadoPagoData.status),
-        amount_cop: MONTHLY_AMOUNT_COP,
-        next_payment_date: mercadoPagoData.next_payment_date || null,
-        updated_at: now
-      },
-      { onConflict: "business_id" }
-    );
+    .upsert({
+      business_id: businessId,
+      provider: "mercadopago",
+      mp_preapproval_id: mercadoPagoData.id,
+      status: mapSubscriptionStatus(mercadoPagoData.status),
+      amount_cop: MONTHLY_AMOUNT_COP,
+      next_payment_date: mercadoPagoData.next_payment_date || null,
+      updated_at: now
+    }, { onConflict: "business_id" });
 
   if (subscriptionSaveError) {
     console.error("Error saving subscription", subscriptionSaveError);
@@ -213,10 +164,7 @@ Deno.serve(async (req) => {
 
   const { error: businessUpdateError } = await admin
     .from("businesses")
-    .update({
-      status: "pending_payment",
-      updated_at: now
-    })
+    .update({ status: "pending_payment", updated_at: now })
     .eq("id", businessId)
     .eq("owner_id", user.id);
 
