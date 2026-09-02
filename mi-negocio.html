@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="cover-image.css" />
+  <link rel="stylesheet" href="profile-form.css" />
 </head>
 <body>
   <header class="business-header">
@@ -55,11 +56,13 @@
           <article class="card">
             <span class="eyebrow">Perfil público</span>
             <h2>Así te verá la comunidad.</h2>
-            <p class="lead">Mantén tu información clara y actualizada. Un buen perfil ayuda a que más personas entiendan qué haces y cómo contactarte.</p>
+            <p class="lead">Ayuda a las personas a entender rápido quién eres, qué ofreces, cómo pueden comprarte y qué hace especial a tu emprendimiento.</p>
+
             <form id="businessForm" class="form-grid">
               <label class="field full">Nombre del emprendimiento
                 <input id="name" maxlength="120" required />
               </label>
+
               <label class="field">Categoría
                 <select id="category" required>
                   <option value="comida">Comida</option>
@@ -70,27 +73,56 @@
                   <option value="tecnologia">Tecnología</option>
                 </select>
               </label>
+
               <label class="field">Ciudad
                 <select id="city" required>
                   <option value="la-dorada">La Dorada</option>
                   <option value="puerto-salgar">Puerto Salgar</option>
                 </select>
               </label>
+
               <label class="field full">¿Qué haces?
-                <textarea id="description" maxlength="500" placeholder="Cuenta qué ofrece tu emprendimiento"></textarea>
+                <textarea id="description" maxlength="420" placeholder="Resume qué hace tu emprendimiento y para quién es"></textarea>
               </label>
+
+              <label class="field full">¿Qué encuentra la gente aquí?
+                <input id="offerings" maxlength="220" placeholder="Ej. Velas, decoración, regalos personalizados" />
+                <small>Separa productos o servicios con comas. Mostraremos hasta 8.</small>
+              </label>
+
+              <div class="profile-form-section">
+                <span class="profile-form-section-title">¿Cómo pueden comprarte o contratarte?</span>
+                <p>Marca las modalidades que aplican a tu emprendimiento.</p>
+                <div class="profile-option-grid">
+                  <label class="profile-option"><input type="checkbox" name="mode" value="Tienda física" />Tienda física</label>
+                  <label class="profile-option"><input type="checkbox" name="mode" value="Domicilios" />Domicilios</label>
+                  <label class="profile-option"><input type="checkbox" name="mode" value="Pedidos por encargo" />Pedidos por encargo</label>
+                  <label class="profile-option"><input type="checkbox" name="mode" value="Envíos" />Envíos</label>
+                  <label class="profile-option"><input type="checkbox" name="mode" value="Atención virtual" />Atención virtual</label>
+                </div>
+              </div>
+
+              <label class="field full">Lo que nos hace Local 💚
+                <textarea id="local_story" maxlength="280" placeholder="Ej. Creamos cada producto a mano y trabajamos con proveedores de La Dorada"></textarea>
+                <small>Una frase corta que cuente qué hay detrás de tu proyecto y su conexión con la comunidad.</small>
+              </label>
+
               <label class="field full">Ubicación o dirección
                 <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20, La Dorada" />
               </label>
+
               <label class="field">Horario
                 <input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." />
               </label>
+
               <label class="field">WhatsApp
                 <input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" />
               </label>
-              <label class="field">Teléfono
+
+              <label class="field">Teléfono alterno
                 <input id="phone" maxlength="30" inputmode="tel" />
               </label>
+
               <label class="field">Instagram
                 <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
               </label>
@@ -114,7 +146,9 @@
 
               <label class="field full">Reel de Instagram
                 <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
+                <small>Este Reel será la historia visual principal cuando una persona abra tu perfil.</small>
               </label>
+
               <div class="form-actions">
                 <button id="saveButton" class="button primary" type="submit">Guardar cambios</button>
               </div>
@@ -148,6 +182,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script src="cover-image.js"></script>
+  <script src="profile-data.js"></script>
   <script>
     const loadingNotice = document.getElementById("loadingNotice");
     const errorNotice = document.getElementById("errorNotice");
@@ -172,7 +207,7 @@
     let pendingCoverData = null;
     let removeCoverRequested = false;
 
-    const fields = ["name", "category", "city", "description", "location", "hours", "whatsapp", "phone", "instagram", "reel_url"];
+    const fields = ["name", "category", "city", "location", "hours", "whatsapp", "phone", "instagram", "reel_url"];
 
     const statusInfo = {
       draft: { label: "Borrador", className: "status-draft", text: "Tu perfil está creado. Activa la membresía cuando quieras publicarlo en Local." },
@@ -200,6 +235,10 @@
       errorNotice.hidden = false;
     }
 
+    function selectedModes() {
+      return [...document.querySelectorAll('input[name="mode"]:checked')].map((input) => input.value);
+    }
+
     function renderCover(source, message = "") {
       const safeSource = window.YaVoyCoverImage?.isSafeImageSource(source) || "";
       coverPreviewImage.hidden = !safeSource;
@@ -214,6 +253,15 @@
       fields.forEach((field) => {
         document.getElementById(field).value = currentBusiness[field] || "";
       });
+
+      const profile = window.LocalProfileData.parse(currentBusiness.description);
+      document.getElementById("description").value = profile.summary;
+      document.getElementById("offerings").value = profile.offerings.join(", ");
+      document.getElementById("local_story").value = profile.localStory;
+      document.querySelectorAll('input[name="mode"]').forEach((input) => {
+        input.checked = profile.modes.includes(input.value);
+      });
+
       renderCover(currentBusiness.image_url);
     }
 
@@ -326,12 +374,19 @@
 
       const payload = {};
       fields.forEach((field) => {
-        const value = document.getElementById(field).value.trim();
-        payload[field] = value || null;
+        const element = document.getElementById(field);
+        payload[field] = element.value.trim() || null;
       });
+
       payload.name = document.getElementById("name").value.trim();
       payload.category = document.getElementById("category").value;
       payload.city = document.getElementById("city").value;
+      payload.description = window.LocalProfileData.serialize({
+        summary: document.getElementById("description").value,
+        offerings: window.LocalProfileData.offeringsFromText(document.getElementById("offerings").value),
+        modes: selectedModes(),
+        localStory: document.getElementById("local_story").value
+      });
       payload.image_url = removeCoverRequested ? null : (pendingCoverData || currentBusiness.image_url || null);
       payload.updated_at = new Date().toISOString();
 

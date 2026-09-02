@@ -90,6 +90,22 @@
           <h2 id="profileName">Emprendimiento</h2>
           <p id="profileDescription" class="profile-description"></p>
           <div class="profile-member-chip">💚 Miembro de Local</div>
+
+          <section id="profileOfferingsSection" class="profile-content-section" hidden>
+            <span class="profile-content-label">Qué encuentras aquí</span>
+            <div id="profileOfferings" class="profile-chip-list"></div>
+          </section>
+
+          <section id="profileModesSection" class="profile-content-section" hidden>
+            <span class="profile-content-label">Cómo puedes comprar o contratar</span>
+            <div id="profileModes" class="profile-chip-list profile-chip-list-soft"></div>
+          </section>
+
+          <section id="profileLocalStorySection" class="profile-local-story" hidden>
+            <span class="profile-content-label">Lo que nos hace Local 💚</span>
+            <blockquote id="profileLocalStory"></blockquote>
+          </section>
+
           <div id="profileDetails" class="summary-list profile-details"></div>
           <div id="profileActions" class="profile-modal-actions"></div>
         </div>
@@ -114,6 +130,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script src="cover-image.js"></script>
+  <script src="profile-data.js"></script>
   <script>
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
@@ -131,6 +148,12 @@
     const profileMediaFallback = document.getElementById("profileMediaFallback");
     const profileFallbackImage = document.getElementById("profileFallbackImage");
     const profileFallbackInitial = document.getElementById("profileFallbackInitial");
+    const profileOfferingsSection = document.getElementById("profileOfferingsSection");
+    const profileOfferings = document.getElementById("profileOfferings");
+    const profileModesSection = document.getElementById("profileModesSection");
+    const profileModes = document.getElementById("profileModes");
+    const profileLocalStorySection = document.getElementById("profileLocalStorySection");
+    const profileLocalStory = document.getElementById("profileLocalStory");
 
     let businesses = [];
     let currentCategory = "todos";
@@ -165,21 +188,16 @@
 
     function instagramEmbedUrl(value) {
       if (!value) return "";
-
       try {
         const url = new URL(value.trim());
         const hostname = url.hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
         if (hostname !== "instagram.com") return "";
-
         const parts = url.pathname.split("/").filter(Boolean);
         if (parts.length < 2) return "";
-
         let type = parts[0].toLowerCase();
         const shortcode = parts[1];
-
         if (type === "reels") type = "reel";
         if (!["reel", "p", "tv"].includes(type) || !shortcode) return "";
-
         return `https://www.instagram.com/${type}/${encodeURIComponent(shortcode)}/embed/`;
       } catch {
         return "";
@@ -202,6 +220,16 @@
       strong.textContent = value;
       row.append(span, strong);
       return row;
+    }
+
+    function renderChipList(container, values) {
+      container.innerHTML = "";
+      values.forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "profile-info-chip";
+        chip.textContent = value;
+        container.appendChild(chip);
+      });
     }
 
     function renderProfileMedia(business) {
@@ -233,15 +261,27 @@
     }
 
     function openProfile(business) {
+      const profile = window.LocalProfileData.parse(business.description);
+      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
+
       profileName.textContent = business.name;
       profileEyebrow.textContent = `${categoryLabels[business.category] || "Emprendimiento"} · ${cityLabels[business.city] || business.city}`;
-      profileDescription.textContent = business.description || "Este emprendimiento hace parte de Local 💚.";
+      profileDescription.textContent = profile.summary || "Este emprendimiento hace parte de Local 💚.";
       profileDetails.innerHTML = "";
       profileActions.innerHTML = "";
 
+      profileOfferingsSection.hidden = !profile.offerings.length;
+      renderChipList(profileOfferings, profile.offerings);
+
+      profileModesSection.hidden = !profile.modes.length;
+      renderChipList(profileModes, profile.modes);
+
+      profileLocalStorySection.hidden = !profile.localStory;
+      profileLocalStory.textContent = profile.localStory;
+
       if (business.location) profileDetails.appendChild(detailRow("Ubicación", business.location));
       if (business.hours) profileDetails.appendChild(detailRow("Horario", business.hours));
-      if (business.phone) profileDetails.appendChild(detailRow("Teléfono", business.phone));
+      if (!wa && business.phone) profileDetails.appendChild(detailRow("Teléfono", business.phone));
 
       const instagram = safeHttpUrl(business.instagram);
       if (instagram) {
@@ -254,7 +294,6 @@
         profileActions.appendChild(link);
       }
 
-      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
       if (wa) {
         const link = document.createElement("a");
         link.className = "button primary";
@@ -280,6 +319,7 @@
     }
 
     function createCard(business) {
+      const profile = window.LocalProfileData.parse(business.description);
       const card = document.createElement("article");
       card.className = "catalog-card";
 
@@ -307,7 +347,7 @@
       const h3 = document.createElement("h3");
       h3.textContent = business.name;
       const p = document.createElement("p");
-      p.textContent = business.description || "Emprendimiento miembro de Local 💚.";
+      p.textContent = profile.summary || "Emprendimiento miembro de Local 💚.";
 
       const meta = document.createElement("div");
       meta.className = "catalog-meta";
@@ -349,7 +389,8 @@
       const term = normalize(searchInput.value.trim());
       const city = cityFilter.value;
       const filtered = businesses.filter((business) => {
-        const haystack = normalize(`${business.name || ""} ${business.category || ""} ${business.description || ""} ${business.location || ""}`);
+        const profile = window.LocalProfileData.parse(business.description);
+        const haystack = normalize(`${business.name || ""} ${business.category || ""} ${profile.summary} ${profile.offerings.join(" ")} ${profile.modes.join(" ")} ${profile.localStory} ${business.location || ""}`);
         const matchesSearch = !term || haystack.includes(term);
         const matchesCity = city === "todas" || business.city === city;
         const matchesCategory = currentCategory === "todos" || business.category === currentCategory;
@@ -364,7 +405,6 @@
         grid.appendChild(empty);
         return;
       }
-
       filtered.forEach((business) => grid.appendChild(createCard(business)));
     }
 
@@ -398,7 +438,6 @@
       chips.forEach((item) => item.classList.toggle("active", item === chip));
       render();
     }));
-
     searchInput.addEventListener("input", render);
     cityFilter.addEventListener("change", render);
     closeModalButton.addEventListener("click", closeProfile);

@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="cover-image.css" />
+  <link rel="stylesheet" href="profile-form.css" />
 </head>
 <body>
   <header class="business-header">
@@ -27,7 +28,7 @@
       <section class="card">
         <span class="eyebrow">Paso 2 de 3 · Tu perfil</span>
         <h1>Presenta tu emprendimiento.</h1>
-        <p class="lead">Cuéntale a la comunidad qué haces, dónde estás y cómo pueden encontrarte. Esta información será la base de tu perfil público en Local 💚.</p>
+        <p class="lead">Cuéntale a la comunidad quién eres, qué ofreces, cómo pueden comprarte y qué hace especial a tu proyecto.</p>
 
         <div id="sessionNotice" class="notice info">Validando tu sesión...</div>
         <div id="existingNotice" class="notice warning" hidden></div>
@@ -36,6 +37,7 @@
           <label class="field full">Nombre del emprendimiento
             <input id="name" maxlength="120" required />
           </label>
+
           <label class="field">Categoría
             <select id="category" required>
               <option value="">Selecciona una categoría</option>
@@ -47,27 +49,56 @@
               <option value="tecnologia">Tecnología</option>
             </select>
           </label>
+
           <label class="field">Ciudad
             <select id="city" required>
               <option value="la-dorada">La Dorada</option>
               <option value="puerto-salgar">Puerto Salgar</option>
             </select>
           </label>
+
           <label class="field full">¿Qué haces?
-            <textarea id="description" maxlength="500" placeholder="Cuenta brevemente qué ofrece tu emprendimiento y qué lo hace especial"></textarea>
+            <textarea id="description" maxlength="420" placeholder="Resume qué hace tu emprendimiento y para quién es"></textarea>
           </label>
+
+          <label class="field full">¿Qué encuentra la gente aquí?
+            <input id="offerings" maxlength="220" placeholder="Ej. Velas, decoración, regalos personalizados" />
+            <small>Separa productos o servicios con comas. Mostraremos hasta 8.</small>
+          </label>
+
+          <div class="profile-form-section">
+            <span class="profile-form-section-title">¿Cómo pueden comprarte o contratarte?</span>
+            <p>Marca las modalidades que aplican a tu emprendimiento.</p>
+            <div class="profile-option-grid">
+              <label class="profile-option"><input type="checkbox" name="mode" value="Tienda física" />Tienda física</label>
+              <label class="profile-option"><input type="checkbox" name="mode" value="Domicilios" />Domicilios</label>
+              <label class="profile-option"><input type="checkbox" name="mode" value="Pedidos por encargo" />Pedidos por encargo</label>
+              <label class="profile-option"><input type="checkbox" name="mode" value="Envíos" />Envíos</label>
+              <label class="profile-option"><input type="checkbox" name="mode" value="Atención virtual" />Atención virtual</label>
+            </div>
+          </div>
+
+          <label class="field full">Lo que nos hace Local 💚
+            <textarea id="local_story" maxlength="280" placeholder="Ej. Creamos cada producto a mano y trabajamos con proveedores de La Dorada"></textarea>
+            <small>Una frase corta sobre la historia, propósito o conexión local de tu emprendimiento.</small>
+          </label>
+
           <label class="field full">Ubicación o dirección
             <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20" />
           </label>
+
           <label class="field">Horario
             <input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." />
           </label>
+
           <label class="field">WhatsApp
             <input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" />
           </label>
-          <label class="field">Teléfono
+
+          <label class="field">Teléfono alterno
             <input id="phone" maxlength="30" inputmode="tel" />
           </label>
+
           <label class="field">Instagram
             <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
           </label>
@@ -91,7 +122,9 @@
 
           <label class="field full">Reel de Instagram
             <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
+            <small>Este Reel será la historia visual principal dentro de tu perfil.</small>
           </label>
+
           <div class="form-actions">
             <button id="saveButton" class="button primary" type="submit">Guardar perfil y continuar</button>
           </div>
@@ -112,9 +145,9 @@
           </div>
         </article>
         <article class="card">
-          <span class="eyebrow">Lo que estás construyendo</span>
-          <h3>Más que una ficha.</h3>
-          <p>Tu perfil será tu espacio dentro de una comunidad que busca dar visibilidad, conectar oportunidades y ayudar a profesionalizar los emprendimientos locales.</p>
+          <span class="eyebrow">Tu perfil</span>
+          <h3>Que se entienda en segundos.</h3>
+          <p>Buscamos que cualquier persona pueda descubrir quién eres, qué puede encontrar contigo y cómo apoyarte o contactarte.</p>
         </article>
       </aside>
     </div>
@@ -123,6 +156,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script src="cover-image.js"></script>
+  <script src="profile-data.js"></script>
   <script>
     const sessionNotice = document.getElementById("sessionNotice");
     const existingNotice = document.getElementById("existingNotice");
@@ -148,6 +182,10 @@
     function getValue(id) {
       const value = document.getElementById(id).value.trim();
       return value || null;
+    }
+
+    function selectedModes() {
+      return [...document.querySelectorAll('input[name="mode"]:checked')].map((input) => input.value);
     }
 
     function renderCover(source, fileName = "") {
@@ -261,12 +299,19 @@
       saveButton.textContent = "Guardando tu perfil...";
       result.hidden = true;
 
+      const description = window.LocalProfileData.serialize({
+        summary: document.getElementById("description").value,
+        offerings: window.LocalProfileData.offeringsFromText(document.getElementById("offerings").value),
+        modes: selectedModes(),
+        localStory: document.getElementById("local_story").value
+      });
+
       const payload = {
         owner_id: currentUser.id,
         name: getValue("name"),
         category: document.getElementById("category").value,
         city: document.getElementById("city").value,
-        description: getValue("description"),
+        description,
         location: getValue("location"),
         hours: getValue("hours"),
         whatsapp: getValue("whatsapp"),

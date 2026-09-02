@@ -1,0 +1,55 @@
+.profile-form-section {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  background: var(--green-pale);
+}
+
+.profile-form-section-title {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+.profile-form-section > p {
+  margin: 0 0 14px;
+  font-size: .9rem;
+}
+
+.profile-option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.profile-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid #cad7cd;
+  border-radius: 999px;
+  background: white;
+  color: var(--green-dark);
+  font-size: .88rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-option input {
+  width: auto;
+  margin: 0;
+  accent-color: var(--green);
+}
+
+.profile-option:has(input:checked) {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+@media (max-width: 640px) {
+  .profile-form-section { grid-column: auto; padding: 16px; }
+}
