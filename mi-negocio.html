@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3157D5" />
-  <title>Mi negocio | YaVoy</title>
+  <meta name="theme-color" content="#1F6B45" />
+  <title>Mi espacio | Local 💚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="cover-image.css" />
 </head>
 <body>
   <header class="business-header">
     <div class="business-shell business-header-inner">
-      <a class="brand" href="index.html">YaVoy</a>
+      <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
       <div class="header-actions">
-        <a class="button ghost hide-mobile" href="catalogo.html">Ver catálogo</a>
+        <a class="button ghost hide-mobile" href="catalogo.html">Explorar comunidad</a>
         <button id="logoutButton" class="button ghost" type="button">Cerrar sesión</button>
       </div>
     </div>
@@ -24,14 +24,14 @@
 
   <main class="business-main">
     <div class="business-shell">
-      <div id="loadingNotice" class="notice info">Cargando tu negocio...</div>
+      <div id="loadingNotice" class="notice info">Cargando tu espacio...</div>
       <div id="errorNotice" class="notice error" hidden></div>
 
       <section id="emptyState" class="card" hidden>
-        <span class="eyebrow">YaVoy Negocios</span>
-        <h1>Publica tu negocio.</h1>
-        <p class="lead">Crea tu perfil, activa la suscripción de $29.900 COP al mes y empieza a aparecer en el catálogo.</p>
-        <a class="button primary" href="negocio.html">Registrar mi negocio</a>
+        <span class="eyebrow">Mi espacio Local</span>
+        <h1>Crea el perfil de tu emprendimiento.</h1>
+        <p class="lead">Tu cuenta ya está lista. El siguiente paso es presentar tu proyecto a la comunidad y después activar tu membresía.</p>
+        <a class="button primary" href="negocio.html">Crear mi perfil</a>
       </section>
 
       <div id="dashboard" class="split" hidden>
@@ -39,24 +39,25 @@
           <article class="card">
             <div class="status-row">
               <div>
-                <span class="eyebrow">Mi negocio</span>
-                <h1 id="businessName">Negocio</h1>
+                <span class="eyebrow">Mi espacio</span>
+                <h1 id="businessName">Emprendimiento</h1>
               </div>
               <span id="statusBadge" class="status-badge status-draft">Borrador</span>
             </div>
             <p id="statusExplanation" class="lead"></p>
             <div id="paymentNotice" class="notice warning" hidden></div>
             <div class="form-actions">
-              <button id="paymentButton" class="button primary" type="button" hidden>Activar con Mercado Pago</button>
-              <a id="catalogButton" class="button secondary" href="catalogo.html" hidden>Ver publicado</a>
+              <button id="paymentButton" class="button primary" type="button" hidden>Activar membresía</button>
+              <a id="catalogButton" class="button secondary" href="catalogo.html" hidden>Ver en la comunidad</a>
             </div>
           </article>
 
           <article class="card">
             <span class="eyebrow">Perfil público</span>
-            <h2>Edita la información que verá la gente.</h2>
+            <h2>Así te verá la comunidad.</h2>
+            <p class="lead">Mantén tu información clara y actualizada. Un buen perfil ayuda a que más personas entiendan qué haces y cómo contactarte.</p>
             <form id="businessForm" class="form-grid">
-              <label class="field full">Nombre del negocio
+              <label class="field full">Nombre del emprendimiento
                 <input id="name" maxlength="120" required />
               </label>
               <label class="field">Categoría
@@ -75,8 +76,8 @@
                   <option value="puerto-salgar">Puerto Salgar</option>
                 </select>
               </label>
-              <label class="field full">Descripción
-                <textarea id="description" maxlength="500" placeholder="Cuenta qué ofrece tu negocio"></textarea>
+              <label class="field full">¿Qué haces?
+                <textarea id="description" maxlength="500" placeholder="Cuenta qué ofrece tu emprendimiento"></textarea>
               </label>
               <label class="field full">Ubicación o dirección
                 <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20, La Dorada" />
@@ -104,14 +105,14 @@
                   <div class="cover-controls">
                     <input class="cover-file-input" id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" />
                     <label class="cover-file-button" for="coverFile">Cambiar foto</label>
-                    <p>Recomendado: foto horizontal. JPG, PNG o WEBP, máximo 10 MB.</p>
+                    <p>Elige una imagen horizontal que represente bien tu marca. JPG, PNG o WEBP, máximo 10 MB.</p>
                     <span class="cover-file-name" id="coverFileName">Sin foto de portada.</span>
                     <button class="cover-remove" id="removeCover" type="button" hidden>Quitar foto</button>
                   </div>
                 </div>
               </div>
 
-              <label class="field full">URL de Reel de Instagram
+              <label class="field full">Reel de Instagram
                 <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
               </label>
               <div class="form-actions">
@@ -124,20 +125,20 @@
 
         <aside class="stack">
           <article class="card">
-            <span class="eyebrow">Plan</span>
-            <h2>YaVoy Negocios</h2>
-            <p>Suscripción mensual para mantener el negocio visible en el catálogo.</p>
+            <span class="eyebrow">Membresía</span>
+            <h2>Local 💚</h2>
+            <p>Tu membresía mantiene tu emprendimiento visible dentro de la comunidad y habilita las iniciativas que iremos construyendo para sus miembros.</p>
             <div class="summary-list">
               <div class="summary-item"><span>Valor</span><strong>$29.900 COP / mes</strong></div>
-              <div class="summary-item"><span>Estado suscripción</span><strong id="subscriptionStatus">Sin activar</strong></div>
+              <div class="summary-item"><span>Estado</span><strong id="subscriptionStatus">Sin activar</strong></div>
               <div class="summary-item"><span>Último pago</span><strong id="lastPayment">—</strong></div>
               <div class="summary-item"><span>Próximo pago</span><strong id="nextPayment">—</strong></div>
             </div>
           </article>
           <article class="card">
             <span class="eyebrow">Publicación</span>
-            <h3>Cómo funciona</h3>
-            <p>Cuando Mercado Pago confirma un cobro aprobado, YaVoy cambia el negocio a <strong>activo</strong>. El catálogo público solo muestra negocios activos.</p>
+            <h3>¿Cuándo apareces en Local?</h3>
+            <p>Cuando Mercado Pago confirma la activación de la membresía, tu perfil pasa a <strong>publicado</strong> y puede aparecer en la comunidad.</p>
           </article>
         </aside>
       </div>
@@ -174,15 +175,15 @@
     const fields = ["name", "category", "city", "description", "location", "hours", "whatsapp", "phone", "instagram", "reel_url"];
 
     const statusInfo = {
-      draft: { label: "Borrador", className: "status-draft", text: "Completa tu perfil y activa la suscripción para publicarlo." },
-      pending_payment: { label: "Pago pendiente", className: "status-pending", text: "Tu perfil está listo. Falta completar o confirmar el pago en Mercado Pago." },
-      active: { label: "Publicado", className: "status-active", text: "Tu negocio está activo y puede aparecer en el catálogo público." },
-      suspended: { label: "Suspendido", className: "status-suspended", text: "La suscripción requiere atención antes de volver a publicar el negocio." }
+      draft: { label: "Borrador", className: "status-draft", text: "Tu perfil está creado. Activa la membresía cuando quieras publicarlo en Local." },
+      pending_payment: { label: "Activación pendiente", className: "status-pending", text: "Tu perfil está listo. Falta completar o confirmar la activación de tu membresía en Mercado Pago." },
+      active: { label: "Publicado", className: "status-active", text: "Tu emprendimiento está publicado y forma parte de la comunidad Local 💚." },
+      suspended: { label: "Pausado", className: "status-suspended", text: "Tu membresía necesita atención antes de volver a mostrar el perfil públicamente." }
     };
 
     const subscriptionLabels = {
       pending: "Pendiente",
-      authorized: "Autorizada",
+      authorized: "Activa",
       paused: "Pausada",
       cancelled: "Cancelada"
     };
@@ -256,13 +257,13 @@
 
       const needsPayment = currentBusiness.status !== "active";
       paymentButton.hidden = !needsPayment;
-      paymentButton.textContent = currentBusiness.status === "draft" ? "Activar con Mercado Pago" : "Continuar pago / reactivar";
+      paymentButton.textContent = currentBusiness.status === "draft" ? "Activar membresía" : "Continuar activación / reactivar";
       catalogButton.hidden = currentBusiness.status !== "active";
       paymentNotice.hidden = currentBusiness.status === "active" || currentBusiness.status === "draft";
       if (!paymentNotice.hidden) {
         paymentNotice.textContent = currentBusiness.status === "pending_payment"
-          ? "Si ya pagaste, la activación puede tardar unos segundos mientras Mercado Pago notifica a YaVoy."
-          : "Tu negocio no se muestra públicamente hasta que la suscripción vuelva a estar al día.";
+          ? "Si ya completaste el pago, la activación puede tardar unos segundos mientras Mercado Pago notifica a Local."
+          : "Tu perfil no se muestra públicamente hasta que la membresía vuelva a estar activa.";
       }
     }
 
@@ -272,14 +273,13 @@
         .select("status,amount_cop,last_payment_date,next_payment_date,mp_preapproval_id")
         .eq("business_id", currentBusiness.id)
         .maybeSingle();
-
       if (!error) currentSubscription = data || null;
     }
 
     async function init() {
       if (!window.yavoyDb) {
         loadingNotice.hidden = true;
-        showError("Supabase no está configurado.");
+        showError("No pudimos conectar con Local en este momento.");
         return;
       }
 
@@ -301,7 +301,7 @@
       loadingNotice.hidden = true;
       if (error) {
         console.error(error);
-        showError("No pudimos cargar tu negocio.");
+        showError("No pudimos cargar tu emprendimiento.");
         return;
       }
       if (!data) {
@@ -356,7 +356,7 @@
       coverFile.value = "";
       fillForm();
       renderStatus();
-      saveNotice.textContent = "Cambios guardados correctamente.";
+      saveNotice.textContent = "Tu perfil fue actualizado.";
       saveNotice.hidden = false;
     });
 
@@ -373,7 +373,7 @@
       if (error || !data?.ok) {
         console.error(error || data);
         paymentButton.textContent = "Intentar nuevamente";
-        showError("No pudimos abrir Mercado Pago. Tu negocio quedó guardado; puedes intentar de nuevo.");
+        showError("No pudimos abrir Mercado Pago. Tu perfil está guardado y puedes intentarlo nuevamente.");
         return;
       }
 
@@ -381,7 +381,6 @@
         window.location.assign(data.init_point);
         return;
       }
-
       window.location.assign("retorno-pago.html");
     });
 
