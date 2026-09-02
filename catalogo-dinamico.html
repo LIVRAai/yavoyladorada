@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
+  <link rel="stylesheet" href="catalogo-horizontal.css" />
 </head>
 <body>
   <header class="business-header">
@@ -239,51 +240,79 @@
 
     function createCard(business) {
       const card = document.createElement("article");
-      card.className = "catalog-card";
+      card.className = "catalog-card catalog-card-horizontal";
 
-      const cover = document.createElement("div");
-      cover.className = "catalog-cover";
-      const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
-      if (imageUrl) {
-        cover.style.backgroundImage = `linear-gradient(180deg, rgba(23,51,37,.02), rgba(23,51,37,.16)), url("${imageUrl.replace(/"/g, "%22")}")`;
-      }
+      const media = document.createElement("div");
+      media.className = "catalog-media";
 
-      const tag = document.createElement("span");
-      tag.className = "catalog-tag";
-      tag.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
-      cover.appendChild(tag);
+      const reel = instagramEmbedUrl(business.reel_url);
+      if (reel) {
+        const iframe = document.createElement("iframe");
+        iframe.className = "catalog-reel";
+        iframe.src = reel;
+        iframe.title = `Historia de ${business.name}`;
+        iframe.loading = "lazy";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture; web-share");
+        iframe.setAttribute("allowfullscreen", "");
+        iframe.setAttribute("scrolling", "no");
+        media.appendChild(iframe);
 
-      if (!imageUrl) {
-        const letter = document.createElement("span");
-        letter.className = "catalog-letter";
-        letter.textContent = (business.name || "L").charAt(0).toUpperCase();
-        cover.appendChild(letter);
+        const storyLabel = document.createElement("span");
+        storyLabel.className = "catalog-media-label";
+        storyLabel.textContent = "Historia";
+        media.appendChild(storyLabel);
+      } else {
+        const fallback = document.createElement("div");
+        fallback.className = "catalog-media-fallback";
+        const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
+
+        if (imageUrl) {
+          fallback.style.backgroundImage = `url("${imageUrl.replace(/"/g, "%22")}")`;
+        } else {
+          const letter = document.createElement("span");
+          letter.className = "catalog-letter";
+          letter.textContent = (business.name || "L").charAt(0).toUpperCase();
+          fallback.appendChild(letter);
+        }
+
+        media.appendChild(fallback);
       }
 
       const body = document.createElement("div");
       body.className = "catalog-body";
+
+      const kicker = document.createElement("div");
+      kicker.className = "catalog-card-kicker";
+      const category = document.createElement("span");
+      category.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
+      const city = document.createElement("span");
+      city.textContent = cityLabels[business.city] || business.city || "Local";
+      kicker.append(category, city);
+
       const h3 = document.createElement("h3");
       h3.textContent = business.name;
-      const p = document.createElement("p");
-      p.textContent = business.description || "Emprendimiento miembro de Local 💚.";
 
-      const meta = document.createElement("div");
-      meta.className = "catalog-meta";
-      const city = document.createElement("span");
-      city.textContent = `📍 ${cityLabels[business.city] || business.city}`;
-      meta.appendChild(city);
-      if (business.location) {
-        const location = document.createElement("span");
-        location.textContent = business.location;
-        meta.appendChild(location);
-      }
+      const description = document.createElement("p");
+      description.className = "catalog-description";
+      description.textContent = business.description || "Emprendimiento miembro de Local 💚.";
+
+      const member = document.createElement("div");
+      member.className = "catalog-member";
+      const memberHeart = document.createElement("span");
+      memberHeart.className = "catalog-member-heart";
+      memberHeart.textContent = "💚";
+      const memberText = document.createElement("span");
+      memberText.textContent = "Miembro de Local";
+      member.append(memberHeart, memberText);
 
       const actions = document.createElement("div");
       actions.className = "catalog-actions";
+
       const profileButton = document.createElement("button");
       profileButton.type = "button";
       profileButton.className = "button secondary";
-      profileButton.textContent = "Conocer";
+      profileButton.textContent = "Conocer emprendimiento";
       profileButton.addEventListener("click", () => openProfile(business));
       actions.appendChild(profileButton);
 
@@ -298,8 +327,8 @@
         actions.appendChild(waLink);
       }
 
-      body.append(h3, p, meta, actions);
-      card.append(cover, body);
+      body.append(kicker, h3, description, member, actions);
+      card.append(media, body);
       return card;
     }
 
