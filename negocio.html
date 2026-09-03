@@ -26,9 +26,9 @@
   <main class="business-main">
     <div class="business-shell split">
       <section class="card">
-        <span class="eyebrow">Paso 2 de 3 · Tu perfil</span>
+        <span class="eyebrow">Tu perfil · 8 días gratis</span>
         <h1>Presenta tu emprendimiento.</h1>
-        <p class="lead">Cuéntale a la comunidad quién eres, qué ofreces, cómo pueden comprarte y qué hace especial a tu proyecto.</p>
+        <p class="lead">Cuéntale a la comunidad quién eres, qué ofreces y cómo pueden encontrarte. Al guardar, tu perfil se publicará y comenzarán tus 8 días gratis en Local 💚.</p>
 
         <div id="sessionNotice" class="notice info">Validando tu sesión...</div>
         <div id="existingNotice" class="notice warning" hidden></div>
@@ -37,30 +37,18 @@
           <label class="field full">Nombre del emprendimiento
             <input id="name" maxlength="120" required />
           </label>
-
           <label class="field">Categoría
             <select id="category" required>
               <option value="">Selecciona una categoría</option>
-              <option value="comida">Comida</option>
-              <option value="hogar">Hogar</option>
-              <option value="belleza">Belleza</option>
-              <option value="moda">Moda</option>
-              <option value="servicios">Servicios</option>
-              <option value="tecnologia">Tecnología</option>
+              <option value="comida">Comida</option><option value="hogar">Hogar</option><option value="belleza">Belleza</option><option value="moda">Moda</option><option value="servicios">Servicios</option><option value="tecnologia">Tecnología</option>
             </select>
           </label>
-
           <label class="field">Ciudad
-            <select id="city" required>
-              <option value="la-dorada">La Dorada</option>
-              <option value="puerto-salgar">Puerto Salgar</option>
-            </select>
+            <select id="city" required><option value="la-dorada">La Dorada</option><option value="puerto-salgar">Puerto Salgar</option></select>
           </label>
-
           <label class="field full">¿Qué haces?
             <textarea id="description" maxlength="420" placeholder="Resume qué hace tu emprendimiento y para quién es"></textarea>
           </label>
-
           <label class="field full">¿Qué encuentra la gente aquí?
             <input id="offerings" maxlength="220" placeholder="Ej. Velas, decoración, regalos personalizados" />
             <small>Separa productos o servicios con comas. Mostraremos hasta 8.</small>
@@ -82,23 +70,18 @@
             <textarea id="local_story" maxlength="280" placeholder="Ej. Creamos cada producto a mano y trabajamos con proveedores de La Dorada"></textarea>
             <small>Una frase corta sobre la historia, propósito o conexión local de tu emprendimiento.</small>
           </label>
-
           <label class="field full">Ubicación o dirección
             <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20" />
           </label>
-
           <label class="field">Horario
             <input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." />
           </label>
-
           <label class="field">WhatsApp
             <input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" />
           </label>
-
           <label class="field">Teléfono alterno
             <input id="phone" maxlength="30" inputmode="tel" />
           </label>
-
           <label class="field">Instagram
             <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
           </label>
@@ -126,28 +109,27 @@
           </label>
 
           <div class="form-actions">
-            <button id="saveButton" class="button primary" type="submit">Guardar perfil y continuar</button>
+            <button id="saveButton" class="button primary" type="submit">Publicar y empezar 8 días gratis</button>
           </div>
         </form>
-
         <div id="result" class="notice info" hidden></div>
       </section>
 
       <aside class="stack">
         <article class="card">
-          <span class="eyebrow">Paso 3 de 3 · Membresía</span>
-          <h2>Activa tu presencia en Local.</h2>
-          <p>Después de guardar tu perfil podrás completar la membresía a través de Mercado Pago.</p>
+          <span class="eyebrow">Empieza sin pagar</span>
+          <h2>8 días para probar Local 💚.</h2>
+          <p>Tu perfil aparecerá en la comunidad desde hoy. No necesitas ingresar un medio de pago para comenzar.</p>
           <div class="summary-list">
-            <div class="summary-item"><span>Membresía</span><strong>Local 💚</strong></div>
-            <div class="summary-item"><span>Valor</span><strong>$29.900 COP / mes</strong></div>
-            <div class="summary-item"><span>Publicación</span><strong>Al confirmar activación</strong></div>
+            <div class="summary-item"><span>Primeros 8 días</span><strong>Gratis</strong></div>
+            <div class="summary-item"><span>Después</span><strong>$29.900 COP / mes</strong></div>
+            <div class="summary-item"><span>Periodo de gracia</span><strong>3 días</strong></div>
           </div>
         </article>
         <article class="card">
-          <span class="eyebrow">Tu perfil</span>
-          <h3>Que se entienda en segundos.</h3>
-          <p>Buscamos que cualquier persona pueda descubrir quién eres, qué puede encontrar contigo y cómo apoyarte o contactarte.</p>
+          <span class="eyebrow">Qué estás probando</span>
+          <h3>Más que un perfil público.</h3>
+          <p>Local combina visibilidad con Local Sessions mensuales, recursos prácticos y espacios de comunidad para ayudarte a profesionalizar tu emprendimiento.</p>
         </article>
       </aside>
     </div>
@@ -170,7 +152,6 @@
     const removeCover = document.getElementById("removeCover");
 
     let currentUser = null;
-    let createdBusiness = null;
     let selectedCoverData = null;
 
     function showResult(message, type = "info") {
@@ -223,31 +204,6 @@
       renderCover("");
     });
 
-    async function startSubscription(businessId) {
-      showResult("Perfil guardado. Conectando con Mercado Pago para activar tu membresía...", "success");
-      saveButton.disabled = true;
-      saveButton.textContent = "Abriendo Mercado Pago...";
-
-      const { data, error } = await window.yavoyDb.functions.invoke("create-subscription", {
-        body: { business_id: businessId }
-      });
-
-      if (error || !data?.ok) {
-        console.error("Error creando membresía", error || data);
-        saveButton.disabled = false;
-        saveButton.textContent = "Reintentar activación";
-        showResult("Tu perfil quedó guardado, pero no pudimos abrir Mercado Pago. Puedes continuar después desde Mi espacio.", "warning");
-        return;
-      }
-
-      if (data.init_point) {
-        window.location.assign(data.init_point);
-        return;
-      }
-
-      window.location.assign("retorno-pago.html");
-    }
-
     async function init() {
       if (!window.yavoyDb) {
         sessionNotice.className = "notice error";
@@ -290,20 +246,17 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!currentUser) return;
-      if (createdBusiness) {
-        await startSubscription(createdBusiness.id);
-        return;
-      }
 
       saveButton.disabled = true;
-      saveButton.textContent = "Guardando tu perfil...";
+      saveButton.textContent = "Publicando tu perfil...";
       result.hidden = true;
 
       const description = window.LocalProfileData.serialize({
         summary: document.getElementById("description").value,
         offerings: window.LocalProfileData.offeringsFromText(document.getElementById("offerings").value),
         modes: selectedModes(),
-        localStory: document.getElementById("local_story").value
+        localStory: document.getElementById("local_story").value,
+        membershipStartedAt: ""
       });
 
       const payload = {
@@ -319,25 +272,25 @@
         instagram: getValue("instagram"),
         image_url: selectedCoverData,
         reel_url: getValue("reel_url"),
-        status: "draft"
+        status: "active"
       };
 
       const { data, error } = await window.yavoyDb
         .from("businesses")
         .insert(payload)
-        .select("id,name,status")
+        .select("id,name,status,created_at")
         .single();
 
       if (error) {
         console.error(error);
         saveButton.disabled = false;
-        saveButton.textContent = "Guardar perfil y continuar";
-        showResult(`No pudimos guardar el perfil: ${error.message}`, "error");
+        saveButton.textContent = "Publicar y empezar 8 días gratis";
+        showResult(`No pudimos publicar el perfil: ${error.message}`, "error");
         return;
       }
 
-      createdBusiness = data;
-      await startSubscription(createdBusiness.id);
+      showResult(`${data.name} ya está publicado. Tus 8 días gratis comienzan hoy 💚`, "success");
+      window.setTimeout(() => window.location.assign("mi-negocio.html?trial=started"), 700);
     });
 
     init();
