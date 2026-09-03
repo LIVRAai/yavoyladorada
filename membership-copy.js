@@ -34,8 +34,8 @@
     const note = document.querySelector(".auth-note");
     if (note) {
       note.innerHTML = `
-        <strong>¿Qué recibes con la membresía de $29.900 al mes?</strong>
-        <p>No pagas solo por aparecer en un directorio. En Local haces parte de una comunidad pensada para darte visibilidad y herramientas para crecer.</p>`;
+        <strong>Empieza con 8 días gratis 💚</strong>
+        <p>Publica tu emprendimiento y prueba Local sin pago inicial. Al terminar los 8 días podrás continuar por $29.900 al mes; tendrás 3 días adicionales para activar la membresía sin perder de inmediato tu visibilidad.</p>`;
       note.appendChild(benefitsList());
     }
     return;
@@ -47,11 +47,15 @@
     if (membershipCard) {
       const title = membershipCard.querySelector("h2");
       const paragraph = membershipCard.querySelector("p");
-      if (title) title.textContent = "Activa una membresía para crecer, no solo para aparecer.";
-      if (paragraph) paragraph.textContent = "Por $29.900 al mes tu emprendimiento entra a Local con visibilidad, aprendizaje mensual, recursos prácticos y acceso a iniciativas de comunidad.";
+      if (title) title.textContent = "Empieza gratis. Decide después de probar Local.";
+      if (paragraph) paragraph.textContent = "Tu perfil se publica gratis durante 8 días. Después puedes continuar por $29.900 al mes para mantener la visibilidad y acceder a aprendizaje, recursos prácticos y comunidad.";
       const summary = membershipCard.querySelector(".summary-list");
-      if (summary && !membershipCard.querySelector(".membership-mini-list")) {
-        membershipCard.insertBefore(benefitsList(), summary);
+      if (summary) {
+        summary.innerHTML = `
+          <div class="summary-item"><span>Primeros 8 días</span><strong>Gratis</strong></div>
+          <div class="summary-item"><span>Después</span><strong>$29.900 COP / mes</strong></div>
+          <div class="summary-item"><span>Periodo de gracia</span><strong>3 días</strong></div>`;
+        if (!membershipCard.querySelector(".membership-mini-list")) membershipCard.insertBefore(benefitsList(), summary);
       }
     }
     return;
@@ -62,14 +66,12 @@
     const membershipCard = cards.find((card) => card.querySelector(".eyebrow")?.textContent.trim() === "Membresía");
     if (membershipCard) {
       const paragraph = membershipCard.querySelector("p");
-      if (paragraph) paragraph.textContent = "Tu membresía combina presencia en Local con aprendizaje y herramientas para seguir profesionalizando tu emprendimiento.";
+      if (paragraph) paragraph.textContent = "Local combina presencia pública, aprendizaje mensual y herramientas para seguir profesionalizando tu emprendimiento.";
       const summary = membershipCard.querySelector(".summary-list");
       if (summary && !membershipCard.querySelector(".membership-mini-list")) {
         membershipCard.insertBefore(benefitsList(), summary);
       }
-      if (!membershipCard.querySelector(".local-sessions-callout")) {
-        membershipCard.appendChild(sessionsCallout());
-      }
+      if (!membershipCard.querySelector(".local-sessions-callout")) membershipCard.appendChild(sessionsCallout());
     }
   }
 })();
