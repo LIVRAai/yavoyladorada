@@ -24,7 +24,7 @@
       </nav>
       <div class="header-actions">
         <a class="button ghost hide-mobile" href="login.html">Mi espacio</a>
-        <a class="button primary" href="registro.html">Quiero ser parte</a>
+        <a class="button primary" href="registro.html">Probar gratis 8 días</a>
       </div>
     </div>
   </header>
@@ -61,7 +61,6 @@
           <button class="filter-chip" data-category="servicios" type="button">Servicios</button>
           <button class="filter-chip" data-category="tecnologia" type="button">Tecnología</button>
         </div>
-
         <div id="catalogNotice" class="notice info">Cargando emprendimientos de la comunidad...</div>
         <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
       </div>
@@ -71,7 +70,6 @@
   <div id="profileModal" class="modal" aria-hidden="true">
     <section class="modal-card profile-modal-card" role="dialog" aria-modal="true" aria-labelledby="profileName">
       <button id="closeModal" class="modal-close" type="button" aria-label="Cerrar">×</button>
-
       <div class="profile-modal-grid">
         <div class="profile-story-column">
           <div class="profile-story-label">La historia detrás del emprendimiento</div>
@@ -95,17 +93,14 @@
             <span class="profile-content-label">Qué encuentras aquí</span>
             <div id="profileOfferings" class="profile-chip-list"></div>
           </section>
-
           <section id="profileModesSection" class="profile-content-section" hidden>
             <span class="profile-content-label">Cómo puedes comprar o contratar</span>
             <div id="profileModes" class="profile-chip-list profile-chip-list-soft"></div>
           </section>
-
           <section id="profileLocalStorySection" class="profile-local-story" hidden>
             <span class="profile-content-label">Lo que nos hace Local 💚</span>
             <blockquote id="profileLocalStory"></blockquote>
           </section>
-
           <div id="profileDetails" class="summary-list profile-details"></div>
           <div id="profileActions" class="profile-modal-actions"></div>
         </div>
@@ -115,15 +110,8 @@
 
   <footer class="local-footer">
     <div class="business-shell footer-grid">
-      <div>
-        <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
-        <p>Conoce, comparte y apoya emprendimientos de nuestra región.</p>
-      </div>
-      <nav class="footer-links" aria-label="Enlaces del pie de página">
-        <a href="index.html#comunidad">Nuestra comunidad</a>
-        <a href="registro.html">Quiero ser parte</a>
-        <a href="login.html">Mi espacio</a>
-      </nav>
+      <div><a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a><p>Conoce, comparte y apoya emprendimientos de nuestra región.</p></div>
+      <nav class="footer-links" aria-label="Enlaces del pie de página"><a href="index.html#comunidad">Nuestra comunidad</a><a href="registro.html">Quiero ser parte</a><a href="login.html">Mi espacio</a></nav>
     </div>
   </footer>
 
@@ -131,6 +119,7 @@
   <script src="supabase-client.js"></script>
   <script src="cover-image.js"></script>
   <script src="profile-data.js"></script>
+  <script src="trial-lifecycle.js"></script>
   <script>
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
@@ -158,19 +147,8 @@
     let businesses = [];
     let currentCategory = "todos";
 
-    const cityLabels = {
-      "la-dorada": "La Dorada",
-      "puerto-salgar": "Puerto Salgar"
-    };
-
-    const categoryLabels = {
-      comida: "Comida",
-      hogar: "Hogar",
-      belleza: "Belleza",
-      moda: "Moda",
-      servicios: "Servicios",
-      tecnologia: "Tecnología"
-    };
+    const cityLabels = { "la-dorada": "La Dorada", "puerto-salgar": "Puerto Salgar" };
+    const categoryLabels = { comida: "Comida", hogar: "Hogar", belleza: "Belleza", moda: "Moda", servicios: "Servicios", tecnologia: "Tecnología" };
 
     function normalize(value = "") {
       return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -181,9 +159,7 @@
       try {
         const url = new URL(value);
         return ["http:", "https:"].includes(url.protocol) ? url.href : "";
-      } catch {
-        return "";
-      }
+      } catch { return ""; }
     }
 
     function instagramEmbedUrl(value) {
@@ -199,9 +175,7 @@
         if (type === "reels") type = "reel";
         if (!["reel", "p", "tv"].includes(type) || !shortcode) return "";
         return `https://www.instagram.com/${type}/${encodeURIComponent(shortcode)}/embed/`;
-      } catch {
-        return "";
-      }
+      } catch { return ""; }
     }
 
     function whatsappUrl(value, businessName) {
@@ -235,7 +209,6 @@
     function renderProfileMedia(business) {
       const reel = instagramEmbedUrl(business.reel_url);
       const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
-
       if (reel) {
         profileMediaFallback.hidden = true;
         profileFallbackImage.hidden = true;
@@ -243,11 +216,9 @@
         profileReel.hidden = false;
         return;
       }
-
       profileReel.removeAttribute("src");
       profileReel.hidden = true;
       profileMediaFallback.hidden = false;
-
       if (imageUrl) {
         profileFallbackImage.src = imageUrl;
         profileFallbackImage.hidden = false;
@@ -263,22 +234,17 @@
     function openProfile(business) {
       const profile = window.LocalProfileData.parse(business.description);
       const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
-
       profileName.textContent = business.name;
       profileEyebrow.textContent = `${categoryLabels[business.category] || "Emprendimiento"} · ${cityLabels[business.city] || business.city}`;
       profileDescription.textContent = profile.summary || "Este emprendimiento hace parte de Local 💚.";
       profileDetails.innerHTML = "";
       profileActions.innerHTML = "";
-
       profileOfferingsSection.hidden = !profile.offerings.length;
       renderChipList(profileOfferings, profile.offerings);
-
       profileModesSection.hidden = !profile.modes.length;
       renderChipList(profileModes, profile.modes);
-
       profileLocalStorySection.hidden = !profile.localStory;
       profileLocalStory.textContent = profile.localStory;
-
       if (business.location) profileDetails.appendChild(detailRow("Ubicación", business.location));
       if (business.hours) profileDetails.appendChild(detailRow("Horario", business.hours));
       if (!wa && business.phone) profileDetails.appendChild(detailRow("Teléfono", business.phone));
@@ -293,7 +259,6 @@
         link.textContent = "Ver Instagram";
         profileActions.appendChild(link);
       }
-
       if (wa) {
         const link = document.createElement("a");
         link.className = "button primary";
@@ -303,7 +268,6 @@
         link.textContent = "Contactar por WhatsApp";
         profileActions.appendChild(link);
       }
-
       renderProfileMedia(business);
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
@@ -322,19 +286,14 @@
       const profile = window.LocalProfileData.parse(business.description);
       const card = document.createElement("article");
       card.className = "catalog-card";
-
       const cover = document.createElement("div");
       cover.className = "catalog-cover";
       const imageUrl = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
-      if (imageUrl) {
-        cover.style.backgroundImage = `linear-gradient(180deg, rgba(23,51,37,.02), rgba(23,51,37,.16)), url("${imageUrl.replace(/"/g, "%22")}")`;
-      }
-
+      if (imageUrl) cover.style.backgroundImage = `linear-gradient(180deg, rgba(23,51,37,.02), rgba(23,51,37,.16)), url("${imageUrl.replace(/"/g, "%22")}")`;
       const tag = document.createElement("span");
       tag.className = "catalog-tag";
       tag.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
       cover.appendChild(tag);
-
       if (!imageUrl) {
         const letter = document.createElement("span");
         letter.className = "catalog-letter";
@@ -344,42 +303,15 @@
 
       const body = document.createElement("div");
       body.className = "catalog-body";
-      const h3 = document.createElement("h3");
-      h3.textContent = business.name;
-      const p = document.createElement("p");
-      p.textContent = profile.summary || "Emprendimiento miembro de Local 💚.";
-
-      const meta = document.createElement("div");
-      meta.className = "catalog-meta";
-      const city = document.createElement("span");
-      city.textContent = `📍 ${cityLabels[business.city] || business.city}`;
-      meta.appendChild(city);
-      if (business.location) {
-        const location = document.createElement("span");
-        location.textContent = business.location;
-        meta.appendChild(location);
-      }
-
-      const actions = document.createElement("div");
-      actions.className = "catalog-actions";
-      const profileButton = document.createElement("button");
-      profileButton.type = "button";
-      profileButton.className = "button secondary";
-      profileButton.textContent = "Conocer";
-      profileButton.addEventListener("click", () => openProfile(business));
-      actions.appendChild(profileButton);
-
+      const h3 = document.createElement("h3"); h3.textContent = business.name;
+      const p = document.createElement("p"); p.textContent = profile.summary || "Emprendimiento miembro de Local 💚.";
+      const meta = document.createElement("div"); meta.className = "catalog-meta";
+      const city = document.createElement("span"); city.textContent = `📍 ${cityLabels[business.city] || business.city}`; meta.appendChild(city);
+      if (business.location) { const location = document.createElement("span"); location.textContent = business.location; meta.appendChild(location); }
+      const actions = document.createElement("div"); actions.className = "catalog-actions";
+      const profileButton = document.createElement("button"); profileButton.type = "button"; profileButton.className = "button secondary"; profileButton.textContent = "Conocer"; profileButton.addEventListener("click", () => openProfile(business)); actions.appendChild(profileButton);
       const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
-      if (wa) {
-        const waLink = document.createElement("a");
-        waLink.className = "button primary";
-        waLink.href = wa;
-        waLink.target = "_blank";
-        waLink.rel = "noopener noreferrer";
-        waLink.textContent = "Contactar";
-        actions.appendChild(waLink);
-      }
-
+      if (wa) { const waLink = document.createElement("a"); waLink.className = "button primary"; waLink.href = wa; waLink.target = "_blank"; waLink.rel = "noopener noreferrer"; waLink.textContent = "Contactar"; actions.appendChild(waLink); }
       body.append(h3, p, meta, actions);
       card.append(cover, body);
       return card;
@@ -391,12 +323,8 @@
       const filtered = businesses.filter((business) => {
         const profile = window.LocalProfileData.parse(business.description);
         const haystack = normalize(`${business.name || ""} ${business.category || ""} ${profile.summary} ${profile.offerings.join(" ")} ${profile.modes.join(" ")} ${profile.localStory} ${business.location || ""}`);
-        const matchesSearch = !term || haystack.includes(term);
-        const matchesCity = city === "todas" || business.city === city;
-        const matchesCategory = currentCategory === "todos" || business.category === currentCategory;
-        return matchesSearch && matchesCity && matchesCategory;
+        return (!term || haystack.includes(term)) && (city === "todas" || business.city === city) && (currentCategory === "todos" || business.category === currentCategory);
       });
-
       grid.innerHTML = "";
       if (!filtered.length) {
         const empty = document.createElement("div");
@@ -414,13 +342,11 @@
         notice.textContent = "No pudimos conectar con Local en este momento.";
         return;
       }
-
       const { data, error } = await window.yavoyDb
         .from("businesses")
-        .select("id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status")
+        .select("id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
         .eq("status", "active")
         .order("name", { ascending: true });
-
       if (error) {
         console.error("Error cargando comunidad", error);
         notice.className = "notice error";
@@ -428,7 +354,10 @@
         return;
       }
 
-      businesses = data || [];
+      // Los miembros existentes se conservan. Para nuevos registros, Local muestra
+      // el perfil durante 8 días de prueba + 3 de gracia y lo retira después si
+      // todavía no existe una primera membresía confirmada.
+      businesses = (data || []).filter((business) => window.LocalTrial.isCatalogVisible(business));
       notice.hidden = true;
       render();
     }
@@ -443,7 +372,6 @@
     closeModalButton.addEventListener("click", closeProfile);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeProfile(); });
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeProfile(); });
-
     loadBusinesses();
   </script>
 </body>
