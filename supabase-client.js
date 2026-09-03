@@ -5,6 +5,21 @@
 // - No coloques aquí service_role, secretos ni credenciales privadas.
 // - Completa estos dos valores directamente en tu copia/repositorio; no los compartas por chat.
 
+(function loadAnalyticsLayer() {
+  if (!document.querySelector('script[src="/analytics.js"]')) {
+    const analytics = document.createElement("script");
+    analytics.src = "/analytics.js";
+    document.head.appendChild(analytics);
+  }
+
+  if (!document.querySelector('script[src="/_vercel/insights/script.js"]')) {
+    const insights = document.createElement("script");
+    insights.src = "/_vercel/insights/script.js";
+    insights.defer = true;
+    document.head.appendChild(insights);
+  }
+})();
+
 (function loadExperienceLayers() {
   if (!document.querySelector('link[data-local-responsive="true"]')) {
     const link = document.createElement("link");
