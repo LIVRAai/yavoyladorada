@@ -9,8 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
-  <script src="/analytics.js"></script>
-  <script defer src="/_vercel/insights/script.js"></script>
+  <link rel="stylesheet" href="membership.css" />
 </head>
 <body>
   <header class="business-header">
@@ -23,10 +22,22 @@
   <main class="business-main">
     <div class="narrow">
       <section class="card">
-        <span class="eyebrow">Activación de membresía</span>
-        <h1 id="title">Estamos verificando tu activación.</h1>
-        <p id="message" class="lead">Local está consultando el estado de tu emprendimiento. La confirmación final depende de Mercado Pago.</p>
-        <div id="statusNotice" class="notice info">Consultando estado...</div>
+        <span class="eyebrow">Membresía Local 💚</span>
+        <h1 id="title">Estamos confirmando tu pago.</h1>
+        <p id="message" class="lead">Esperaremos la confirmación de Mercado Pago antes de marcar tu membresía como activa.</p>
+        <div id="statusNotice" class="notice info">Consultando el pago...</div>
+
+        <div id="benefits" class="membership-status-panel success" hidden>
+          <h3>Lo que continúas recibiendo con Local 💚</h3>
+          <p>Tu membresía mantiene mucho más que una publicación.</p>
+          <div class="membership-benefit-chips">
+            <span>💚 Visibilidad</span>
+            <span>🎓 Local Sessions</span>
+            <span>🧰 Recursos</span>
+            <span>🤝 Comunidad</span>
+          </div>
+        </div>
+
         <div class="form-actions">
           <button id="refreshButton" class="button secondary" type="button">Volver a consultar</button>
           <a id="dashboardButton" class="button primary" href="mi-negocio.html">Ir a Mi espacio</a>
@@ -38,41 +49,100 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
+  <script src="profile-data.js"></script>
+  <script src="trial-lifecycle.js"></script>
   <script>
     const title = document.getElementById("title");
     const message = document.getElementById("message");
     const statusNotice = document.getElementById("statusNotice");
     const refreshButton = document.getElementById("refreshButton");
     const catalogButton = document.getElementById("catalogButton");
+    const benefits = document.getElementById("benefits");
 
     let attempts = 0;
     let stopped = false;
 
-    function render(status, businessName) {
-      if (status === "active") {
-        stopped = true;
-        title.textContent = "¡Ya haces parte de Local!";
-        message.textContent = `${businessName} quedó publicado dentro de la comunidad Local 💚.`;
-        statusNotice.className = "notice success";
-        statusNotice.textContent = "Membresía confirmada y perfil publicado.";
-        catalogButton.hidden = false;
-        refreshButton.hidden = true;
-        return;
-      }
+    async function markMembershipConfirmed(business, lastPaymentDate) {
+      const description = window.LocalProfileData.markMembershipStarted(
+        business.description,
+        lastPaymentDate
+      );
 
-      if (status === "suspended") {
-        stopped = true;
-        title.textContent = "Tu membresía necesita atención.";
-        message.textContent = "Mercado Pago informó un estado que no permite mantener el perfil publicado.";
-        statusNotice.className = "notice error";
-        statusNotice.textContent = "Puedes revisar o reactivar tu membresía desde Mi espacio.";
-        return;
-      }
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .update({ description, status: "active" })
+        .eq("id", business.id)
+        .select("id,name,status,description,created_at,updated_at")
+        .single();
 
-      title.textContent = "Estamos verificando tu activación.";
-      message.textContent = `${businessName} ya tiene su perfil creado. Estamos esperando la confirmación de Mercado Pago.`;
-      statusNotice.className = "notice warning";
-      statusNotice.textContent = "Activación pendiente de confirmación. Normalmente se actualiza pocos segundos después de la aprobación.";
+      if (error) {
+        console.error("No pudimos registrar la membresía confirmada", error);
+        return business;
+      }
+      return data || business;
+    }
+
+    async function keepGraceVisible(business, subscription) {
+      const state = window.LocalTrial.phase(business, subscription);
+      if (state.key !== "grace" || business.status === "active") return business;
+      if (["paused", "cancelled"].includes(subscription?.status)) return business;
+
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .update({ status: "active" })
+        .eq("id", business.id)
+        .select("id,name,status,description,created_at,updated_at")
+        .single();
+
+      if (error) {
+        console.warn("No pudimos restaurar temporalmente la visibilidad de gracia", error);
+        return business;
+      }
+      return data || business;
+    }
+
+    function renderConfirmed(businessName) {
+      stopped = true;
+      title.textContent = "¡Tu membresía quedó activa!";
+      message.textContent = `${businessName} continúa dentro de Local 💚 con todos los beneficios de la comunidad.`;
+      statusNotice.className = "notice success";
+      statusNotice.textContent = "Mercado Pago confirmó un cobro aprobado.";
+      benefits.hidden = false;
+      catalogButton.hidden = false;
+      refreshButton.hidden = true;
+    }
+
+    function renderPaused() {
+      stopped = true;
+      title.textContent = "Tu membresía necesita atención.";
+      message.textContent = "La suscripción está pausada o cancelada. Puedes volver a activarla desde Mi espacio.";
+      statusNotice.className = "notice error";
+      statusNotice.textContent = "Tu información permanece guardada en Local.";
+      benefits.hidden = true;
+      catalogButton.hidden = true;
+    }
+
+    function renderPending(business, subscription) {
+      const state = window.LocalTrial.phase(business, subscription);
+      title.textContent = "Estamos esperando la confirmación del pago.";
+
+      if (state.key === "grace") {
+        message.textContent = `${business.name} todavía está dentro de sus ${state.daysRemaining} ${state.daysRemaining === 1 ? "día" : "días"} de gracia. Tu perfil puede seguir visible mientras Mercado Pago confirma el cobro.`;
+        statusNotice.className = "notice warning";
+        statusNotice.textContent = "Aún no vemos un pago aprobado. Mantienes temporalmente tu visibilidad durante el periodo de gracia.";
+        catalogButton.hidden = business.status !== "active";
+      } else if (state.key === "expired") {
+        message.textContent = "Tu periodo de gracia terminó. En cuanto Mercado Pago confirme un pago aprobado, tu perfil volverá a mostrarse automáticamente.";
+        statusNotice.className = "notice warning";
+        statusNotice.textContent = "Todavía no encontramos un cobro aprobado.";
+        catalogButton.hidden = true;
+      } else {
+        message.textContent = "Mercado Pago todavía no ha informado un cobro aprobado. Puedes esperar unos segundos o volver a Mi espacio.";
+        statusNotice.className = "notice warning";
+        statusNotice.textContent = "La membresía solo se activa cuando recibimos la confirmación real del pago.";
+        catalogButton.hidden = business.status !== "active";
+      }
+      benefits.hidden = true;
     }
 
     async function checkStatus() {
@@ -95,25 +165,46 @@
         return;
       }
 
-      const { data, error } = await window.yavoyDb
+      const { data: business, error: businessError } = await window.yavoyDb
         .from("businesses")
-        .select("id,name,status,updated_at")
+        .select("id,name,status,description,created_at,updated_at")
         .eq("owner_id", userData.user.id)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      refreshButton.disabled = false;
-      refreshButton.textContent = "Volver a consultar";
-
-      if (error || !data) {
-        console.error(error);
+      if (businessError || !business) {
+        console.error(businessError);
         statusNotice.className = "notice error";
         statusNotice.textContent = "No pudimos encontrar el emprendimiento asociado a tu cuenta.";
+        refreshButton.disabled = false;
+        refreshButton.textContent = "Volver a consultar";
         return;
       }
 
-      render(data.status, data.name);
+      const { data: subscription, error: subscriptionError } = await window.yavoyDb
+        .from("business_subscriptions")
+        .select("status,last_payment_date,next_payment_date,mp_preapproval_id")
+        .eq("business_id", business.id)
+        .maybeSingle();
+
+      refreshButton.disabled = false;
+      refreshButton.textContent = "Volver a consultar";
+
+      if (subscriptionError) {
+        console.error(subscriptionError);
+        renderPending(business, null);
+      } else if (subscription?.last_payment_date) {
+        const confirmedBusiness = await markMembershipConfirmed(business, subscription.last_payment_date);
+        renderConfirmed(confirmedBusiness.name);
+        return;
+      } else if (["paused", "cancelled"].includes(subscription?.status) || business.status === "suspended") {
+        renderPaused();
+        return;
+      } else {
+        const visibleBusiness = await keepGraceVisible(business, subscription);
+        renderPending(visibleBusiness, subscription);
+      }
 
       if (!stopped && attempts < 10) window.setTimeout(checkStatus, 4000);
     }
@@ -121,6 +212,7 @@
     refreshButton.addEventListener("click", () => {
       stopped = false;
       attempts = 0;
+      refreshButton.hidden = false;
       checkStatus();
     });
 

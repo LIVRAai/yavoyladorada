@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="cover-image.css" />
   <link rel="stylesheet" href="profile-form.css" />
-  <script src="/analytics.js"></script>
-  <script defer src="/_vercel/insights/script.js"></script>
+  <link rel="stylesheet" href="membership.css" />
 </head>
 <body>
   <header class="business-header">
@@ -33,8 +32,8 @@
       <section id="emptyState" class="card" hidden>
         <span class="eyebrow">Mi espacio Local</span>
         <h1>Crea el perfil de tu emprendimiento.</h1>
-        <p class="lead">Tu cuenta ya está lista. El siguiente paso es presentar tu proyecto a la comunidad y después activar tu membresía.</p>
-        <a class="button primary" href="negocio.html">Crear mi perfil</a>
+        <p class="lead">Tu perfil puede empezar a aparecer en Local desde hoy. Los primeros 8 días son gratis y no necesitas ingresar un medio de pago.</p>
+        <a class="button primary" href="negocio.html">Crear mi perfil y empezar gratis</a>
       </section>
 
       <div id="dashboard" class="split" hidden>
@@ -45,12 +44,21 @@
                 <span class="eyebrow">Mi espacio</span>
                 <h1 id="businessName">Emprendimiento</h1>
               </div>
-              <span id="statusBadge" class="status-badge status-draft">Borrador</span>
+              <span id="statusBadge" class="status-badge status-draft">Cargando</span>
             </div>
             <p id="statusExplanation" class="lead"></p>
+
+            <div id="membershipValueNotice" class="membership-status-panel" hidden>
+              <h3 id="membershipValueTitle"></h3>
+              <p id="membershipValueText"></p>
+              <div class="membership-benefit-chips">
+                <span>💚 Visibilidad</span><span>🎓 Local Sessions</span><span>🧰 Recursos</span><span>🤝 Comunidad</span>
+              </div>
+            </div>
+
             <div id="paymentNotice" class="notice warning" hidden></div>
             <div class="form-actions">
-              <button id="paymentButton" class="button primary" type="button" hidden>Activar membresía</button>
+              <button id="paymentButton" class="button primary" type="button" hidden>Continuar en Local 💚</button>
               <a id="catalogButton" class="button secondary" href="catalogo.html" hidden>Ver en la comunidad</a>
             </div>
           </article>
@@ -58,39 +66,14 @@
           <article class="card">
             <span class="eyebrow">Perfil público</span>
             <h2>Así te verá la comunidad.</h2>
-            <p class="lead">Ayuda a las personas a entender rápido quién eres, qué ofreces, cómo pueden comprarte y qué hace especial a tu emprendimiento.</p>
+            <p class="lead">Mantén actualizado quién eres, qué ofreces, cómo pueden comprarte y qué hace especial a tu emprendimiento.</p>
 
             <form id="businessForm" class="form-grid">
-              <label class="field full">Nombre del emprendimiento
-                <input id="name" maxlength="120" required />
-              </label>
-
-              <label class="field">Categoría
-                <select id="category" required>
-                  <option value="comida">Comida</option>
-                  <option value="hogar">Hogar</option>
-                  <option value="belleza">Belleza</option>
-                  <option value="moda">Moda</option>
-                  <option value="servicios">Servicios</option>
-                  <option value="tecnologia">Tecnología</option>
-                </select>
-              </label>
-
-              <label class="field">Ciudad
-                <select id="city" required>
-                  <option value="la-dorada">La Dorada</option>
-                  <option value="puerto-salgar">Puerto Salgar</option>
-                </select>
-              </label>
-
-              <label class="field full">¿Qué haces?
-                <textarea id="description" maxlength="420" placeholder="Resume qué hace tu emprendimiento y para quién es"></textarea>
-              </label>
-
-              <label class="field full">¿Qué encuentra la gente aquí?
-                <input id="offerings" maxlength="220" placeholder="Ej. Velas, decoración, regalos personalizados" />
-                <small>Separa productos o servicios con comas. Mostraremos hasta 8.</small>
-              </label>
+              <label class="field full">Nombre del emprendimiento<input id="name" maxlength="120" required /></label>
+              <label class="field">Categoría<select id="category" required><option value="comida">Comida</option><option value="hogar">Hogar</option><option value="belleza">Belleza</option><option value="moda">Moda</option><option value="servicios">Servicios</option><option value="tecnologia">Tecnología</option></select></label>
+              <label class="field">Ciudad<select id="city" required><option value="la-dorada">La Dorada</option><option value="puerto-salgar">Puerto Salgar</option></select></label>
+              <label class="field full">¿Qué haces?<textarea id="description" maxlength="420" placeholder="Resume qué hace tu emprendimiento y para quién es"></textarea></label>
+              <label class="field full">¿Qué encuentra la gente aquí?<input id="offerings" maxlength="220" placeholder="Ej. Velas, decoración, regalos personalizados" /><small>Separa productos o servicios con comas. Mostraremos hasta 8.</small></label>
 
               <div class="profile-form-section">
                 <span class="profile-form-section-title">¿Cómo pueden comprarte o contratarte?</span>
@@ -104,38 +87,17 @@
                 </div>
               </div>
 
-              <label class="field full">Lo que nos hace Local 💚
-                <textarea id="local_story" maxlength="280" placeholder="Ej. Creamos cada producto a mano y trabajamos con proveedores de La Dorada"></textarea>
-                <small>Una frase corta que cuente qué hay detrás de tu proyecto y su conexión con la comunidad.</small>
-              </label>
-
-              <label class="field full">Ubicación o dirección
-                <input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20, La Dorada" />
-              </label>
-
-              <label class="field">Horario
-                <input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." />
-              </label>
-
-              <label class="field">WhatsApp
-                <input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" />
-              </label>
-
-              <label class="field">Teléfono alterno
-                <input id="phone" maxlength="30" inputmode="tel" />
-              </label>
-
-              <label class="field">Instagram
-                <input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." />
-              </label>
+              <label class="field full">Lo que nos hace Local 💚<textarea id="local_story" maxlength="280" placeholder="Ej. Creamos cada producto a mano y trabajamos con proveedores de La Dorada"></textarea><small>Una frase corta que cuente qué hay detrás de tu proyecto y su conexión con la comunidad.</small></label>
+              <label class="field full">Ubicación o dirección<input id="location" maxlength="180" placeholder="Ej. Calle 10 # 5-20, La Dorada" /></label>
+              <label class="field">Horario<input id="hours" maxlength="160" placeholder="Ej. Lun-Sáb 8:00 a. m. - 7:00 p. m." /></label>
+              <label class="field">WhatsApp<input id="whatsapp" maxlength="30" inputmode="tel" placeholder="Ej. 573001234567" /></label>
+              <label class="field">Teléfono alterno<input id="phone" maxlength="30" inputmode="tel" /></label>
+              <label class="field">Instagram<input id="instagram" type="url" maxlength="300" placeholder="https://instagram.com/..." /></label>
 
               <div class="cover-upload">
                 <span class="cover-upload-title">Foto de portada</span>
                 <div class="cover-picker">
-                  <div class="cover-preview">
-                    <span id="coverPlaceholder">Tu foto aparecerá aquí</span>
-                    <img id="coverPreviewImage" alt="Vista previa de la portada" hidden />
-                  </div>
+                  <div class="cover-preview"><span id="coverPlaceholder">Tu foto aparecerá aquí</span><img id="coverPreviewImage" alt="Vista previa de la portada" hidden /></div>
                   <div class="cover-controls">
                     <input class="cover-file-input" id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" />
                     <label class="cover-file-button" for="coverFile">Cambiar foto</label>
@@ -146,14 +108,8 @@
                 </div>
               </div>
 
-              <label class="field full">Reel de Instagram
-                <input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." />
-                <small>Este Reel será la historia visual principal cuando una persona abra tu perfil.</small>
-              </label>
-
-              <div class="form-actions">
-                <button id="saveButton" class="button primary" type="submit">Guardar cambios</button>
-              </div>
+              <label class="field full">Reel de Instagram<input id="reel_url" type="url" maxlength="600" placeholder="https://www.instagram.com/reel/..." /><small>Este Reel será la historia visual principal cuando una persona abra tu perfil.</small></label>
+              <div class="form-actions"><button id="saveButton" class="button primary" type="submit">Guardar cambios</button></div>
             </form>
             <div id="saveNotice" class="notice success" hidden></div>
           </article>
@@ -163,18 +119,18 @@
           <article class="card">
             <span class="eyebrow">Membresía</span>
             <h2>Local 💚</h2>
-            <p>Tu membresía mantiene tu emprendimiento visible dentro de la comunidad y habilita las iniciativas que iremos construyendo para sus miembros.</p>
+            <p>Tu membresía combina presencia en Local con aprendizaje y herramientas para seguir profesionalizando tu emprendimiento.</p>
             <div class="summary-list">
               <div class="summary-item"><span>Valor</span><strong>$29.900 COP / mes</strong></div>
-              <div class="summary-item"><span>Estado</span><strong id="subscriptionStatus">Sin activar</strong></div>
+              <div class="summary-item"><span>Estado</span><strong id="subscriptionStatus">Cargando...</strong></div>
               <div class="summary-item"><span>Último pago</span><strong id="lastPayment">—</strong></div>
               <div class="summary-item"><span>Próximo pago</span><strong id="nextPayment">—</strong></div>
             </div>
           </article>
           <article class="card">
-            <span class="eyebrow">Publicación</span>
-            <h3>¿Cuándo apareces en Local?</h3>
-            <p>Cuando Mercado Pago confirma la activación de la membresía, tu perfil pasa a <strong>publicado</strong> y puede aparecer en la comunidad.</p>
+            <span class="eyebrow">Cómo funciona</span>
+            <h3>8 días gratis + 3 días de gracia</h3>
+            <p>Los nuevos emprendimientos aparecen gratis durante 8 días. Después tienen 3 días adicionales para activar la membresía antes de que el perfil deje de mostrarse públicamente.</p>
           </article>
         </aside>
       </div>
@@ -185,6 +141,7 @@
   <script src="supabase-client.js"></script>
   <script src="cover-image.js"></script>
   <script src="profile-data.js"></script>
+  <script src="trial-lifecycle.js"></script>
   <script>
     const loadingNotice = document.getElementById("loadingNotice");
     const errorNotice = document.getElementById("errorNotice");
@@ -197,6 +154,9 @@
     const paymentButton = document.getElementById("paymentButton");
     const catalogButton = document.getElementById("catalogButton");
     const paymentNotice = document.getElementById("paymentNotice");
+    const membershipValueNotice = document.getElementById("membershipValueNotice");
+    const membershipValueTitle = document.getElementById("membershipValueTitle");
+    const membershipValueText = document.getElementById("membershipValueText");
     const coverFile = document.getElementById("coverFile");
     const coverPreviewImage = document.getElementById("coverPreviewImage");
     const coverPlaceholder = document.getElementById("coverPlaceholder");
@@ -208,22 +168,7 @@
     let currentSubscription = null;
     let pendingCoverData = null;
     let removeCoverRequested = false;
-
     const fields = ["name", "category", "city", "location", "hours", "whatsapp", "phone", "instagram", "reel_url"];
-
-    const statusInfo = {
-      draft: { label: "Borrador", className: "status-draft", text: "Tu perfil está creado. Activa la membresía cuando quieras publicarlo en Local." },
-      pending_payment: { label: "Activación pendiente", className: "status-pending", text: "Tu perfil está listo. Falta completar o confirmar la activación de tu membresía en Mercado Pago." },
-      active: { label: "Publicado", className: "status-active", text: "Tu emprendimiento está publicado y forma parte de la comunidad Local 💚." },
-      suspended: { label: "Pausado", className: "status-suspended", text: "Tu membresía necesita atención antes de volver a mostrar el perfil públicamente." }
-    };
-
-    const subscriptionLabels = {
-      pending: "Pendiente",
-      authorized: "Activa",
-      paused: "Pausada",
-      cancelled: "Cancelada"
-    };
 
     function formatDate(value) {
       if (!value) return "—";
@@ -252,18 +197,12 @@
     }
 
     function fillForm() {
-      fields.forEach((field) => {
-        document.getElementById(field).value = currentBusiness[field] || "";
-      });
-
+      fields.forEach((field) => { document.getElementById(field).value = currentBusiness[field] || ""; });
       const profile = window.LocalProfileData.parse(currentBusiness.description);
       document.getElementById("description").value = profile.summary;
       document.getElementById("offerings").value = profile.offerings.join(", ");
       document.getElementById("local_story").value = profile.localStory;
-      document.querySelectorAll('input[name="mode"]').forEach((input) => {
-        input.checked = profile.modes.includes(input.value);
-      });
-
+      document.querySelectorAll('input[name="mode"]').forEach((input) => { input.checked = profile.modes.includes(input.value); });
       renderCover(currentBusiness.image_url);
     }
 
@@ -282,9 +221,7 @@
         coverFile.value = "";
         renderCover(currentBusiness?.image_url || "");
         showError(error.message || "No pudimos preparar la imagen.");
-      } finally {
-        coverFile.disabled = false;
-      }
+      } finally { coverFile.disabled = false; }
     });
 
     removeCover.addEventListener("click", () => {
@@ -293,29 +230,6 @@
       coverFile.value = "";
       renderCover("", "La foto se quitará cuando guardes los cambios.");
     });
-
-    function renderStatus() {
-      const info = statusInfo[currentBusiness.status] || statusInfo.draft;
-      document.getElementById("businessName").textContent = currentBusiness.name;
-      const badge = document.getElementById("statusBadge");
-      badge.textContent = info.label;
-      badge.className = `status-badge ${info.className}`;
-      document.getElementById("statusExplanation").textContent = info.text;
-      document.getElementById("subscriptionStatus").textContent = currentSubscription ? (subscriptionLabels[currentSubscription.status] || currentSubscription.status) : "Sin activar";
-      document.getElementById("lastPayment").textContent = formatDate(currentSubscription?.last_payment_date);
-      document.getElementById("nextPayment").textContent = formatDate(currentSubscription?.next_payment_date);
-
-      const needsPayment = currentBusiness.status !== "active";
-      paymentButton.hidden = !needsPayment;
-      paymentButton.textContent = currentBusiness.status === "draft" ? "Activar membresía" : "Continuar activación / reactivar";
-      catalogButton.hidden = currentBusiness.status !== "active";
-      paymentNotice.hidden = currentBusiness.status === "active" || currentBusiness.status === "draft";
-      if (!paymentNotice.hidden) {
-        paymentNotice.textContent = currentBusiness.status === "pending_payment"
-          ? "Si ya completaste el pago, la activación puede tardar unos segundos mientras Mercado Pago notifica a Local."
-          : "Tu perfil no se muestra públicamente hasta que la membresía vuelva a estar activa.";
-      }
-    }
 
     async function loadSubscription() {
       const { data, error } = await window.yavoyDb
@@ -326,20 +240,76 @@
       if (!error) currentSubscription = data || null;
     }
 
-    async function init() {
-      if (!window.yavoyDb) {
-        loadingNotice.hidden = true;
-        showError("No pudimos conectar con Local en este momento.");
-        return;
-      }
+    async function syncConfirmedMembership() {
+      if (!currentSubscription?.last_payment_date) return;
+      const profile = window.LocalProfileData.parse(currentBusiness.description);
+      if (profile.membershipStartedAt && currentBusiness.status === "active") return;
+      const description = window.LocalProfileData.markMembershipStarted(currentBusiness.description, currentSubscription.last_payment_date);
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .update({ description, status: "active" })
+        .eq("id", currentBusiness.id)
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .single();
+      if (!error && data) currentBusiness = data;
+    }
 
-      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
-      if (userError || !userData.user) {
-        window.location.replace("login.html?next=mi-negocio.html");
-        return;
-      }
-      currentUser = userData.user;
+    async function keepGraceProfileVisible() {
+      const state = window.LocalTrial.phase(currentBusiness, currentSubscription);
+      if (state.key !== "grace" || currentBusiness.status === "active") return;
+      if (["paused", "cancelled"].includes(currentSubscription?.status)) return;
+      const { data, error } = await window.yavoyDb
+        .from("businesses")
+        .update({ status: "active" })
+        .eq("id", currentBusiness.id)
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .single();
+      if (!error && data) currentBusiness = data;
+    }
 
+    function renderStatus() {
+      const state = window.LocalTrial.phase(currentBusiness, currentSubscription);
+      const copy = window.LocalTrial.dashboardCopy(state);
+      const badge = document.getElementById("statusBadge");
+
+      document.getElementById("businessName").textContent = currentBusiness.name;
+      badge.textContent = copy.badge;
+      badge.className = `status-badge ${copy.badgeClass}`;
+      document.getElementById("statusExplanation").textContent = copy.title;
+      membershipValueNotice.className = `membership-status-panel ${copy.tone}`;
+      membershipValueTitle.textContent = copy.title;
+      membershipValueText.textContent = copy.text;
+      membershipValueNotice.hidden = false;
+
+      const stateLabels = {
+        member: "Activa",
+        trial: `Prueba gratuita · ${state.daysRemaining} ${state.daysRemaining === 1 ? "día" : "días"}`,
+        grace: `Por activar · ${state.daysRemaining} ${state.daysRemaining === 1 ? "día" : "días"} de gracia`,
+        expired: "Prueba finalizada",
+        suspended: "Pausada"
+      };
+      document.getElementById("subscriptionStatus").textContent = stateLabels[state.key] || "—";
+      document.getElementById("lastPayment").textContent = formatDate(currentSubscription?.last_payment_date);
+      document.getElementById("nextPayment").textContent = formatDate(currentSubscription?.next_payment_date);
+
+      const showPayment = ["grace", "expired", "suspended"].includes(state.key);
+      paymentButton.hidden = !showPayment;
+      paymentButton.textContent = copy.cta || "Continuar en Local 💚 — $29.900/mes";
+
+      const publiclyVisible = currentBusiness.status === "active" && ["member", "trial", "grace"].includes(state.key);
+      catalogButton.hidden = !publiclyVisible;
+
+      paymentNotice.hidden = true;
+      if (state.key === "grace") {
+        paymentNotice.hidden = false;
+        paymentNotice.textContent = "Tu perfil todavía está visible. Si completas el pago dentro del periodo de gracia, continúas en Local sin interrupción.";
+      } else if (state.key === "expired") {
+        paymentNotice.hidden = false;
+        paymentNotice.textContent = "Tu perfil dejó de mostrarse en Explorar, pero toda tu información está guardada y volverá a publicarse cuando Mercado Pago confirme la membresía.";
+      }
+    }
+
+    async function loadBusiness() {
       const { data, error } = await window.yavoyDb
         .from("businesses")
         .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
@@ -347,22 +317,41 @@
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
+      if (error) throw error;
+      currentBusiness = data || null;
+    }
 
-      loadingNotice.hidden = true;
-      if (error) {
+    async function refreshLifecycle() {
+      if (!currentBusiness) return;
+      await loadSubscription();
+      await syncConfirmedMembership();
+      await keepGraceProfileVisible();
+      renderStatus();
+    }
+
+    async function init() {
+      if (!window.yavoyDb) {
+        loadingNotice.hidden = true;
+        showError("No pudimos conectar con Local en este momento.");
+        return;
+      }
+      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
+      if (userError || !userData.user) {
+        window.location.replace("login.html?next=mi-negocio.html");
+        return;
+      }
+      currentUser = userData.user;
+      try { await loadBusiness(); }
+      catch (error) {
         console.error(error);
+        loadingNotice.hidden = true;
         showError("No pudimos cargar tu emprendimiento.");
         return;
       }
-      if (!data) {
-        emptyState.hidden = false;
-        return;
-      }
-
-      currentBusiness = data;
-      await loadSubscription();
+      loadingNotice.hidden = true;
+      if (!currentBusiness) { emptyState.hidden = false; return; }
+      await refreshLifecycle();
       fillForm();
-      renderStatus();
       dashboard.hidden = false;
     }
 
@@ -374,12 +363,9 @@
       saveNotice.hidden = true;
       errorNotice.hidden = true;
 
+      const currentProfile = window.LocalProfileData.parse(currentBusiness.description);
       const payload = {};
-      fields.forEach((field) => {
-        const element = document.getElementById(field);
-        payload[field] = element.value.trim() || null;
-      });
-
+      fields.forEach((field) => { const element = document.getElementById(field); payload[field] = element.value.trim() || null; });
       payload.name = document.getElementById("name").value.trim();
       payload.category = document.getElementById("category").value;
       payload.city = document.getElementById("city").value;
@@ -387,7 +373,8 @@
         summary: document.getElementById("description").value,
         offerings: window.LocalProfileData.offeringsFromText(document.getElementById("offerings").value),
         modes: selectedModes(),
-        localStory: document.getElementById("local_story").value
+        localStory: document.getElementById("local_story").value,
+        membershipStartedAt: currentProfile.membershipStartedAt
       });
       payload.image_url = removeCoverRequested ? null : (pendingCoverData || currentBusiness.image_url || null);
       payload.updated_at = new Date().toISOString();
@@ -401,12 +388,7 @@
 
       saveButton.disabled = false;
       saveButton.textContent = "Guardar cambios";
-      if (error) {
-        console.error(error);
-        showError("No pudimos guardar los cambios. Intenta nuevamente.");
-        return;
-      }
-
+      if (error) { console.error(error); showError("No pudimos guardar los cambios. Intenta nuevamente."); return; }
       currentBusiness = data;
       pendingCoverData = null;
       removeCoverRequested = false;
@@ -419,26 +401,38 @@
 
     paymentButton.addEventListener("click", async () => {
       if (!currentBusiness) return;
+      const stateBeforePayment = window.LocalTrial.phase(currentBusiness, currentSubscription);
       paymentButton.disabled = true;
-      paymentButton.textContent = "Conectando con Mercado Pago...";
+      paymentButton.textContent = "Preparando Mercado Pago...";
+      errorNotice.hidden = true;
 
-      const { data, error } = await window.yavoyDb.functions.invoke("create-subscription", {
-        body: { business_id: currentBusiness.id }
-      });
-
-      paymentButton.disabled = false;
+      const { data, error } = await window.yavoyDb.functions.invoke("create-subscription", { body: { business_id: currentBusiness.id } });
       if (error || !data?.ok) {
         console.error(error || data);
+        paymentButton.disabled = false;
         paymentButton.textContent = "Intentar nuevamente";
-        showError("No pudimos abrir Mercado Pago. Tu perfil está guardado y puedes intentarlo nuevamente.");
+        showError("No pudimos abrir Mercado Pago. Tu perfil y tu información siguen guardados.");
         return;
       }
 
-      if (data.init_point) {
-        window.location.assign(data.init_point);
-        return;
+      if (stateBeforePayment.key === "grace") {
+        const { data: restored } = await window.yavoyDb
+          .from("businesses")
+          .update({ status: "active" })
+          .eq("id", currentBusiness.id)
+          .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+          .single();
+        if (restored) currentBusiness = restored;
       }
+
+      paymentButton.disabled = false;
+      if (data.init_point) { window.location.assign(data.init_point); return; }
       window.location.assign("retorno-pago.html");
+    });
+
+    window.addEventListener("pageshow", async (event) => {
+      if (!event.persisted || !currentBusiness) return;
+      await refreshLifecycle();
     });
 
     logoutButton.addEventListener("click", async () => {
