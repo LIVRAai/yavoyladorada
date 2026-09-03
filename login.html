@@ -39,8 +39,24 @@
           </label>
           <div class="form-actions">
             <button id="loginButton" class="button primary" type="submit">Entrar a mi espacio</button>
+            <button id="showRecoveryButton" class="button secondary" type="button">Olvidé mi contraseña</button>
           </div>
         </form>
+
+        <div id="recoveryPanel" class="auth-note" hidden>
+          <strong>Recupera el acceso a tu cuenta</strong>
+          <p>Escribe el correo con el que te registraste. Te enviaremos un enlace para crear una nueva contraseña.</p>
+          <form id="recoveryForm" class="form-grid">
+            <label class="field full">Correo electrónico
+              <input id="recoveryEmail" type="email" autocomplete="email" required />
+            </label>
+            <div class="form-actions">
+              <button id="recoveryButton" class="button primary" type="submit">Enviar enlace de recuperación</button>
+              <button id="cancelRecoveryButton" class="button ghost" type="button">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
         <div id="result" class="notice info" hidden></div>
       </section>
     </div>
@@ -54,8 +70,15 @@
     const passwordInput = document.getElementById("password");
     const button = document.getElementById("loginButton");
     const result = document.getElementById("result");
+    const showRecoveryButton = document.getElementById("showRecoveryButton");
+    const recoveryPanel = document.getElementById("recoveryPanel");
+    const recoveryForm = document.getElementById("recoveryForm");
+    const recoveryEmailInput = document.getElementById("recoveryEmail");
+    const recoveryButton = document.getElementById("recoveryButton");
+    const cancelRecoveryButton = document.getElementById("cancelRecoveryButton");
 
-    const requestedNext = new URLSearchParams(window.location.search).get("next");
+    const searchParams = new URLSearchParams(window.location.search);
+    const requestedNext = searchParams.get("next");
     const safeTargets = new Set(["negocio.html", "mi-negocio.html", "retorno-pago.html"]);
     const nextPage = safeTargets.has(requestedNext) ? requestedNext : "mi-negocio.html";
 
@@ -65,11 +88,55 @@
       result.hidden = false;
     }
 
+    function openRecovery() {
+      recoveryEmailInput.value = emailInput.value.trim() || recoveryEmailInput.value;
+      recoveryPanel.hidden = false;
+      recoveryEmailInput.focus();
+    }
+
+    function closeRecovery() {
+      recoveryPanel.hidden = true;
+      result.hidden = true;
+    }
+
     async function redirectIfAuthenticated() {
       if (!window.yavoyDb) return;
       const { data } = await window.yavoyDb.auth.getSession();
       if (data.session) window.location.replace(nextPage);
     }
+
+    showRecoveryButton.addEventListener("click", openRecovery);
+    cancelRecoveryButton.addEventListener("click", closeRecovery);
+
+    recoveryForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!window.yavoyDb) {
+        show("No pudimos conectar con Local en este momento.", "error");
+        return;
+      }
+
+      const email = recoveryEmailInput.value.trim();
+      if (!email) return;
+
+      recoveryButton.disabled = true;
+      recoveryButton.textContent = "Enviando...";
+      result.hidden = true;
+
+      const { error } = await window.yavoyDb.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password.html`
+      });
+
+      recoveryButton.disabled = false;
+      recoveryButton.textContent = "Enviar enlace de recuperación";
+
+      if (error) {
+        console.error(error);
+        show("No pudimos enviar el enlace. Revisa el correo e inténtalo de nuevo.", "error");
+        return;
+      }
+
+      show("Listo. Revisa tu correo y abre el enlace más reciente para crear una nueva contraseña.", "success");
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -92,7 +159,7 @@
 
       if (error) {
         console.error(error);
-        show(error.message, "error");
+        show("El correo o la contraseña no son correctos.", "error");
         return;
       }
       if (!data.session) {
@@ -102,6 +169,10 @@
 
       window.location.assign(nextPage);
     });
+
+    if (searchParams.get("recovery") === "1") {
+      openRecovery();
+    }
 
     redirectIfAuthenticated();
   </script>
