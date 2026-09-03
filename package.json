@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "Local 💚 es una comunidad de emprendimientos de La Dorada, Puerto Salgar y la región. Su propósito es **visibilizar, apoyar, conectar y profesionalizar** proyectos locales.",
+  "main": "cover-image.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LIVRAai/yavoyladorada.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LIVRAai/yavoyladorada/issues"
+  },
+  "homepage": "https://github.com/LIVRAai/yavoyladorada#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
