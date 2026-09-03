@@ -23,12 +23,19 @@
       .slice(0, 8);
   }
 
+  function cleanIso(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+  }
+
   function parse(raw) {
     const fallback = {
       summary: String(raw || "").trim(),
       offerings: [],
       modes: [],
-      localStory: ""
+      localStory: "",
+      membershipStartedAt: ""
     };
 
     if (!raw || !String(raw).startsWith(PREFIX)) return fallback;
@@ -39,7 +46,8 @@
         summary: String(decoded.summary || "").trim(),
         offerings: cleanList(decoded.offerings),
         modes: cleanList(decoded.modes),
-        localStory: String(decoded.localStory || "").trim()
+        localStory: String(decoded.localStory || "").trim(),
+        membershipStartedAt: cleanIso(decoded.membershipStartedAt)
       };
     } catch (error) {
       console.warn("No se pudo leer el perfil enriquecido de Local", error);
@@ -47,12 +55,13 @@
     }
   }
 
-  function serialize({ summary, offerings, modes, localStory }) {
+  function serialize({ summary, offerings, modes, localStory, membershipStartedAt }) {
     const payload = {
       summary: String(summary || "").trim().slice(0, 420),
       offerings: cleanList(offerings),
       modes: cleanList(modes),
-      localStory: String(localStory || "").trim().slice(0, 280)
+      localStory: String(localStory || "").trim().slice(0, 280),
+      membershipStartedAt: cleanIso(membershipStartedAt)
     };
     return `${PREFIX}${toBase64Url(JSON.stringify(payload))}`;
   }
@@ -61,5 +70,13 @@
     return cleanList(String(value || "").split(","));
   }
 
-  window.LocalProfileData = { parse, serialize, offeringsFromText };
+  function markMembershipStarted(raw, startedAt = new Date().toISOString()) {
+    const current = parse(raw);
+    return serialize({
+      ...current,
+      membershipStartedAt: current.membershipStartedAt || startedAt
+    });
+  }
+
+  window.LocalProfileData = { parse, serialize, offeringsFromText, markMembershipStarted };
 })();
