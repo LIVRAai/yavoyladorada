@@ -56,6 +56,14 @@
     document.head.appendChild(exploreLink);
   }
 
+  if (!document.querySelector('link[data-local-profile-mobile="true"]')) {
+    const profileMobileLink = document.createElement("link");
+    profileMobileLink.rel = "stylesheet";
+    profileMobileLink.href = "profile-mobile.css";
+    profileMobileLink.dataset.localProfileMobile = "true";
+    document.head.appendChild(profileMobileLink);
+  }
+
   if (!document.querySelector('script[data-local-explore="true"]')) {
     const exploreScript = document.createElement("script");
     exploreScript.src = "explore-ux.js";
