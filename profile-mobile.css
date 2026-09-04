@@ -1,0 +1,69 @@
+/* Local 💚 — orden narrativo del perfil únicamente en celulares */
+@media (max-width: 560px) {
+  .profile-modal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Quitamos las cajas de las dos columnas para poder intercalar sus contenidos. */
+  .profile-info-column,
+  .profile-story-column {
+    display: contents;
+  }
+
+  /* En celular el Reel habla por sí mismo; evitamos texto redundante alrededor. */
+  .profile-story-label,
+  .profile-story-note {
+    display: none;
+  }
+
+  .profile-info-column > .eyebrow {
+    order: 1;
+    margin-bottom: 10px;
+  }
+
+  .profile-info-column > h2 {
+    order: 2;
+    margin-bottom: 16px;
+  }
+
+  .profile-story-column > .profile-media-frame {
+    order: 3;
+    width: min(100%, 290px, 31.5dvh);
+    margin: 0 auto 18px;
+    border-radius: 18px;
+  }
+
+  .profile-info-column > .profile-description {
+    order: 4;
+    margin-bottom: 16px;
+  }
+
+  .profile-info-column > .profile-member-chip {
+    order: 5;
+    align-self: flex-start;
+  }
+
+  .profile-info-column > #profileOfferingsSection {
+    order: 6;
+  }
+
+  .profile-info-column > #profileModesSection {
+    order: 7;
+  }
+
+  .profile-info-column > #profileLocalStorySection {
+    order: 8;
+  }
+
+  .profile-info-column > #profileDetails {
+    order: 9;
+    width: 100%;
+  }
+
+  .profile-info-column > #profileActions {
+    order: 10;
+    width: 100%;
+  }
+}
