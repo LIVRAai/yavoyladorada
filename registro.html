@@ -25,9 +25,9 @@
     <div class="narrow">
       <section class="card">
         <div class="auth-intro">
-          <span class="eyebrow">Paso 1 de 3 · 8 días gratis</span>
+          <span class="eyebrow">Paso 1 de 3 · Únete a Local</span>
           <h1>Crea tu espacio.</h1>
-          <p class="lead">Publica tu emprendimiento en Local 💚 y pruébalo durante 8 días sin pago inicial. Después decides si quieres continuar con la membresía.</p>
+          <p class="lead">Crea tu cuenta para presentar tu emprendimiento y empezar a hacer parte de la comunidad Local 💚.</p>
         </div>
 
         <form id="signupForm" class="form-grid">
@@ -39,13 +39,13 @@
             <small>Mínimo 6 caracteres.</small>
           </label>
           <div class="form-actions">
-            <button id="signupButton" class="button primary" type="submit">Crear cuenta y empezar gratis</button>
+            <button id="signupButton" class="button primary" type="submit">Crear cuenta y continuar</button>
           </div>
         </form>
 
         <div class="auth-note">
-          <strong>Empieza con 8 días gratis 💚</strong>
-          <p>Tu perfil se publicará sin pago inicial. Al terminar, podrás continuar por $29.900 COP al mes y tendrás 3 días de gracia para activar la membresía manteniendo tu visibilidad.</p>
+          <strong>Un beneficio para empezar 💚</strong>
+          <p>Tendrás 8 días para conocer Local con tu perfil publicado, sin ingresar un medio de pago. Después decides si quieres continuar con la membresía.</p>
         </div>
 
         <div id="result" class="notice info" hidden></div>
@@ -92,7 +92,7 @@
       });
 
       button.disabled = false;
-      button.textContent = "Crear cuenta y empezar gratis";
+      button.textContent = "Crear cuenta y continuar";
 
       if (error) {
         console.error(error);
@@ -105,7 +105,7 @@
         return;
       }
 
-      show("Tu cuenta fue creada. Revisa tu correo, confirma la cuenta y luego inicia sesión para publicar tu emprendimiento y comenzar los 8 días gratis.", "success");
+      show("Tu cuenta fue creada. Revisa tu correo, confirma la cuenta y luego inicia sesión para publicar tu emprendimiento.", "success");
     });
 
     redirectIfAuthenticated();
