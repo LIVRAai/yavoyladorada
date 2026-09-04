@@ -127,5 +127,67 @@
         <h3>Un espacio para mostrarte y seguir creciendo.</h3>
         <p>Mantén tu perfil actualizado, aprovecha las Local Sessions y utiliza los recursos de la comunidad para fortalecer tu emprendimiento.</p>`;
     }
+
+    // Los días de gracia son una regla interna. Nunca los exponemos al usuario.
+    const subscriptionStatus = document.getElementById("subscriptionStatus");
+    const paymentNotice = document.getElementById("paymentNotice");
+    const cleanInternalTimingCopy = () => {
+      if (subscriptionStatus && /gracia|prueba/i.test(subscriptionStatus.textContent || "")) {
+        subscriptionStatus.textContent = "Membresía disponible";
+      }
+      if (paymentNotice && /gracia|prueba/i.test(paymentNotice.textContent || "")) {
+        paymentNotice.textContent = "Activa tu membresía para mantener la visibilidad de tu emprendimiento y continuar con los beneficios de Local 💚.";
+      }
+    };
+    cleanInternalTimingCopy();
+    if (subscriptionStatus) new MutationObserver(cleanInternalTimingCopy).observe(subscriptionStatus, { childList: true, characterData: true, subtree: true });
+    if (paymentNotice) new MutationObserver(cleanInternalTimingCopy).observe(paymentNotice, { childList: true, characterData: true, subtree: true });
+
+    async function showAccountContext() {
+      if (!window.yavoyDb || !emptyState) return;
+
+      const { data: userData } = await window.yavoyDb.auth.getUser();
+      const user = userData?.user;
+      if (!user) return;
+
+      const { data: business, error } = await window.yavoyDb
+        .from("businesses")
+        .select("id")
+        .eq("owner_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error || business) return;
+
+      const lead = emptyState.querySelector(".lead");
+      const createButton = emptyState.querySelector("a.button");
+      const email = user.email || "esta cuenta";
+
+      if (lead) {
+        lead.textContent = `No encontramos un emprendimiento asociado a ${email}. Si lo creaste con otro correo, cambia de cuenta para administrar ese perfil.`;
+      }
+      if (createButton) createButton.textContent = "Crear un emprendimiento con esta cuenta";
+
+      if (!document.getElementById("switchLocalAccountButton")) {
+        const switchButton = document.createElement("button");
+        switchButton.id = "switchLocalAccountButton";
+        switchButton.className = "button ghost";
+        switchButton.type = "button";
+        switchButton.textContent = "Cambiar de cuenta";
+        switchButton.style.marginLeft = "8px";
+        switchButton.addEventListener("click", async () => {
+          switchButton.disabled = true;
+          switchButton.textContent = "Cerrando sesión...";
+          await window.yavoyDb.auth.signOut();
+          window.location.assign("login.html?next=mi-negocio.html");
+        });
+        createButton?.insertAdjacentElement("afterend", switchButton);
+      }
+
+      emptyState.hidden = false;
+    }
+
+    window.setTimeout(showAccountContext, 0);
   }
 })();
