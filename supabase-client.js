@@ -64,6 +64,14 @@
     document.head.appendChild(profileMobileLink);
   }
 
+  if (!document.querySelector('link[data-local-mobile-close="true"]')) {
+    const mobileCloseLink = document.createElement("link");
+    mobileCloseLink.rel = "stylesheet";
+    mobileCloseLink.href = "mobile-close-button-fix.css";
+    mobileCloseLink.dataset.localMobileClose = "true";
+    document.head.appendChild(mobileCloseLink);
+  }
+
   if (!document.querySelector('script[data-local-explore="true"]')) {
     const exploreScript = document.createElement("script");
     exploreScript.src = "explore-ux.js";
