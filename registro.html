@@ -70,9 +70,9 @@
     }
 
     async function redirectIfAuthenticated() {
-      if (!window.yavoyDb) return;
-      const { data } = await window.yavoyDb.auth.getSession();
-      if (data.session) window.location.replace("mi-negocio.html");
+      if (!window.yavoyDb || !window.LocalAuth) return;
+      const authState = await window.LocalAuth.validate();
+      if (authState.valid) window.location.replace("mi-negocio.html");
     }
 
     form.addEventListener("submit", async (event) => {
@@ -92,20 +92,31 @@
         options: { emailRedirectTo: `${window.location.origin}/login.html?next=negocio.html` }
       });
 
-      button.disabled = false;
-      button.textContent = "Crear cuenta y continuar";
-
       if (error) {
+        button.disabled = false;
+        button.textContent = "Crear cuenta y continuar";
         console.error(error);
         show(error.message, "error");
         return;
       }
 
       if (data.session) {
+        if (window.LocalAuth) {
+          window.LocalAuth.resetCache();
+          const authState = await window.LocalAuth.validate({ force: true });
+          if (!authState.valid) {
+            button.disabled = false;
+            button.textContent = "Crear cuenta y continuar";
+            show("La cuenta se creó, pero no pudimos validar la sesión. Inicia sesión para continuar.", "error");
+            return;
+          }
+        }
         window.location.assign("negocio.html");
         return;
       }
 
+      button.disabled = false;
+      button.textContent = "Crear cuenta y continuar";
       show("Tu cuenta fue creada. Revisa tu correo, confirma la cuenta y luego inicia sesión para publicar tu emprendimiento.", "success");
     });
 

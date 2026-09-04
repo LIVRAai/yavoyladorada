@@ -107,13 +107,20 @@
     }
 
     try {
-      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
-      if (userError || !userData?.user) return;
+      const authState = window.LocalAuth
+        ? await window.LocalAuth.validate()
+        : { valid: false, user: null };
+
+      if (!authState.valid || !authState.user) {
+        if (window.LocalAuth) await window.LocalAuth.clearLocalSession();
+        window.location.replace('login.html?next=mi-negocio.html');
+        return;
+      }
 
       const { data: business, error: businessError } = await window.yavoyDb
         .from('businesses')
         .select('id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at')
-        .eq('owner_id', userData.user.id)
+        .eq('owner_id', authState.user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();

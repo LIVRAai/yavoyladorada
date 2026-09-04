@@ -103,9 +103,9 @@
     }
 
     async function redirectIfAuthenticated() {
-      if (!window.yavoyDb) return;
-      const { data } = await window.yavoyDb.auth.getSession();
-      if (data.session) window.location.replace(nextPage);
+      if (!window.yavoyDb || !window.LocalAuth) return;
+      const authState = await window.LocalAuth.validate();
+      if (authState.valid) window.location.replace(nextPage);
     }
 
     showRecoveryButton.addEventListener("click", openRecovery);
@@ -157,17 +157,29 @@
         password: passwordInput.value
       });
 
-      button.disabled = false;
-      button.textContent = "Entrar a mi espacio";
-
       if (error) {
+        button.disabled = false;
+        button.textContent = "Entrar a mi espacio";
         console.error(error);
         show("El correo o la contraseña no son correctos.", "error");
         return;
       }
       if (!data.session) {
+        button.disabled = false;
+        button.textContent = "Entrar a mi espacio";
         show("No pudimos iniciar una sesión válida.", "error");
         return;
+      }
+
+      if (window.LocalAuth) {
+        window.LocalAuth.resetCache();
+        const authState = await window.LocalAuth.validate({ force: true });
+        if (!authState.valid) {
+          button.disabled = false;
+          button.textContent = "Entrar a mi espacio";
+          show("No pudimos validar la sesión. Intenta iniciar nuevamente.", "error");
+          return;
+        }
       }
 
       window.location.assign(nextPage);

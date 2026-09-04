@@ -83,6 +83,7 @@
 
 const YAVOY_SUPABASE_URL = "https://upahrzjvpfjfmbcrjrco.supabase.co";
 const YAVOY_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8j64gItbayvv0fieAmEZsg_cY2zTY2f";
+const LOCAL_AUTH_STORAGE_PREFIX = "sb-upahrzjvpfjfmbcrjrco-auth-token";
 
 function hasSupabaseConfiguration() {
   return (
@@ -105,6 +106,113 @@ window.yavoyDb = window.YAVOY_SUPABASE_CONFIGURED
       YAVOY_SUPABASE_PUBLISHABLE_KEY
     )
   : null;
+
+// Una sesión guardada en el navegador no implica que siga siendo válida en Supabase.
+// Esta capa valida una sola vez contra Auth y elimina tokens dañados antes de redirigir.
+(function setupLocalAuth() {
+  let validationPromise = null;
+  let hasValidated = false;
+  let cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
+
+  function purgeStoredAuth() {
+    try {
+      for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
+        const key = window.localStorage.key(index);
+        if (key && (key === LOCAL_AUTH_STORAGE_PREFIX || key.startsWith(`${LOCAL_AUTH_STORAGE_PREFIX}-`))) {
+          window.localStorage.removeItem(key);
+        }
+      }
+    } catch (error) {
+      console.warn("No pudimos limpiar el almacenamiento local de sesión.", error);
+    }
+  }
+
+  async function clearLocalSession() {
+    // Quitamos primero el token persistido para impedir que una siguiente página
+    // vuelva a considerarlo válido aunque el logout remoto falle.
+    purgeStoredAuth();
+    try {
+      if (window.yavoyDb) await window.yavoyDb.auth.signOut({ scope: "local" });
+    } catch (error) {
+      console.warn("La sesión remota ya no era válida; se limpió localmente.", error);
+    }
+    purgeStoredAuth();
+    cachedResult = { valid: false, user: null, session: null, invalidStoredSession: true };
+    hasValidated = true;
+    window.dispatchEvent(new CustomEvent("local:auth-cleared"));
+    return cachedResult;
+  }
+
+  async function validate(options = {}) {
+    const force = Boolean(options.force);
+    if (!window.yavoyDb) return cachedResult;
+    if (!force && hasValidated) return cachedResult;
+    if (!force && validationPromise) return validationPromise;
+
+    validationPromise = (async () => {
+      let sessionResponse;
+      try {
+        sessionResponse = await window.yavoyDb.auth.getSession();
+      } catch (error) {
+        console.warn("No pudimos leer la sesión de Local.", error);
+        return clearLocalSession();
+      }
+
+      const session = sessionResponse?.data?.session || null;
+      if (sessionResponse?.error) {
+        console.warn("La sesión guardada no se pudo recuperar.", sessionResponse.error);
+        return clearLocalSession();
+      }
+
+      if (!session) {
+        cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
+        hasValidated = true;
+        return cachedResult;
+      }
+
+      let userResponse;
+      try {
+        userResponse = await window.yavoyDb.auth.getUser();
+      } catch (error) {
+        console.warn("No pudimos validar el usuario guardado.", error);
+        return clearLocalSession();
+      }
+
+      const user = userResponse?.data?.user || null;
+      if (userResponse?.error || !user) {
+        console.warn("La sesión almacenada ya no corresponde a un usuario válido.", userResponse?.error || "Usuario ausente");
+        return clearLocalSession();
+      }
+
+      cachedResult = { valid: true, user, session, invalidStoredSession: false };
+      hasValidated = true;
+      window.dispatchEvent(new CustomEvent("local:auth-ready", { detail: cachedResult }));
+      return cachedResult;
+    })();
+
+    try {
+      return await validationPromise;
+    } finally {
+      validationPromise = null;
+    }
+  }
+
+  function resetCache() {
+    hasValidated = false;
+    cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
+  }
+
+  function getCachedUser() {
+    return cachedResult.valid ? cachedResult.user : null;
+  }
+
+  window.LocalAuth = {
+    validate,
+    clearLocalSession,
+    resetCache,
+    getCachedUser
+  };
+})();
 
 (function loadMiEspacioRecovery() {
   const isMiEspacio = window.location.pathname.endsWith("/mi-negocio.html") || window.location.pathname.endsWith("mi-negocio.html");
