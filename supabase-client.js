@@ -89,3 +89,14 @@ window.yavoyDb = window.YAVOY_SUPABASE_CONFIGURED
       YAVOY_SUPABASE_PUBLISHABLE_KEY
     )
   : null;
+
+(function loadMiEspacioRecovery() {
+  const isMiEspacio = window.location.pathname.endsWith("/mi-negocio.html") || window.location.pathname.endsWith("mi-negocio.html");
+  if (!isMiEspacio || document.querySelector('script[data-local-mi-espacio-recovery="true"]')) return;
+
+  const recoveryScript = document.createElement("script");
+  recoveryScript.src = "mi-espacio-recovery.js";
+  recoveryScript.defer = true;
+  recoveryScript.dataset.localMiEspacioRecovery = "true";
+  document.head.appendChild(recoveryScript);
+})();
