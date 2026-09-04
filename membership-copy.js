@@ -144,21 +144,17 @@
     if (paymentNotice) new MutationObserver(cleanInternalTimingCopy).observe(paymentNotice, { childList: true, characterData: true, subtree: true });
 
     async function showAccountContext() {
-      if (!window.yavoyDb || !emptyState) return;
+      // La pantalla principal es quien decide si realmente no hay negocio.
+      // Solo enriquecemos el mensaje después de que ese estado ya esté visible,
+      // evitando otra llamada a getUser() y otra consulta a businesses.
+      if (!window.yavoyDb || !emptyState || emptyState.hidden) return;
 
-      const { data: userData } = await window.yavoyDb.auth.getUser();
-      const user = userData?.user;
+      let user = window.LocalAuth?.getCachedUser?.() || null;
+      if (!user) {
+        const { data } = await window.yavoyDb.auth.getSession();
+        user = data?.session?.user || null;
+      }
       if (!user) return;
-
-      const { data: business, error } = await window.yavoyDb
-        .from("businesses")
-        .select("id")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error || business) return;
 
       const lead = emptyState.querySelector(".lead");
       const createButton = emptyState.querySelector("a.button");
@@ -179,15 +175,14 @@
         switchButton.addEventListener("click", async () => {
           switchButton.disabled = true;
           switchButton.textContent = "Cerrando sesión...";
-          await window.yavoyDb.auth.signOut();
+          if (window.LocalAuth) await window.LocalAuth.clearLocalSession();
+          else await window.yavoyDb.auth.signOut({ scope: "local" });
           window.location.assign("login.html?next=mi-negocio.html");
         });
         createButton?.insertAdjacentElement("afterend", switchButton);
       }
-
-      emptyState.hidden = false;
     }
 
-    window.setTimeout(showAccountContext, 0);
+    window.setTimeout(showAccountContext, 700);
   }
 })();
