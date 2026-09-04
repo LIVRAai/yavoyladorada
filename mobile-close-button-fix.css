@@ -1,0 +1,42 @@
+/* Local 💚 — botón cerrar del perfil, optimizado solo para móviles */
+@media (max-width: 560px) {
+  .profile-modal-card {
+    position: relative;
+  }
+
+  .profile-modal-card > .modal-close {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    z-index: 20 !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    max-width: 42px !important;
+    max-height: 42px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 42px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(31, 107, 69, .14) !important;
+    background: rgba(255, 253, 248, .96) !important;
+    color: var(--green-dark) !important;
+    box-shadow: 0 7px 20px rgba(23, 51, 37, .13) !important;
+    font-size: 1.45rem !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    transform: none !important;
+  }
+
+  .profile-modal-card > .modal-close:active {
+    transform: scale(.96) !important;
+  }
+
+  .profile-modal-grid {
+    padding-top: 8px;
+  }
+}
