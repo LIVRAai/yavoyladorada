@@ -120,6 +120,7 @@
   <script src="cover-image.js"></script>
   <script src="profile-data.js"></script>
   <script src="trial-lifecycle.js"></script>
+  <script src="share-business.js"></script>
   <script>
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
@@ -146,6 +147,7 @@
 
     let businesses = [];
     let currentCategory = "todos";
+    const requestedBusinessId = new URLSearchParams(window.location.search).get("negocio");
 
     const cityLabels = { "la-dorada": "La Dorada", "puerto-salgar": "Puerto Salgar" };
     const categoryLabels = { comida: "Comida", hogar: "Hogar", belleza: "Belleza", moda: "Moda", servicios: "Servicios", tecnologia: "Tecnología" };
@@ -231,6 +233,33 @@
       }
     }
 
+    function createShareButton(business) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "button secondary";
+      button.textContent = "Compartir emprendimiento";
+      button.setAttribute("aria-label", `Compartir ${business.name}`);
+      button.addEventListener("click", async () => {
+        if (!window.LocalShareBusiness) return;
+        const originalText = "Compartir emprendimiento";
+        button.disabled = true;
+        try {
+          const result = await window.LocalShareBusiness.shareBusiness(business);
+          if (result?.copied) {
+            button.textContent = "Enlace copiado ✓";
+            window.setTimeout(() => { button.textContent = originalText; }, 1800);
+          }
+        } catch (error) {
+          console.error("No se pudo compartir el emprendimiento", error);
+          button.textContent = "No pudimos compartir";
+          window.setTimeout(() => { button.textContent = originalText; }, 1800);
+        } finally {
+          button.disabled = false;
+        }
+      });
+      return button;
+    }
+
     function openProfile(business) {
       const profile = window.LocalProfileData.parse(business.description);
       const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
@@ -268,6 +297,7 @@
         link.textContent = "Contactar por WhatsApp";
         profileActions.appendChild(link);
       }
+      profileActions.appendChild(createShareButton(business));
       renderProfileMedia(business);
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
@@ -280,6 +310,12 @@
       profileReel.removeAttribute("src");
       profileReel.hidden = true;
       document.body.style.overflow = "";
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("negocio")) {
+        url.searchParams.delete("negocio");
+        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+      }
     }
 
     function createCard(business) {
@@ -336,6 +372,18 @@
       filtered.forEach((business) => grid.appendChild(createCard(business)));
     }
 
+    function openSharedBusinessIfRequested() {
+      if (!requestedBusinessId) return;
+      const business = businesses.find((item) => item.id === requestedBusinessId);
+      if (business) {
+        openProfile(business);
+        return;
+      }
+      notice.hidden = false;
+      notice.className = "notice info";
+      notice.textContent = "Este emprendimiento no está disponible públicamente en este momento.";
+    }
+
     async function loadBusinesses() {
       if (!window.yavoyDb) {
         notice.className = "notice error";
@@ -360,6 +408,7 @@
       businesses = (data || []).filter((business) => window.LocalTrial.isCatalogVisible(business));
       notice.hidden = true;
       render();
+      openSharedBusinessIfRequested();
     }
 
     chips.forEach((chip) => chip.addEventListener("click", () => {
