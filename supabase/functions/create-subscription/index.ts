@@ -12,10 +12,7 @@ const corsHeaders = {
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      ...corsHeaders,
-      "Content-Type": "application/json; charset=utf-8"
-    }
+    headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" }
   });
 }
 
@@ -26,6 +23,12 @@ function mapSubscriptionStatus(status: string | undefined) {
   return "pending";
 }
 
+function isBefore(value: string | null | undefined) {
+  if (!value) return false;
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) && Date.now() < date.getTime();
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return jsonResponse({ ok: false, error: "method_not_allowed" }, 405);
@@ -33,7 +36,6 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const mercadoPagoToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
-
   if (!supabaseUrl || !serviceRoleKey || !mercadoPagoToken) {
     return jsonResponse({ ok: false, error: "server_not_configured" }, 500);
   }
@@ -51,18 +53,15 @@ Deno.serve(async (req) => {
   if (!user.email) return jsonResponse({ ok: false, error: "user_email_required" }, 400);
 
   let payload: { business_id?: string };
-  try {
-    payload = await req.json();
-  } catch {
-    return jsonResponse({ ok: false, error: "invalid_json" }, 400);
-  }
+  try { payload = await req.json(); }
+  catch { return jsonResponse({ ok: false, error: "invalid_json" }, 400); }
 
   const businessId = payload.business_id?.trim();
   if (!businessId) return jsonResponse({ ok: false, error: "business_id_required" }, 400);
 
   const { data: business, error: businessError } = await admin
     .from("businesses")
-    .select("id, owner_id, name, status")
+    .select("id,owner_id,name,status,trial_started_at,trial_ends_at,grace_ends_at")
     .eq("id", businessId)
     .maybeSingle();
 
@@ -73,9 +72,20 @@ Deno.serve(async (req) => {
   if (!business) return jsonResponse({ ok: false, error: "business_not_found" }, 404);
   if (business.owner_id !== user.id) return jsonResponse({ ok: false, error: "business_forbidden" }, 403);
 
+  if (business.trial_started_at && isBefore(business.trial_ends_at)) {
+    return jsonResponse({
+      ok: false,
+      error: "trial_still_active",
+      trial_ends_at: business.trial_ends_at,
+      grace_ends_at: business.grace_ends_at
+    }, 409);
+  }
+
+  const withinGrace = Boolean(business.trial_started_at && isBefore(business.grace_ends_at));
+
   const { data: existingSubscription, error: existingSubscriptionError } = await admin
     .from("business_subscriptions")
-    .select("mp_preapproval_id, status")
+    .select("mp_preapproval_id,status,last_payment_date")
     .eq("business_id", businessId)
     .maybeSingle();
 
@@ -162,15 +172,17 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: false, error: "subscription_persistence_failed" }, 500);
   }
 
-  const { error: businessUpdateError } = await admin
-    .from("businesses")
-    .update({ status: "pending_payment", updated_at: now })
-    .eq("id", businessId)
-    .eq("owner_id", user.id);
+  if (!withinGrace) {
+    const { error: businessUpdateError } = await admin
+      .from("businesses")
+      .update({ status: "pending_payment", updated_at: now })
+      .eq("id", businessId)
+      .eq("owner_id", user.id);
 
-  if (businessUpdateError) {
-    console.error("Error updating business status", businessUpdateError);
-    return jsonResponse({ ok: false, error: "business_status_update_failed" }, 500);
+    if (businessUpdateError) {
+      console.error("Error updating business status", businessUpdateError);
+      return jsonResponse({ ok: false, error: "business_status_update_failed" }, 500);
+    }
   }
 
   return jsonResponse({
@@ -181,6 +193,7 @@ Deno.serve(async (req) => {
     subscription_id: mercadoPagoData.id,
     status: mercadoPagoData.status,
     amount_cop: MONTHLY_AMOUNT_COP,
+    within_grace: withinGrace,
     init_point: mercadoPagoData.init_point || null
   });
 });
