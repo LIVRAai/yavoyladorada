@@ -109,7 +109,7 @@
       return {
         badge: "Membresía pausada",
         badgeClass: "status-suspended",
-        title: "Tu perfil está guardado y puedes volver cuando quieras.",
+        title: "Tu espacio sigue guardado en Local 💚.",
         text: "Reactiva tu membresía para recuperar la visibilidad de tu emprendimiento y volver a acceder a Local Sessions, recursos prácticos y espacios de comunidad.",
         cta: "Volver a Local 💚 — $29.900/mes",
         tone: "error"
@@ -118,58 +118,33 @@
 
     if (state.key === "expired") {
       return {
-        badge: "Perfil oculto",
+        badge: "Perfil no visible",
         badgeClass: "status-suspended",
-        title: "Tu prueba terminó, pero tu espacio sigue guardado.",
-        text: "Activa la Membresía Local para volver a aparecer en la comunidad y conservar cada mes visibilidad, una Local Session, recursos aplicables y espacios para conectar.",
-        cta: "Volver a Local 💚 — $29.900/mes",
-        tone: "warning"
-      };
-    }
-
-    if (state.key === "grace") {
-      const days = state.daysRemaining || 1;
-      return {
-        badge: "Periodo de gracia",
-        badgeClass: "status-pending",
-        title: `Tu perfil sigue visible por ${days} ${days === 1 ? "día" : "días"} más.`,
-        text: "Activa tu membresía para mantener tu espacio publicado y seguir recibiendo Local Sessions mensuales, recursos prácticos y beneficios de comunidad.",
+        title: "Tu espacio sigue guardado en Local 💚.",
+        text: "Activa la Membresía Local para volver a aparecer en la comunidad y mantener visibilidad, Local Sessions, recursos aplicables y espacios para conectar.",
         cta: "Continuar en Local 💚 — $29.900/mes",
         tone: "warning"
       };
     }
 
-    // La prueba cambia el argumento a medida que la persona conoce el producto.
-    const days = state.daysRemaining || 1;
-    if ((state.elapsedDays || 0) <= 2) {
+    if (state.key === "grace") {
       return {
-        badge: "Prueba gratuita",
-        badgeClass: "status-active",
-        title: "Tu emprendimiento ya está visible en Local 💚.",
-        text: `Te quedan ${days} ${days === 1 ? "día" : "días"} gratis. Completa tu perfil, compártelo y empieza a aprovechar la visibilidad dentro de la comunidad.`,
-        cta: "",
-        tone: "success"
-      };
-    }
-
-    if ((state.elapsedDays || 0) <= 5) {
-      return {
-        badge: "Prueba gratuita",
-        badgeClass: "status-active",
-        title: "Local es más que una vitrina.",
-        text: `Te quedan ${days} ${days === 1 ? "día" : "días"} gratis. La membresía también incluye una Local Session mensual, recursos aplicables y espacios para conectar con otros emprendimientos.`,
-        cta: "",
-        tone: "success"
+        badge: "Membresía disponible",
+        badgeClass: "status-pending",
+        title: "Mantén tu emprendimiento visible y sigue creciendo.",
+        text: "Activa tu membresía para conservar tu presencia en Local y seguir recibiendo Local Sessions mensuales, recursos prácticos y beneficios de comunidad.",
+        cta: "Continuar en Local 💚 — $29.900/mes",
+        tone: "warning"
       };
     }
 
     return {
-      badge: "Prueba gratuita",
-      badgeClass: "status-pending",
-      title: `Tu prueba gratuita termina en ${days} ${days === 1 ? "día" : "días"}.`,
-      text: "Cuando termine podrás activar tu membresía por $29.900 al mes para conservar tu perfil visible y continuar con Local Sessions, recursos prácticos y comunidad.",
+      badge: "Publicado",
+      badgeClass: "status-active",
+      title: "Tu emprendimiento ya está visible en Local 💚.",
+      text: "Completa tu perfil, compártelo y aprovecha tu presencia dentro de la comunidad.",
       cta: "",
-      tone: "warning"
+      tone: "success"
     };
   }
 
