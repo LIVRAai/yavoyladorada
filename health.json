@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "service": "local-web",
+  "environment": "production",
+  "purpose": "availability-probe"
+}
