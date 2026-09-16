@@ -9,14 +9,10 @@
   };
 
   async function loadHealth() {
-    if (!window.yavoyDb) {
-      modeEl.textContent = "—";
-      setDetail("No pudimos consultar el estado del Empleado Digital.");
-      return;
-    }
     try {
-      const { data, error } = await window.yavoyDb.functions.invoke("local2-health");
-      if (error || !data?.ok) throw error || new Error("health unavailable");
+      const response = await fetch("/api/local2-ai-status", { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok || !data?.ok) throw new Error("health unavailable");
       modeEl.textContent = data.ai_configured ? "IA activa" : "Guiado";
       modeEl.classList.toggle("good", Boolean(data.ai_configured));
       setDetail(data.ai_configured
