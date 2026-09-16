@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="local2-owner.css" />
+  <link rel="stylesheet" href="local2-customer-history.css" />
 </head>
 <body>
   <header class="owner-header">
@@ -112,6 +113,21 @@
           </article>
         </aside>
       </div>
+
+      <section class="card customer-history-card">
+        <div class="customer-history-head">
+          <div>
+            <span class="eyebrow">Clientes</span>
+            <h2>Historia y memoria</h2>
+            <p class="section-copy">Local conserva la relación comercial: conversaciones, pedidos, pagos, productos frecuentes y notas útiles para atender mejor al cliente.</p>
+          </div>
+          <input id="customerSearch" class="customer-search" type="search" placeholder="Buscar cliente…" autocomplete="off" />
+        </div>
+        <div class="customer-history-grid">
+          <div id="customerDirectory" class="customer-directory"><div class="customer-empty">Cargando clientes…</div></div>
+          <div id="customerDetail" class="customer-detail"><div class="customer-empty">Selecciona un cliente para ver su historia.</div></div>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -120,5 +136,6 @@
   <script src="local2-owner.js"></script>
   <script src="local2-owner-insights.js"></script>
   <script src="local2-share-kit.js"></script>
+  <script src="local2-customer-history.js"></script>
 </body>
 </html>
