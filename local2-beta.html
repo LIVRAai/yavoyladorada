@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="local2-beta.css" />
+  <link rel="stylesheet" href="local2-payment-proof.css" />
 </head>
 <body>
   <header class="beta-header">
@@ -94,9 +95,9 @@
           </div>
 
           <section id="identityPanel" class="flow-panel" hidden>
-            <span class="flow-kicker">Para guardar tu pedido</span>
+            <span class="flow-kicker">Para reconocerte</span>
             <h3>¿Cómo te identificamos?</h3>
-            <p>Así podrás volver a este mismo asistente y consultar tus compras.</p>
+            <p>Usamos estos datos para asociar tus compras a este negocio y poder continuar tu historia cuando vuelvas.</p>
             <form id="identityForm" class="flow-form">
               <label>Nombre<input id="customerName" maxlength="120" autocomplete="name" required /></label>
               <label>Celular<input id="customerPhone" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="300 123 4567" /></label>
@@ -117,14 +118,20 @@
           </section>
 
           <section id="paymentPanel" class="flow-panel" hidden>
-            <span class="flow-kicker">Pago</span>
-            <h3 id="paymentTitle">Reportar pago</h3>
+            <span class="flow-kicker">Comprobante de pago</span>
+            <h3 id="paymentTitle">Registrar pago</h3>
             <div id="paymentInstructions" class="payment-methods"></div>
             <form id="paymentForm" class="flow-form">
               <label>¿Cómo pagaste?<select id="paymentMethod"></select></label>
               <label>Nombre desde el que pagaste <span>opcional</span><input id="payerName" maxlength="160" /></label>
-              <p class="payment-warning">Reportar un pago no significa que esté confirmado. El emprendimiento revisará que el dinero haya llegado.</p>
-              <button class="primary-button" type="submit">Ya pagué · reportar</button>
+              <label class="proof-upload-field">
+                <span class="proof-required">Comprobante obligatorio</span>
+                <strong>Adjunta el comprobante</strong>
+                <input id="paymentProofFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required />
+                <small id="paymentProofHint">JPG, PNG, WEBP o PDF · máximo 8 MB</small>
+              </label>
+              <p class="payment-warning"><strong>Importante:</strong> enviar el comprobante no confirma el pago. El emprendimiento verificará que el dinero realmente haya llegado.</p>
+              <button class="primary-button" type="submit">Enviar comprobante</button>
             </form>
           </section>
 
@@ -154,6 +161,7 @@
   <script src="profile-data.js"></script>
   <script src="local2-memory-router.js"></script>
   <script src="local2-beta.js"></script>
+  <script src="local2-payment-proof.js"></script>
   <script src="local2-conversational-identity.js"></script>
   <script src="local2-recovery-addon.js"></script>
 </body>
