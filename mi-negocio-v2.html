@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Mi negocio · Local 2.0 Beta 💚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="local2-owner.css" />
+</head>
+<body>
+  <header class="owner-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">Local <span>💚</span></a>
+      <span class="beta-badge">Mi negocio · Beta 2.0</span>
+      <div class="header-actions">
+        <a id="publicLink" class="button ghost" href="local2-beta.html">Ver mi página</a>
+        <a class="button ghost" href="mi-negocio.html">Local actual</a>
+        <button id="logoutButton" class="button ghost" type="button">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell owner-main">
+    <div id="loadingNotice" class="notice">Cargando tu negocio…</div>
+    <div id="errorNotice" class="notice error" hidden></div>
+
+    <div id="ownerApp" hidden>
+      <section class="welcome-row">
+        <div>
+          <span class="eyebrow">Mi negocio</span>
+          <h1 id="businessName">Emprendimiento</h1>
+          <p>Configura tu Empleado Digital y atiende lo que realmente necesita de ti.</p>
+        </div>
+        <div class="assistant-state" id="assistantState">Empleado Digital</div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card"><span>Clientes</span><strong id="statCustomers">0</strong></article>
+        <article class="stat-card"><span>Pedidos</span><strong id="statOrders">0</strong></article>
+        <article class="stat-card alert"><span>Pagos por confirmar</span><strong id="statPayments">0</strong></article>
+        <article class="stat-card"><span>Pedidos activos</span><strong id="statActive">0</strong></article>
+      </section>
+
+      <div class="owner-grid">
+        <section class="stack">
+          <article class="card">
+            <div class="section-head">
+              <div><span class="eyebrow">Empleado Digital</span><h2>¿Cómo trabajará por ti?</h2></div>
+              <label class="switch-label"><input id="assistantEnabled" type="checkbox" /><span>Activo en beta</span></label>
+            </div>
+            <form id="assistantForm" class="form-grid">
+              <label>Nombre del empleado<input id="assistantName" maxlength="80" placeholder="Ej. Luna" /></label>
+              <label>Cargo<input id="assistantRole" maxlength="100" placeholder="Ej. Asesora digital" /></label>
+              <label class="full">Mensaje de bienvenida<textarea id="welcomeMessage" maxlength="500" placeholder="Hola 👋 ¿En qué puedo ayudarte?"></textarea></label>
+              <button class="button primary" type="submit">Guardar configuración</button>
+            </form>
+            <div id="assistantNotice" class="inline-notice" hidden></div>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <div><span class="eyebrow">Catálogo</span><h2>Productos</h2></div>
+            </div>
+            <p class="section-copy">El asistente usa estos nombres y precios. Si un precio está vacío, podrá hablar del producto pero no crear una compra directa.</p>
+            <div id="productList" class="editable-list"></div>
+            <form id="productForm" class="add-form">
+              <input id="newProductName" maxlength="140" placeholder="Nuevo producto" required />
+              <input id="newProductPrice" inputmode="numeric" placeholder="Precio COP (opcional)" />
+              <button class="button primary" type="submit">Agregar</button>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <div><span class="eyebrow">Cobros</span><h2>Medios de pago</h2></div>
+            </div>
+            <p class="section-copy">Local nunca confirmará un pago automáticamente en esta beta. Tú revisas tu Nequi, Bre-B o DaviPlata y confirmas desde aquí.</p>
+            <div id="paymentMethodList" class="editable-list"></div>
+            <form id="paymentMethodForm" class="payment-add-form">
+              <select id="newPaymentType">
+                <option value="nequi">Nequi</option>
+                <option value="breb">Bre-B</option>
+                <option value="daviplata">DaviPlata</option>
+                <option value="bank_transfer">Transferencia</option>
+                <option value="cash">Efectivo</option>
+                <option value="other">Otro</option>
+              </select>
+              <input id="newPaymentLabel" maxlength="100" placeholder="Nombre visible (opcional)" />
+              <input id="newPaymentDestination" maxlength="180" placeholder="Número, llave o dato para pagar" />
+              <button class="button primary" type="submit">Agregar</button>
+            </form>
+          </article>
+        </section>
+
+        <aside class="stack">
+          <article class="card attention-card">
+            <span class="eyebrow">Necesitan tu atención</span>
+            <h2>Pagos por confirmar</h2>
+            <div id="pendingPayments" class="attention-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="section-head"><div><span class="eyebrow">Operación</span><h2>Pedidos recientes</h2></div><button id="refreshOrders" class="button ghost small" type="button">Actualizar</button></div>
+            <div id="ordersList" class="orders-list"></div>
+          </article>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="local2-owner.js"></script>
+</body>
+</html>
