@@ -41,6 +41,25 @@ function firstName(value: unknown) {
   return normalizeName(value).split(" ")[0] || "";
 }
 
+async function sha256(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function requireSession(businessId: string, token: string) {
+  if (!businessId || !token) return null;
+  const tokenHash = await sha256(token);
+  const { data, error } = await db
+    .from("local2_customer_sessions")
+    .select("id,business_id,customer_id,expires_at")
+    .eq("business_id", businessId)
+    .eq("token_hash", tokenHash)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "Método no permitido" }, 405);
@@ -50,9 +69,13 @@ Deno.serve(async (req: Request) => {
     const action = clean(body?.action, 40);
     const businessId = clean(body?.business_id, 80);
     const phone = normalizePhone(body?.phone);
+    const sessionToken = clean(body?.session_token, 220);
 
     if (!businessId) return json({ ok: false, error: "Falta el negocio." }, 400);
     if (!phone || phone.length < 7) return json({ ok: false, error: "Confirma un número de celular válido." }, 400);
+
+    const session = await requireSession(businessId, sessionToken);
+    if (!session) return json({ ok: false, error: "La sesión no es válida. Recarga la página e intenta nuevamente." }, 401);
 
     const { data: customer, error } = await db
       .from("local2_customers")
@@ -64,7 +87,7 @@ Deno.serve(async (req: Request) => {
     if (error) throw error;
 
     if (action === "lookup_phone") {
-      return json({ ok: true, found: Boolean(customer) });
+      return json({ ok: true, found: Boolean(customer), already_linked: session.customer_id === customer?.id });
     }
 
     if (action === "verify_name") {
@@ -77,6 +100,7 @@ Deno.serve(async (req: Request) => {
         found: true,
         verified,
         customer_name: verified ? customer.name : null,
+        needs_history_recovery: verified && session.customer_id !== customer.id,
       });
     }
 
