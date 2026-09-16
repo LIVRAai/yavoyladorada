@@ -15,7 +15,6 @@
     delivered: "Entregado",
     cancelled: "Cancelado"
   };
-  const paymentLabels = { nequi: "Nequi", breb: "Bre-B", daviplata: "DaviPlata", bank_transfer: "Transferencia", cash: "Efectivo", other: "Otro" };
 
   let currentBusiness = null;
   let customers = [];
@@ -35,7 +34,12 @@
   }
 
   function escapeText(value) {
-    return String(value ?? "");
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   function renderDirectory() {
@@ -57,7 +61,7 @@
       button.type = "button";
       button.className = `customer-entry${selectedCustomerId === customer.id ? " active" : ""}`;
       const last = memory?.last_interaction_at ? `Última interacción: ${formatDate(memory.last_interaction_at)}` : "Sin actividad reciente";
-      button.innerHTML = `<strong>${escapeText(customer.name || "Cliente")}</strong><span>${memory?.order_count || 0} pedido${Number(memory?.order_count || 0) === 1 ? "" : "s"} · ${last}</span>`;
+      button.innerHTML = `<strong>${escapeText(customer.name || "Cliente")}</strong><span>${memory?.order_count || 0} pedido${Number(memory?.order_count || 0) === 1 ? "" : "s"} · ${escapeText(last)}</span>`;
       button.addEventListener("click", () => loadCustomerDetail(customer.id));
       directory.appendChild(button);
     });
@@ -131,10 +135,10 @@
       <div class="customer-memory-summary">${escapeText(memory.summary || "Todavía estamos construyendo la memoria comercial de este cliente.")}</div>
 
       <div class="customer-mini-stats">
-        <div class="customer-mini-stat"><span>Conversaciones</span><strong>${memory.conversation_count || 0}</strong></div>
-        <div class="customer-mini-stat"><span>Pedidos</span><strong>${memory.order_count || 0}</strong></div>
-        <div class="customer-mini-stat"><span>Entregados</span><strong>${memory.delivered_order_count || 0}</strong></div>
-        <div class="customer-mini-stat"><span>Compras entregadas</span><strong>${money(memory.lifetime_value_cop || 0)}</strong></div>
+        <div class="customer-mini-stat"><span>Conversaciones</span><strong>${Number(memory.conversation_count || 0)}</strong></div>
+        <div class="customer-mini-stat"><span>Pedidos</span><strong>${Number(memory.order_count || 0)}</strong></div>
+        <div class="customer-mini-stat"><span>Entregados</span><strong>${Number(memory.delivered_order_count || 0)}</strong></div>
+        <div class="customer-mini-stat"><span>Compras entregadas</span><strong>${escapeText(money(memory.lifetime_value_cop || 0))}</strong></div>
       </div>
 
       <div>
@@ -170,7 +174,9 @@
         productsEl.appendChild(chip);
       });
     } else {
-      productsEl.innerHTML = '<span>Sin productos frecuentes todavía</span>';
+      const chip = document.createElement("span");
+      chip.textContent = "Sin productos frecuentes todavía";
+      productsEl.appendChild(chip);
     }
 
     const timeline = detail.querySelector("#customerTimeline");
@@ -182,7 +188,7 @@
         item.className = "timeline-item";
         const orderCode = event.metadata?.public_code ? ` · ${event.metadata.public_code}` : "";
         const status = event.metadata?.status ? ` · ${statusLabels[event.metadata.status] || event.metadata.status}` : "";
-        item.innerHTML = `<strong>${escapeText(event.title || event.event_type)}${escapeText(orderCode)}</strong><p>${escapeText(event.description || "")}${escapeText(status)}</p><time>${formatDate(event.occurred_at)}</time>`;
+        item.innerHTML = `<strong>${escapeText(event.title || event.event_type)}${escapeText(orderCode)}</strong><p>${escapeText(event.description || "")}${escapeText(status)}</p><time>${escapeText(formatDate(event.occurred_at))}</time>`;
         timeline.appendChild(item);
       });
     }
