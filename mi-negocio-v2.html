@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="local2-owner.css" />
   <link rel="stylesheet" href="local2-customer-history.css" />
   <link rel="stylesheet" href="local2-payment-proof.css" />
+  <link rel="stylesheet" href="local2-owner-ux.css" />
 </head>
 <body>
   <header class="owner-header">
@@ -35,7 +36,7 @@
         <div>
           <span class="eyebrow">Mi negocio</span>
           <h1 id="businessName">Emprendimiento</h1>
-          <p>Configura tu Empleado Digital y atiende lo que realmente necesita de ti.</p>
+          <p>Primero atiende lo que necesita tu intervención. Después ajusta cómo trabaja tu Empleado Digital.</p>
         </div>
         <div class="assistant-state" id="assistantState">Empleado Digital</div>
       </section>
@@ -45,13 +46,33 @@
         <article class="stat-card"><span>Pedidos</span><strong id="statOrders">0</strong></article>
         <article class="stat-card alert"><span>Comprobantes por revisar</span><strong id="statPayments">0</strong></article>
         <article class="stat-card"><span>Pedidos activos</span><strong id="statActive">0</strong></article>
-        <article class="stat-card"><span>Motor del asistente</span><strong id="statAiMode">Verificando…</strong></article>
-        <article class="stat-card"><span>Respuestas con IA</span><strong id="statAiMessages">0</strong></article>
       </section>
-      <div id="aiDetail" class="notice">Verificando si la beta está usando IA real o el modo guiado de respaldo…</div>
+
+      <details class="card beta-diagnostics">
+        <summary>Diagnóstico del Empleado Digital <span class="eyebrow">Solo beta</span></summary>
+        <div class="diagnostic-grid">
+          <div class="diagnostic-item"><span>Motor del asistente</span><strong id="statAiMode">Verificando…</strong></div>
+          <div class="diagnostic-item"><span>Respuestas con IA</span><strong id="statAiMessages">0</strong></div>
+        </div>
+        <div id="aiDetail" class="notice diagnostic-detail">Verificando si la beta está usando IA real o el modo guiado de respaldo…</div>
+      </details>
 
       <div class="owner-grid">
-        <section class="stack">
+        <aside class="stack operations-stack">
+          <article class="card attention-card">
+            <span class="eyebrow">Necesitan tu atención</span>
+            <h2>Comprobantes por revisar</h2>
+            <p class="section-copy">Abre el comprobante, valida el movimiento en tu cuenta y luego confirma o rechaza el pago.</p>
+            <div id="pendingPayments" class="attention-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="section-head"><div><span class="eyebrow">Operación</span><h2>Pedidos recientes</h2></div><button id="refreshOrders" class="button ghost small" type="button">Actualizar</button></div>
+            <div id="ordersList" class="orders-list"></div>
+          </article>
+        </aside>
+
+        <section class="stack config-stack">
           <article class="card">
             <div class="section-head">
               <div><span class="eyebrow">Empleado Digital</span><h2>¿Cómo trabajará por ti?</h2></div>
@@ -100,20 +121,6 @@
             </form>
           </article>
         </section>
-
-        <aside class="stack">
-          <article class="card attention-card">
-            <span class="eyebrow">Necesitan tu atención</span>
-            <h2>Comprobantes por revisar</h2>
-            <p class="section-copy">Abre el comprobante, valida el movimiento en tu cuenta y luego confirma o rechaza el pago.</p>
-            <div id="pendingPayments" class="attention-list"></div>
-          </article>
-
-          <article class="card">
-            <div class="section-head"><div><span class="eyebrow">Operación</span><h2>Pedidos recientes</h2></div><button id="refreshOrders" class="button ghost small" type="button">Actualizar</button></div>
-            <div id="ordersList" class="orders-list"></div>
-          </article>
-        </aside>
       </div>
 
       <section class="card customer-history-card">
