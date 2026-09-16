@@ -59,4 +59,9 @@
   refresh();
   window.addEventListener("local2:refresh", refresh);
   window.setInterval(refresh, 60000);
+
+  const handoffOwner = document.createElement("script");
+  handoffOwner.src = "local2-handoff-owner.js";
+  handoffOwner.defer = true;
+  document.head.appendChild(handoffOwner);
 })();
