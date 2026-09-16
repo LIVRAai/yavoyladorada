@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="description" content="Vista beta de Local 2.0: presencia gratuita y Empleado Digital para emprendimientos." />
+  <title>Local 2.0 Beta 💚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="local2-beta.css" />
+</head>
+<body>
+  <header class="beta-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">Local <span>💚</span></a>
+      <span class="beta-badge">Beta 2.0</span>
+      <a class="ghost-link" href="catalogo.html">Volver a Local actual</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div>
+        <span class="eyebrow">Local 2.0 · entorno de prueba</span>
+        <h1>Presencia gratis. Un empleado digital cuando quieras crecer.</h1>
+        <p>Esta beta no reemplaza la versión actual. Aquí probaremos la nueva experiencia de cada emprendimiento, su enlace compartible y el futuro Empleado Digital.</p>
+      </div>
+      <div class="safety-card">
+        <strong>Producción sigue intacta</strong>
+        <span>Esta página vive en la rama de beta y no modifica la experiencia pública actual.</span>
+      </div>
+    </section>
+
+    <section class="shell workspace">
+      <aside class="business-picker card">
+        <span class="eyebrow">Prueba con datos reales</span>
+        <h2>Elige un emprendimiento</h2>
+        <p>Usamos únicamente la información pública que ya existe en Local.</p>
+        <select id="businessSelect" aria-label="Seleccionar emprendimiento">
+          <option value="">Cargando emprendimientos...</option>
+        </select>
+        <div id="loadNotice" class="notice">Cargando Local...</div>
+      </aside>
+
+      <section id="businessExperience" class="experience" hidden>
+        <article class="public-page card">
+          <div id="cover" class="cover"><span id="coverInitial">L</span></div>
+          <div class="public-content">
+            <div class="title-row">
+              <div>
+                <span id="businessMeta" class="eyebrow"></span>
+                <h2 id="businessName">Emprendimiento</h2>
+              </div>
+              <span class="member-chip">Local 💚</span>
+            </div>
+            <p id="businessDescription" class="lead"></p>
+            <div id="offerings" class="chip-list"></div>
+            <div class="actions">
+              <button id="assistantButton" class="primary-button" type="button">Hablar con nuestro asistente</button>
+              <a id="whatsappButton" class="secondary-button" target="_blank" rel="noopener noreferrer" hidden>WhatsApp</a>
+              <a id="instagramButton" class="secondary-button" target="_blank" rel="noopener noreferrer" hidden>Instagram</a>
+            </div>
+            <div class="share-row">
+              <label for="shareUrl">Enlace para compartir</label>
+              <div class="share-input-row">
+                <input id="shareUrl" readonly />
+                <button id="copyLink" type="button">Copiar</button>
+              </div>
+              <small>Este será el enlace que el emprendimiento podrá poner en WhatsApp, Instagram, QR o tarjetas.</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="assistant card" id="assistantPanel" hidden>
+          <div class="assistant-head">
+            <div>
+              <span class="eyebrow">Empleado Digital · prototipo de interfaz</span>
+              <h2 id="assistantTitle">Asistente</h2>
+            </div>
+            <button id="closeAssistant" class="icon-button" type="button" aria-label="Cerrar asistente">×</button>
+          </div>
+          <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+          <div class="quick-actions">
+            <button type="button" data-intent="products">¿Qué ofrecen?</button>
+            <button type="button" data-intent="order">Quiero hacer un pedido</button>
+            <button type="button" data-intent="tracking">Consultar mi pedido</button>
+          </div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" placeholder="Escribe un mensaje..." autocomplete="off" />
+            <button type="submit">Enviar</button>
+          </form>
+          <p class="prototype-note">Esta primera vista valida la experiencia. El cerebro con OpenAI, pedidos, pagos y seguimiento se conectará en las siguientes etapas de la beta.</p>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="profile-data.js"></script>
+  <script src="local2-beta.js"></script>
+</body>
+</html>
