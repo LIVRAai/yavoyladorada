@@ -23,7 +23,6 @@
         customerFound: false,
         pendingMessage: "",
         sessionToken: "",
-        skipIdentity: false,
       });
     }
     return stateByBusiness.get(businessId);
@@ -56,6 +55,16 @@
 
   function wantsChangePhone(text) {
     return /cambiar\s+(el\s+)?(número|numero|celular)/i.test(text);
+  }
+
+  function isHistoryIntent(text) {
+    return /(mi historial|mis compras|qué compré|que compre|qué he comprado|que he comprado|lo mismo de la vez pasada|ultima vez|última vez|repetir (mi )?pedido)/i.test(String(text || ""));
+  }
+
+  function requiresIdentity(text) {
+    if (window.Local2PaymentProof?.isPaymentIntent?.(text)) return true;
+    if (window.Local2ConversationController?.requiresIdentity?.(text)) return true;
+    return isHistoryIntent(text);
   }
 
   function setPlaceholder(text) {
@@ -98,6 +107,8 @@
   async function sendRememberedMessage(message) {
     const businessId = select.value;
     const current = state();
+    const session = await ensureSession(businessId);
+    current.sessionToken = session.session_token;
     const data = await invoke("local2-chat-api-v2", {
       action: "send_message",
       business_id: businessId,
@@ -148,6 +159,11 @@
       return;
     }
 
+    if (window.Local2ConversationController?.handleIntent) {
+      const result = await window.Local2ConversationController.handleIntent(pending, { echoUser: false });
+      if (result?.handled) return;
+    }
+
     await sendRememberedMessage(pending);
   }
 
@@ -157,41 +173,46 @@
     await replayPending();
   }
 
-  async function continueWithoutHistory() {
+  async function continueWithoutIdentity() {
     const current = state();
-    current.skipIdentity = true;
+    const blocked = current.pendingMessage && requiresIdentity(current.pendingMessage);
     current.phase = "anonymous";
-    sessionLabel.textContent = current.displayName ? `Atendiendo a ${current.displayName} · sin historial` : "Sesión sin historial";
-    addBubble(current.displayName
-      ? `Perfecto, ${current.displayName}. Podemos seguir. Por seguridad no usaré compras anteriores en este dispositivo hasta que recuperes tu historial.`
-      : "Claro. Podemos seguir sin identificarte; simplemente no podré recordar tu historia cuando vuelvas.");
+    current.phone = "";
+    current.customerFound = false;
+    setPlaceholder("Escribe un mensaje...");
+
+    if (blocked) {
+      current.pendingMessage = "";
+      addBubble("Podemos seguir explorando sin identificarte. Para completar compras, consultar pedidos privados o registrar un comprobante sí necesito asociar la acción a un cliente.");
+      return;
+    }
+
+    addBubble("Claro. Puedes seguir preguntando sin identificarte. Solo te pediré tus datos si necesitas una acción privada o transaccional.");
     await replayPending();
   }
 
-  async function handleFirstMessage(text) {
-    const businessId = select.value;
+  async function beginProtectedAction(text) {
     const current = state();
-    const session = await ensureSession(businessId);
+    current.pendingMessage = text;
+    const session = await ensureSession(select.value);
 
     if (session.customer_id) {
       current.phase = "identified";
       addBubble(text, "user");
-      await sendRememberedMessage(text);
+      await replayPending();
       return;
     }
 
-    messages.innerHTML = "";
     addBubble(text, "user");
-    current.pendingMessage = text;
     current.phase = "awaiting_phone";
-    addBubble("¡Hola! 👋 Antes de seguir, confírmame tu número de celular. Si ya has comprado aquí, intentaré reconocerte; si es tu primera vez, lo usaré para registrarte y recordar nuestra relación con este negocio. Si prefieres continuar sin identificarte, escribe “seguir sin identificarme”.");
+    addBubble("Para completar esta acción necesito asociarla a un cliente. Confírmame tu número de celular. Si ya has comprado aquí, intentaré reconocerte; si es tu primera vez, te registraré. Si prefieres seguir solo explorando, escribe “seguir sin identificarme”.");
     setPlaceholder("Escribe tu número de celular...");
   }
 
   async function handlePhone(text) {
     const current = state();
     if (isAnonymousChoice(text)) {
-      await continueWithoutHistory();
+      await continueWithoutIdentity();
       return;
     }
 
@@ -214,9 +235,9 @@
     current.phase = "awaiting_name";
 
     if (lookup.found) {
-      addBubble("Encontré un cliente registrado con ese celular 😊 Confírmame tu nombre. Si coincide, te explicaré cómo recuperar tu historial de forma segura en este dispositivo.");
+      addBubble("Encontré un cliente registrado con ese celular 😊 Confírmame tu nombre. Como estás en una sesión nueva, después te pediré un código de pedido para proteger el historial anterior.");
     } else {
-      addBubble("No encuentro un cliente registrado con ese número. ¿Cómo te llamas? Te registraré para que este dispositivo pueda reconocerte cuando vuelvas.");
+      addBubble("No encuentro un cliente registrado con ese número. ¿Cómo te llamas? Te registraré para poder asociar correctamente esta compra y reconocerte en este dispositivo.");
     }
     setPlaceholder("Escribe tu nombre...");
   }
@@ -224,7 +245,7 @@
   async function handleName(text) {
     const current = state();
     if (isAnonymousChoice(text)) {
-      await continueWithoutHistory();
+      await continueWithoutIdentity();
       return;
     }
     if (wantsChangePhone(text)) {
@@ -260,19 +281,19 @@
 
       current.displayName = verification.customer_name || name;
       current.phase = "awaiting_order_code";
-      addBubble(`Perfecto, ${current.displayName} 😊 Te reconocí. Para proteger tus compras anteriores en un dispositivo nuevo, confírmame el código de uno de tus pedidos (por ejemplo L-AB12CD34). Si ahora no lo tienes, escribe “continuar sin historial” y podemos seguir conversando sin mostrar compras anteriores.`);
+      addBubble(`Perfecto, ${current.displayName} 😊 Te reconocí. Para proteger tus compras anteriores en este dispositivo, confírmame el código de uno de tus pedidos (por ejemplo L-AB12CD34). Si ahora no lo tienes, puedes escribir “continuar sin historial” y seguir explorando, pero no podré completar esta acción privada.`);
       setPlaceholder("Código de pedido o “continuar sin historial”…");
       return;
     }
 
-    addBubble(`Mucho gusto, ${name} 😊 Te registraré para que cuando regreses desde este dispositivo podamos continuar donde quedamos.`);
+    addBubble(`Mucho gusto, ${name} 😊 Te registraré y retomaré la acción que estabas haciendo.`);
     await finishNewCustomer(name);
   }
 
   async function handleOrderCode(text) {
     const current = state();
     if (isContinueWithoutHistory(text) || isAnonymousChoice(text)) {
-      await continueWithoutHistory();
+      await continueWithoutIdentity();
       return;
     }
 
@@ -294,26 +315,30 @@
     });
 
     current.phase = "identified";
-    current.skipIdentity = false;
     current.displayName = recovery.customer?.name || current.displayName;
     sessionLabel.textContent = `Atendiendo a ${current.displayName || "cliente"} ✓`;
-    addBubble(`Listo, ${current.displayName || "ya está"} ✓ Recuperé tu historial con este negocio de forma segura. Podemos continuar donde quedamos.`);
+    addBubble(`Listo, ${current.displayName || "ya está"} ✓ Recuperé tu relación con este negocio de forma segura. Retomemos lo que estabas haciendo.`);
     await replayPending();
   }
 
   form.addEventListener("submit", async (event) => {
     const current = state();
-    if (current.phase === "identified" || current.phase === "anonymous" || current.skipIdentity) return;
-
     const text = input.value.trim();
     if (!text) return;
+
+    const inIdentityFlow = ["awaiting_phone", "awaiting_name", "awaiting_order_code"].includes(current.phase);
+    const protectedAction = requiresIdentity(text);
+
+    if (!inIdentityFlow && !protectedAction) return;
+    if (!inIdentityFlow && current.phase === "identified") return;
+
     event.preventDefault();
     event.stopImmediatePropagation();
     input.value = "";
 
     try {
-      if (current.phase === "unknown") {
-        await handleFirstMessage(text);
+      if (!inIdentityFlow && protectedAction) {
+        await beginProtectedAction(text);
       } else if (current.phase === "awaiting_phone") {
         await handlePhone(text);
       } else if (current.phase === "awaiting_name") {
