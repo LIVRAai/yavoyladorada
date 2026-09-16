@@ -23,6 +23,10 @@ function clean(value: unknown, max = 1200) {
   return String(value ?? "").trim().slice(0, max);
 }
 
+function normalizePhone(value: unknown) {
+  return String(value ?? "").replace(/\D/g, "").slice(0, 20);
+}
+
 async function sha256(value: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -68,13 +72,14 @@ Deno.serve(async (req: Request) => {
     const businessId = clean(body?.business_id, 80);
     const token = clean(body?.session_token, 220);
     const message = clean(body?.message, 1200) || "Quiero hablar con alguien";
+    const contactPhone = normalizePhone(body?.contact_phone);
     const session = await resolveSession(businessId, token);
     if (!session) return json({ ok: false, error: "La sesión venció o no es válida" }, 401);
-    if (!session.customer_id) {
+    if (!session.customer_id && contactPhone.length < 7) {
       return json({
         ok: false,
-        needs_customer: true,
-        error: "Para pedir que el negocio te contacte necesito asociar la solicitud a un cliente.",
+        needs_contact: true,
+        error: "Déjame un celular de contacto para que el negocio pueda responderte.",
       }, 400);
     }
 
@@ -106,6 +111,7 @@ Deno.serve(async (req: Request) => {
         conversation_id: conversation.id,
         session_id: session.id,
         customer_id: session.customer_id,
+        contact_phone: session.customer_id ? null : contactPhone,
         reason: "customer_requested_human",
         last_customer_message: message,
       })
