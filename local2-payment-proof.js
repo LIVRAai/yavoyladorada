@@ -117,7 +117,10 @@
   async function handlePaymentIntentText(text, options = {}) {
     const echoUser = options.echoUser !== false;
     const session = await ensureSession();
-    if (!session.customerId) return { handled: false, needsIdentity: true };
+    if (!session.customerId) {
+      addBubble("Para registrar un comprobante sí necesito identificarte o recuperar el pedido. Así puedo asociar el archivo al pedido correcto y proteger tu información.");
+      return { handled: false, needsIdentity: true };
+    }
 
     if (echoUser) addBubble(text, "user");
     const result = await invoke("local2-payment-proof-api", {
