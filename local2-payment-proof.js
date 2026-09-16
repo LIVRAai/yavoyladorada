@@ -32,7 +32,7 @@
   }
 
   function paymentIntent(text) {
-    return /(^|\b)(ya\s+pagu[eé]|acabo\s+de\s+pagar|hice\s+el\s+pago|realic[eé]\s+el\s+pago|ya\s+transfer[ií]|te\s+pag[ué]e?|pago\s+hecho)(\b|$)/i.test(text.trim());
+    return /(^|\b)(ya\s+pagu[eé]|acabo\s+de\s+pagar|hice\s+el\s+pago|realic[eé]\s+el\s+pago|ya\s+transfer[ií]|te\s+pag[ué]e?|pago\s+hecho)(\b|$)/i.test(String(text || "").trim());
   }
 
   function sessionKey(businessId) {
@@ -108,8 +108,35 @@
       session_token: session.token,
     });
     const orders = tracking.orders || [];
-    return orders.find((order) => order.id === explicitId) || orders.find((order) => String(order.public_code || "").toUpperCase() === codeFromTitle) || orders.find((order) => order.status === "awaiting_payment") || null;
+    return orders.find((order) => order.id === explicitId)
+      || orders.find((order) => String(order.public_code || "").toUpperCase() === codeFromTitle)
+      || orders.find((order) => order.status === "awaiting_payment")
+      || null;
   }
+
+  async function handlePaymentIntentText(text, options = {}) {
+    const echoUser = options.echoUser !== false;
+    const session = await ensureSession();
+    if (!session.customerId) return { handled: false, needsIdentity: true };
+
+    if (echoUser) addBubble(text, "user");
+    const result = await invoke("local2-payment-proof-api", {
+      action: "payment_intent",
+      business_id: session.businessId,
+      session_token: session.token,
+      message: text,
+    });
+    addBubble(result.reply || "Envíame el comprobante para poder registrar el pago.");
+    if (result.order?.status === "awaiting_payment" && result.payment_methods?.length) {
+      renderMethods(result.order, result.payment_methods);
+    }
+    return { handled: true, result };
+  }
+
+  window.Local2PaymentProof = {
+    isPaymentIntent: paymentIntent,
+    handlePaymentIntent: handlePaymentIntentText,
+  };
 
   proofFile.addEventListener("change", () => {
     const file = proofFile.files?.[0];
@@ -132,18 +159,7 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       input.value = "";
-      addBubble(text, "user");
-
-      const result = await invoke("local2-payment-proof-api", {
-        action: "payment_intent",
-        business_id: session.businessId,
-        session_token: session.token,
-        message: text,
-      });
-      addBubble(result.reply || "Envíame el comprobante para poder registrar el pago.");
-      if (result.order?.status === "awaiting_payment" && result.payment_methods?.length) {
-        renderMethods(result.order, result.payment_methods);
-      }
+      await handlePaymentIntentText(text, { echoUser: true });
     } catch (error) {
       event.preventDefault();
       event.stopImmediatePropagation();
