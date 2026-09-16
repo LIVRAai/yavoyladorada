@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="local2-customer-history.css" />
   <link rel="stylesheet" href="local2-payment-proof.css" />
   <link rel="stylesheet" href="local2-owner-ux.css" />
+  <link rel="stylesheet" href="local2-catalog-owner.css" />
 </head>
 <body>
   <header class="owner-header">
@@ -87,17 +88,48 @@
             <div id="assistantNotice" class="inline-notice" hidden></div>
           </article>
 
-          <article class="card">
+          <article class="card catalog-manager-card">
             <div class="section-head">
-              <div><span class="eyebrow">Catálogo</span><h2>Productos</h2></div>
+              <div><span class="eyebrow">Catálogo</span><h2>Productos que puede mostrar y vender tu asistente</h2></div>
             </div>
-            <p class="section-copy">El asistente usa estos nombres y precios. Si un precio está vacío, podrá hablar del producto pero no crear una compra directa.</p>
-            <div id="productList" class="editable-list"></div>
-            <form id="productForm" class="add-form">
-              <input id="newProductName" maxlength="140" placeholder="Nuevo producto" required />
-              <input id="newProductPrice" inputmode="numeric" placeholder="Precio COP (opcional)" />
-              <button class="button primary" type="submit">Agregar</button>
+            <div class="catalog-manager-intro">
+              <div>
+                <strong>Este es el catálogo oficial del Empleado Digital.</strong>
+                <span>Las fotos, descripciones, precios y disponibilidad que guardes aquí son las que verá el cliente cuando pregunte por productos.</span>
+              </div>
+            </div>
+
+            <form id="catalogCreateForm" class="catalog-create-form">
+              <div class="catalog-create-photo">
+                <div id="catalogNewPreview" class="catalog-new-preview"><span>Sube una foto</span></div>
+                <label class="catalog-photo-picker">Seleccionar foto<input id="catalogNewImage" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+                <small>JPG, PNG o WEBP · máximo 5 MB</small>
+              </div>
+              <div class="catalog-create-fields">
+                <label>Nombre<input id="catalogNewName" maxlength="140" placeholder="Ej. Aceite fortalecedor para cejas" required /></label>
+                <label>Precio COP<input id="catalogNewPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="29000" /></label>
+                <label class="catalog-wide">Descripción<textarea id="catalogNewDescription" maxlength="600" placeholder="Explica qué es, para qué sirve y lo que el cliente debería saber."></textarea></label>
+                <div class="catalog-create-options">
+                  <label class="catalog-check"><input id="catalogNewActive" type="checkbox" checked /> Visible para clientes</label>
+                  <label class="catalog-check"><input id="catalogNewTrackStock" type="checkbox" /> Controlar inventario</label>
+                </div>
+                <label>Unidades disponibles<input id="catalogNewStock" type="number" min="0" step="1" inputmode="numeric" placeholder="0" disabled /></label>
+                <div class="catalog-create-actions"><button class="button primary" type="submit">Guardar producto</button></div>
+              </div>
             </form>
+
+            <div id="catalogNotice" class="inline-notice catalog-notice" hidden></div>
+            <div id="catalogOwnerEmpty" class="empty">Todavía no tienes productos. Agrega el primero para que el asistente pueda empezar a mostrarlos.</div>
+            <div id="catalogOwnerGrid" class="catalog-owner-grid"></div>
+
+            <div class="legacy-catalog-hooks" aria-hidden="true">
+              <div id="productList"></div>
+              <form id="productForm">
+                <input id="newProductName" />
+                <input id="newProductPrice" />
+                <button type="submit">Agregar</button>
+              </form>
+            </div>
           </article>
 
           <article class="card">
@@ -143,6 +175,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script src="local2-owner.js"></script>
+  <script src="local2-catalog-owner.js"></script>
   <script src="local2-owner-insights.js"></script>
   <script src="local2-share-kit.js"></script>
   <script src="local2-customer-history.js"></script>
