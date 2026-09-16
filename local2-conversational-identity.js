@@ -141,7 +141,14 @@
     setPlaceholder("Escribe un mensaje...");
     const pending = current.pendingMessage;
     current.pendingMessage = "";
-    if (pending) await sendRememberedMessage(pending);
+    if (!pending) return;
+
+    if (window.Local2PaymentProof?.isPaymentIntent?.(pending)) {
+      await window.Local2PaymentProof.handlePaymentIntent(pending, { echoUser: false });
+      return;
+    }
+
+    await sendRememberedMessage(pending);
   }
 
   async function finishNewCustomer(name) {
