@@ -17,7 +17,7 @@
       modeEl.classList.toggle("good", Boolean(data.ai_configured));
       setDetail(data.ai_configured
         ? "OpenAI está disponible para la beta. Las respuestas pueden usar IA real."
-        : "La beta está usando respuestas guiadas de respaldo hasta configurar OPENAI_API_KEY en Supabase.");
+        : "La beta está usando respuestas guiadas de respaldo hasta configurar OPENAI_API_KEY en el servidor.");
     } catch (error) {
       console.warn("Local2 health", error);
       modeEl.textContent = "Sin verificar";
