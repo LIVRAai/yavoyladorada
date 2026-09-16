@@ -4,6 +4,7 @@
   const input = document.getElementById("chatInput");
   const messages = document.getElementById("chatMessages");
   const select = document.getElementById("businessSelect");
+  const quickActions = document.querySelector(".quick-actions");
   if (!db || !form || !input || !messages || !select) return;
 
   const stateByBusiness = new Map();
@@ -106,6 +107,19 @@
   }
 
   window.Local2Handoff = { isHandoffIntent, handleIntent };
+
+  if (quickActions && !quickActions.querySelector('[data-intent="human"]')) {
+    const humanButton = document.createElement("button");
+    humanButton.type = "button";
+    humanButton.dataset.intent = "human";
+    humanButton.textContent = "Hablar con el negocio";
+    humanButton.addEventListener("click", () => {
+      input.value = "Quiero hablar con alguien del negocio";
+      if (typeof form.requestSubmit === "function") form.requestSubmit();
+      else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+    quickActions.appendChild(humanButton);
+  }
 
   form.addEventListener("submit", async (event) => {
     const text = input.value.trim();
