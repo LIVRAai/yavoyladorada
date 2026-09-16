@@ -10,4 +10,9 @@
     }
     return originalInvoke(functionName, options);
   };
+
+  const handoff = document.createElement("script");
+  handoff.src = "local2-handoff.js";
+  handoff.defer = true;
+  document.head.appendChild(handoff);
 })();
