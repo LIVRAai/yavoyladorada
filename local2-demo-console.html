@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Local 2.0 · Consola Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="local2-demo-console.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="local2-beta.html?negocio=gaia-by-paula-rivera">Local <span>💚</span></a>
+      <span class="demo-badge">Simulación</span>
+      <a class="client-link" href="local2-beta.html?negocio=gaia-by-paula-rivera">Ver experiencia cliente ↗</a>
+    </div>
+  </header>
+
+  <main class="shell main-shell">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Local 2.0 · prueba punta a punta</span>
+        <h1>Así se ve el negocio mientras el Empleado Digital trabaja.</h1>
+        <p>Esta consola usa únicamente pedidos, pagos y clientes simulados de GAIA. Puedes cambiar estados sin afectar el Local actual ni mover dinero real.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="refreshButton" class="secondary-button" type="button">Actualizar</button>
+        <button id="resetButton" class="danger-button" type="button">Restablecer simulación</button>
+      </div>
+    </section>
+
+    <div id="statusNotice" class="notice">Cargando simulación…</div>
+
+    <section id="dashboard" hidden>
+      <div class="business-card card">
+        <div>
+          <span class="eyebrow">Negocio piloto</span>
+          <h2 id="businessName">GAIA</h2>
+          <p id="assistantSummary"></p>
+        </div>
+        <div class="subscription-chip" id="subscriptionChip">Prueba activa</div>
+      </div>
+
+      <section class="metrics" aria-label="Resumen">
+        <article class="metric card"><span>Pedidos demo</span><strong id="metricOrders">0</strong></article>
+        <article class="metric card"><span>Valor en pedidos</span><strong id="metricValue">$0</strong></article>
+        <article class="metric card attention"><span>Pagos por confirmar</span><strong id="metricPayments">0</strong></article>
+        <article class="metric card"><span>En producción</span><strong id="metricProduction">0</strong></article>
+      </section>
+
+      <section class="layout">
+        <div>
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Necesitan tu atención</span>
+              <h2>Pedidos</h2>
+            </div>
+          </div>
+          <div id="ordersList" class="orders-list"></div>
+        </div>
+
+        <aside class="side-stack">
+          <article class="card side-card">
+            <span class="eyebrow">Empleado Digital</span>
+            <h3 id="assistantName">Gaia</h3>
+            <p id="assistantRole"></p>
+            <div class="status-row"><span>Estado</span><strong id="assistantStatus">Activo</strong></div>
+          </article>
+
+          <article class="card side-card">
+            <span class="eyebrow">Catálogo demo</span>
+            <h3>Productos</h3>
+            <div id="productsList" class="mini-list"></div>
+          </article>
+
+          <article class="card side-card">
+            <span class="eyebrow">Pagos de prueba</span>
+            <h3>Medios configurados</h3>
+            <div id="paymentsList" class="mini-list"></div>
+            <p class="safe-note">Todos los destinos están marcados como DEMO / NO PAGAR.</p>
+          </article>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="local2-demo-console.js"></script>
+</body>
+</html>

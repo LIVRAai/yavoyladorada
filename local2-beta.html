@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="description" content="Local 2.0 Beta: una página propia y un Empleado Digital para pequeños emprendimientos." />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Local 2.0 Beta 💚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="local2-beta.css" />
+  <link rel="stylesheet" href="local2-payment-proof.css" />
+  <link rel="stylesheet" href="local2-conversation-controller.css" />
+  <link rel="stylesheet" href="local2-catalog-assistant.css" />
+</head>
+<body>
+  <header class="beta-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">Local <span>💚</span></a>
+      <span class="beta-badge">Beta 2.0</span>
+      <a class="ghost-link" href="catalogo.html">Volver a Local actual</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div>
+        <span class="eyebrow">Local 2.0 · entorno de prueba</span>
+        <h1>Presencia gratis. Un empleado digital cuando quieras crecer.</h1>
+        <p>La versión actual de Local sigue funcionando. Aquí estamos probando la nueva experiencia sin tocar producción.</p>
+      </div>
+      <div class="safety-card">
+        <strong>Beta aislada</strong>
+        <span>Las nuevas conversaciones, clientes y pedidos se guardan en módulos nuevos y separados del Local actual.</span>
+      </div>
+    </section>
+
+    <section class="shell workspace">
+      <aside class="business-picker card">
+        <span class="eyebrow">Entorno de prueba</span>
+        <h2>Elige un emprendimiento</h2>
+        <p>La experiencia usa perfiles públicos reales de Local.</p>
+        <select id="businessSelect" aria-label="Seleccionar emprendimiento">
+          <option value="">Cargando emprendimientos...</option>
+        </select>
+        <div id="loadNotice" class="notice">Cargando Local...</div>
+      </aside>
+
+      <section id="businessExperience" class="experience" hidden>
+        <article class="public-page card">
+          <div id="cover" class="cover"><span id="coverInitial">L</span></div>
+          <div class="public-content">
+            <div class="title-row">
+              <div>
+                <span id="businessMeta" class="eyebrow"></span>
+                <h1 id="businessName">Emprendimiento</h1>
+              </div>
+              <span class="member-chip">Local 💚</span>
+            </div>
+            <p id="businessDescription" class="lead"></p>
+            <div id="offerings" class="chip-list"></div>
+            <div id="catalogPreview" class="catalog-preview" hidden></div>
+            <div class="actions">
+              <button id="assistantButton" class="primary-button" type="button">Explorar productos con el asistente</button>
+              <a id="whatsappButton" class="secondary-button" target="_blank" rel="noopener noreferrer" hidden>WhatsApp</a>
+              <a id="instagramButton" class="secondary-button" target="_blank" rel="noopener noreferrer" hidden>Instagram</a>
+            </div>
+            <div class="share-row">
+              <label for="shareUrl">Enlace para compartir</label>
+              <div class="share-input-row">
+                <input id="shareUrl" readonly />
+                <button id="copyLink" type="button">Copiar</button>
+              </div>
+              <small>Puedes poner este enlace en WhatsApp Business, Instagram, un código QR o una tarjeta.</small>
+            </div>
+          </div>
+        </article>
+
+        <article class="assistant card" id="assistantPanel" hidden>
+          <div class="assistant-head">
+            <div>
+              <span class="eyebrow">Asistente de información y compras</span>
+              <h2 id="assistantTitle">Asistente</h2>
+              <span id="sessionLabel" class="session-label">Preparando tu sesión privada…</span>
+            </div>
+            <button id="closeAssistant" class="icon-button" type="button" aria-label="Cerrar asistente">×</button>
+          </div>
+
+          <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+
+          <div class="quick-actions">
+            <button type="button" data-intent="products">Ver productos</button>
+            <button type="button" data-intent="order">Hacer un pedido</button>
+            <button type="button" data-intent="tracking">Mis pedidos</button>
+          </div>
+
+          <section id="identityPanel" class="flow-panel" hidden>
+            <span class="flow-kicker">Para reconocerte</span>
+            <h3>¿Cómo te identificamos?</h3>
+            <p>Usamos estos datos para asociar tus compras a este negocio y poder continuar tu historia cuando vuelvas.</p>
+            <form id="identityForm" class="flow-form">
+              <label>Nombre<input id="customerName" maxlength="120" autocomplete="name" required /></label>
+              <label>Celular<input id="customerPhone" inputmode="tel" maxlength="25" autocomplete="tel" placeholder="300 123 4567" /></label>
+              <label>Correo <span>opcional</span><input id="customerEmail" type="email" maxlength="180" autocomplete="email" /></label>
+              <button class="primary-button" type="submit">Continuar</button>
+            </form>
+          </section>
+
+          <section id="orderPanel" class="flow-panel" hidden>
+            <span class="flow-kicker">Nuevo pedido</span>
+            <h3>¿Qué quieres pedir?</h3>
+            <form id="orderForm">
+              <div id="orderProducts" class="order-products"></div>
+              <label class="wide-field">Notas para el negocio<textarea id="orderNotes" maxlength="800" placeholder="Ej. Entrega en la tarde, color, referencia o indicación especial"></textarea></label>
+              <div id="orderNotice" class="inline-notice" hidden></div>
+              <button id="createOrderButton" class="primary-button" type="submit">Crear pedido</button>
+            </form>
+          </section>
+
+          <section id="paymentPanel" class="flow-panel" hidden>
+            <span class="flow-kicker">Comprobante de pago</span>
+            <h3 id="paymentTitle">Registrar pago</h3>
+            <div id="paymentInstructions" class="payment-methods"></div>
+            <form id="paymentForm" class="flow-form">
+              <label>¿Cómo pagaste?<select id="paymentMethod"></select></label>
+              <label>Nombre desde el que pagaste <span>opcional</span><input id="payerName" maxlength="160" /></label>
+              <label class="proof-upload-field">
+                <span class="proof-required">Comprobante obligatorio</span>
+                <strong>Adjunta el comprobante</strong>
+                <input id="paymentProofFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required />
+                <small id="paymentProofHint">JPG, PNG, WEBP o PDF · máximo 8 MB</small>
+              </label>
+              <p class="payment-warning"><strong>Importante:</strong> enviar el comprobante no confirma el pago. El emprendimiento verificará que el dinero realmente haya llegado.</p>
+              <button class="primary-button" type="submit">Enviar comprobante</button>
+            </form>
+          </section>
+
+          <section id="trackingPanel" class="flow-panel" hidden>
+            <div class="tracking-head">
+              <div>
+                <span class="flow-kicker">Seguimiento</span>
+                <h3>Mis pedidos</h3>
+              </div>
+              <button id="refreshTracking" class="mini-button" type="button">Actualizar</button>
+            </div>
+            <div id="trackingContent" class="tracking-list"></div>
+          </section>
+
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" maxlength="1200" placeholder="Ej. Busco algo para fortalecer mis pestañas" autocomplete="off" />
+            <button id="sendButton" type="submit">Enviar</button>
+          </form>
+          <p class="prototype-note">Pregúntame por productos, precios o recomendaciones. Solo te pediré tus datos cuando quieras comprar, consultar pedidos privados o registrar un comprobante.</p>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="profile-data.js"></script>
+  <script src="local2-memory-router.js"></script>
+  <script src="local2-beta.js"></script>
+  <script src="local2-payment-proof.js"></script>
+  <script src="local2-conversational-identity.js"></script>
+  <script src="local2-conversation-controller.js"></script>
+  <script src="local2-catalog-assistant.js"></script>
+  <script src="local2-recovery-addon.js"></script>
+</body>
+</html>

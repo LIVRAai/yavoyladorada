@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1F6B45" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Mi negocio · Local 2.0 Beta 💚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="local2-owner.css" />
+  <link rel="stylesheet" href="local2-customer-history.css" />
+  <link rel="stylesheet" href="local2-payment-proof.css" />
+  <link rel="stylesheet" href="local2-owner-ux.css" />
+  <link rel="stylesheet" href="local2-catalog-owner.css" />
+</head>
+<body>
+  <header class="owner-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html">Local <span>💚</span></a>
+      <span class="beta-badge">Mi negocio · Beta 2.0</span>
+      <div class="header-actions">
+        <a id="publicLink" class="button ghost" href="local2-beta.html">Ver mi página</a>
+        <a class="button ghost" href="mi-negocio.html">Local actual</a>
+        <button id="logoutButton" class="button ghost" type="button">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell owner-main">
+    <div id="loadingNotice" class="notice">Cargando tu negocio…</div>
+    <div id="errorNotice" class="notice error" hidden></div>
+
+    <div id="ownerApp" hidden>
+      <section class="welcome-row">
+        <div>
+          <span class="eyebrow">Mi negocio</span>
+          <h1 id="businessName">Emprendimiento</h1>
+          <p>Primero atiende lo que necesita tu intervención. Después ajusta cómo trabaja tu Empleado Digital.</p>
+        </div>
+        <div class="assistant-state" id="assistantState">Empleado Digital</div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card"><span>Clientes</span><strong id="statCustomers">0</strong></article>
+        <article class="stat-card"><span>Pedidos</span><strong id="statOrders">0</strong></article>
+        <article class="stat-card alert"><span>Comprobantes por revisar</span><strong id="statPayments">0</strong></article>
+        <article class="stat-card"><span>Pedidos activos</span><strong id="statActive">0</strong></article>
+      </section>
+
+      <details class="card beta-diagnostics">
+        <summary>Diagnóstico del Empleado Digital <span class="eyebrow">Solo beta</span></summary>
+        <div class="diagnostic-grid">
+          <div class="diagnostic-item"><span>Motor del asistente</span><strong id="statAiMode">Verificando…</strong></div>
+          <div class="diagnostic-item"><span>Respuestas con IA</span><strong id="statAiMessages">0</strong></div>
+        </div>
+        <div id="aiDetail" class="notice diagnostic-detail">Verificando si la beta está usando IA real o el modo guiado de respaldo…</div>
+      </details>
+
+      <div class="owner-grid">
+        <aside class="stack operations-stack">
+          <article class="card attention-card">
+            <span class="eyebrow">Necesitan tu atención</span>
+            <h2>Comprobantes por revisar</h2>
+            <p class="section-copy">Abre el comprobante, valida el movimiento en tu cuenta y luego confirma o rechaza el pago.</p>
+            <div id="pendingPayments" class="attention-list"></div>
+          </article>
+
+          <article class="card">
+            <div class="section-head"><div><span class="eyebrow">Operación</span><h2>Pedidos recientes</h2></div><button id="refreshOrders" class="button ghost small" type="button">Actualizar</button></div>
+            <div id="ordersList" class="orders-list"></div>
+          </article>
+        </aside>
+
+        <section class="stack config-stack">
+          <article class="card">
+            <div class="section-head">
+              <div><span class="eyebrow">Empleado Digital</span><h2>¿Cómo trabajará por ti?</h2></div>
+              <label class="switch-label"><input id="assistantEnabled" type="checkbox" /><span>Activo en beta</span></label>
+            </div>
+            <form id="assistantForm" class="form-grid">
+              <label>Nombre del empleado<input id="assistantName" maxlength="80" placeholder="Ej. Luna" /></label>
+              <label>Cargo<input id="assistantRole" maxlength="100" placeholder="Ej. Asesora digital" /></label>
+              <label class="full">Mensaje de bienvenida<textarea id="welcomeMessage" maxlength="500" placeholder="Hola 👋 ¿En qué puedo ayudarte?"></textarea></label>
+              <button class="button primary" type="submit">Guardar configuración</button>
+            </form>
+            <div id="assistantNotice" class="inline-notice" hidden></div>
+          </article>
+
+          <article class="card catalog-manager-card">
+            <div class="section-head">
+              <div><span class="eyebrow">Catálogo</span><h2>Productos que puede mostrar y vender tu asistente</h2></div>
+            </div>
+            <div class="catalog-manager-intro">
+              <div>
+                <strong>Este es el catálogo oficial del Empleado Digital.</strong>
+                <span>Las fotos, descripciones, precios y disponibilidad que guardes aquí son las que verá el cliente cuando pregunte por productos.</span>
+              </div>
+            </div>
+
+            <form id="catalogCreateForm" class="catalog-create-form">
+              <div class="catalog-create-photo">
+                <div id="catalogNewPreview" class="catalog-new-preview"><span>Sube una foto</span></div>
+                <label class="catalog-photo-picker">Seleccionar foto<input id="catalogNewImage" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+                <small>JPG, PNG o WEBP · máximo 5 MB</small>
+              </div>
+              <div class="catalog-create-fields">
+                <label>Nombre<input id="catalogNewName" maxlength="140" placeholder="Ej. Aceite fortalecedor para cejas" required /></label>
+                <label>Precio COP<input id="catalogNewPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="29000" /></label>
+                <label class="catalog-wide">Descripción<textarea id="catalogNewDescription" maxlength="600" placeholder="Explica qué es, para qué sirve y lo que el cliente debería saber."></textarea></label>
+                <div class="catalog-create-options">
+                  <label class="catalog-check"><input id="catalogNewActive" type="checkbox" checked /> Visible para clientes</label>
+                  <label class="catalog-check"><input id="catalogNewTrackStock" type="checkbox" /> Controlar inventario</label>
+                </div>
+                <label>Unidades disponibles<input id="catalogNewStock" type="number" min="0" step="1" inputmode="numeric" placeholder="0" disabled /></label>
+                <div class="catalog-create-actions"><button class="button primary" type="submit">Guardar producto</button></div>
+              </div>
+            </form>
+
+            <div id="catalogNotice" class="inline-notice catalog-notice" hidden></div>
+            <div id="catalogOwnerEmpty" class="empty">Todavía no tienes productos. Agrega el primero para que el asistente pueda empezar a mostrarlos.</div>
+            <div id="catalogOwnerGrid" class="catalog-owner-grid"></div>
+
+            <div class="legacy-catalog-hooks" aria-hidden="true">
+              <div id="productList"></div>
+              <form id="productForm">
+                <input id="newProductName" />
+                <input id="newProductPrice" />
+                <button type="submit">Agregar</button>
+              </form>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="section-head">
+              <div><span class="eyebrow">Cobros</span><h2>Medios de pago</h2></div>
+            </div>
+            <p class="section-copy">El cliente envía su comprobante desde el asistente. Local lo deja pendiente y tú verificas que el dinero realmente haya llegado antes de confirmarlo.</p>
+            <div id="paymentMethodList" class="editable-list"></div>
+            <form id="paymentMethodForm" class="payment-add-form">
+              <select id="newPaymentType">
+                <option value="nequi">Nequi</option>
+                <option value="breb">Bre-B</option>
+                <option value="daviplata">DaviPlata</option>
+                <option value="bank_transfer">Transferencia</option>
+                <option value="cash">Efectivo</option>
+                <option value="other">Otro</option>
+              </select>
+              <input id="newPaymentLabel" maxlength="100" placeholder="Nombre visible (opcional)" />
+              <input id="newPaymentDestination" maxlength="180" placeholder="Número, llave o dato para pagar" />
+              <button class="button primary" type="submit">Agregar</button>
+            </form>
+          </article>
+        </section>
+      </div>
+
+      <section class="card customer-history-card">
+        <div class="customer-history-head">
+          <div>
+            <span class="eyebrow">Clientes</span>
+            <h2>Historia y memoria</h2>
+            <p class="section-copy">Local conserva la relación comercial: conversaciones, pedidos, pagos, productos frecuentes y notas útiles para atender mejor al cliente.</p>
+          </div>
+          <input id="customerSearch" class="customer-search" type="search" placeholder="Buscar cliente…" autocomplete="off" />
+        </div>
+        <div class="customer-history-grid">
+          <div id="customerDirectory" class="customer-directory"><div class="customer-empty">Cargando clientes…</div></div>
+          <div id="customerDetail" class="customer-detail"><div class="customer-empty">Selecciona un cliente para ver su historia.</div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="local2-owner.js"></script>
+  <script src="local2-catalog-owner.js"></script>
+  <script src="local2-owner-insights.js"></script>
+  <script src="local2-share-kit.js"></script>
+  <script src="local2-customer-history.js"></script>
+  <script src="local2-payment-review.js"></script>
+</body>
+</html>
