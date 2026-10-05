@@ -42,10 +42,15 @@
     const dates = boundaries(business);
     const confirmed = hasConfirmedPayment(business, subscription);
     const grandfathered = isGrandfathered(business);
+    const manuallyActive = business?.manual_active === true;
     const subscriptionStopped = ["paused", "cancelled"].includes(subscription?.status);
 
     if (business?.status === "suspended" || subscriptionStopped) {
       return { key: "suspended", confirmed, grandfathered, ...dates, daysRemaining: 0 };
+    }
+
+    if (manuallyActive) {
+      return { key: "manual_active", confirmed: false, grandfathered, manuallyActive: true, ...dates, daysRemaining: 0 };
     }
 
     if (confirmed || grandfathered) {
@@ -86,6 +91,7 @@
 
   function isCatalogVisible(business, now = Date.now()) {
     if (!business || business.status !== "active") return false;
+    if (business.manual_active === true) return true;
     if (isGrandfathered(business)) return true;
     const profile = profileFor(business);
     if (profile.membershipStartedAt) return true;
@@ -94,6 +100,17 @@
   }
 
   function dashboardCopy(state) {
+    if (state.key === "manual_active") {
+      return {
+        badge: "Perfil activo",
+        badgeClass: "status-active",
+        title: "Tu emprendimiento está visible en Local 💚",
+        text: "Local mantuvo tu perfil activo para que sigas apareciendo en la comunidad. Esta activación no registra una membresía pagada.",
+        cta: "Activar membresía — $29.900/mes",
+        tone: "success"
+      };
+    }
+
     if (state.key === "member") {
       return {
         badge: "Membresía activa",
