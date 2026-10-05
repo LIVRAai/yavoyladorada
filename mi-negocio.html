@@ -249,7 +249,7 @@
         .from("businesses")
         .update({ description, status: "active" })
         .eq("id", currentBusiness.id)
-        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
         .single();
       if (!error && data) currentBusiness = data;
     }
@@ -262,7 +262,7 @@
         .from("businesses")
         .update({ status: "active" })
         .eq("id", currentBusiness.id)
-        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
         .single();
       if (!error && data) currentBusiness = data;
     }
@@ -282,7 +282,7 @@
       membershipValueNotice.hidden = false;
 
       const stateLabels = {
-        member: "Activa",
+        manual_active: "Activo",\n        member: "Activa",
         trial: `Prueba gratuita · ${state.daysRemaining} ${state.daysRemaining === 1 ? "día" : "días"}`,
         grace: `Por activar · ${state.daysRemaining} ${state.daysRemaining === 1 ? "día" : "días"} de gracia`,
         expired: "Prueba finalizada",
@@ -292,11 +292,11 @@
       document.getElementById("lastPayment").textContent = formatDate(currentSubscription?.last_payment_date);
       document.getElementById("nextPayment").textContent = formatDate(currentSubscription?.next_payment_date);
 
-      const showPayment = ["grace", "expired", "suspended"].includes(state.key);
+      const showPayment = ["manual_active", "grace", "expired", "suspended"].includes(state.key);
       paymentButton.hidden = !showPayment;
       paymentButton.textContent = copy.cta || "Continuar en Local 💚 — $29.900/mes";
 
-      const publiclyVisible = currentBusiness.status === "active" && ["member", "trial", "grace"].includes(state.key);
+      const publiclyVisible = currentBusiness.status === "active" && ["manual_active", "member", "trial", "grace"].includes(state.key);
       catalogButton.hidden = !publiclyVisible;
 
       paymentNotice.hidden = true;
@@ -312,7 +312,7 @@
     async function loadBusiness() {
       const { data, error } = await window.yavoyDb
         .from("businesses")
-        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
         .eq("owner_id", currentUser.id)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -383,7 +383,7 @@
         .from("businesses")
         .update(payload)
         .eq("id", currentBusiness.id)
-        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
         .single();
 
       saveButton.disabled = false;
@@ -420,7 +420,7 @@
           .from("businesses")
           .update({ status: "active" })
           .eq("id", currentBusiness.id)
-          .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+          .select("id,owner_id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
           .single();
         if (restored) currentBusiness = restored;
       }
