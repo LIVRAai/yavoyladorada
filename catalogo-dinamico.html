@@ -392,7 +392,7 @@
       }
       const { data, error } = await window.yavoyDb
         .from("businesses")
-        .select("id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,created_at,updated_at")
+        .select("id,name,category,city,description,location,hours,instagram,image_url,reel_url,phone,whatsapp,status,manual_active,created_at,updated_at")
         .eq("status", "active")
         .order("name", { ascending: true });
       if (error) {
