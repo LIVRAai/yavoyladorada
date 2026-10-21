@@ -24,7 +24,7 @@
     const params = new URLSearchParams({ negocio: String(business.id) });
     a.href = "catalogo-dinamico.html?" + params.toString();
     a.setAttribute("aria-label", "Conocer " + (business.name || "emprendimiento"));
-    a.setAttribute("data-lx-reveal", "");
+    // Cards created after load must never depend on the initial reveal observer.
     const media = element("div", "lx-story-media");
     const badge = element("span", "lx-story-badge", categories[business.category] || "Emprendimiento");
     const safeImage = window.YaVoyCoverImage?.isSafeImageSource(business.image_url) || "";
@@ -87,7 +87,16 @@
         showMessage("Pronto podrás descubrir aquí las historias de nuestra comunidad.");
         return;
       }
-      grid.replaceChildren(...cards.map(renderCard));
+      const rendered = cards.map(renderCard);
+      grid.replaceChildren(...rendered);
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        rendered.forEach((card, index) => {
+          card.animate?.(
+            [{ opacity: 0, transform: "translateY(22px)" }, { opacity: 1, transform: "translateY(0)" }],
+            { duration: 680, delay: index * 95, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both" }
+          );
+        });
+      }
       status.textContent = cards.length + (cards.length === 1 ? " emprendimiento para descubrir" : " emprendimientos para descubrir");
       if (window.LocalExperience?.enhanceCards) window.LocalExperience.enhanceCards();
     } catch (error) {
