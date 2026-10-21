@@ -10,10 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
   <link rel="stylesheet" href="responsive.css" data-local-responsive="true" />
+  <link rel="stylesheet" href="local-experience.css" />
   <script src="/analytics.js"></script>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
-<body>
+<body class="local-experience page-access">
   <header class="business-header">
     <div class="business-shell business-header-inner">
       <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
@@ -25,11 +26,17 @@
   </header>
 
   <main class="business-main">
-    <div class="narrow">
-      <section class="card">
+    <div class="business-shell lx-auth-layout">
+      <aside class="lx-auth-aside" data-lx-reveal>
+        <span class="lx-overline">LOCAL / NUESTRA COMUNIDAD</span>
+        <h1>Qué bueno <em>tenerte de vuelta.</em></h1>
+        <p>Este es tu lugar para mostrar lo que haces, conectar con las personas y seguir haciendo crecer tu marca.</p>
+        <div class="lx-auth-features"><span>Descubre</span><span>Conecta</span><span>Crece</span></div>
+      </aside>
+      <section class="card" data-lx-reveal>
         <div class="auth-intro">
           <span class="eyebrow">Mi espacio Local</span>
-          <h1>Qué bueno verte de nuevo.</h1>
+          <h2>Entra a tu espacio.</h2>
           <p class="lead">Entra para administrar tu perfil, revisar tu membresía y ver el estado de publicación de tu emprendimiento.</p>
         </div>
 
@@ -191,5 +198,6 @@
 
     redirectIfAuthenticated();
   </script>
+  <script src="local-experience.js"></script>
 </body>
 </html>
