@@ -9,9 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
+  <link rel="stylesheet" href="local-experience.css" />
   <link rel="stylesheet" href="responsive.css" data-local-responsive="true" />
 </head>
-<body>
+<body class="local-experience page-access">
   <header class="business-header">
     <div class="business-shell business-header-inner">
       <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
@@ -23,11 +24,17 @@
   </header>
 
   <main class="business-main">
-    <div class="narrow">
-      <section class="card">
+    <div class="business-shell lx-auth-layout">
+      <aside class="lx-auth-aside" data-lx-reveal>
+        <span class="lx-overline">LOCAL / NUESTRA COMUNIDAD</span>
+        <h1>Tu historia merece <em>ser descubierta.</em></h1>
+        <p>Haz parte de una comunidad que conecta, visibiliza y acompaña a las personas que emprenden en nuestra región.</p>
+        <div class="lx-auth-features"><span>Descubre</span><span>Conecta</span><span>Crece</span></div>
+      </aside>
+      <section class="card" data-lx-reveal>
         <div class="auth-intro">
           <span class="eyebrow">Paso 1 de 3 · Únete a Local</span>
-          <h1>Crea tu espacio.</h1>
+          <h2>Crea tu espacio.</h2>
           <p class="lead">Crea tu cuenta para presentar tu emprendimiento y empezar a hacer parte de la comunidad Local 💚.</p>
         </div>
 
@@ -122,5 +129,6 @@
 
     redirectIfAuthenticated();
   </script>
+  <script src="local-experience.js"></script>
 </body>
 </html>
