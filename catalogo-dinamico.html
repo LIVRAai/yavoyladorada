@@ -13,9 +13,10 @@
   <link rel="stylesheet" href="responsive.css" />
   <link rel="stylesheet" href="profile-modal.css" />
   <link rel="stylesheet" href="local-editorial.css" />
+  <link rel="stylesheet" href="local-experience.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
 </head>
-<body class="local-editorial page-catalog">
+<body class="local-editorial local-experience page-catalog">
   <header class="business-header">
     <div class="business-shell business-header-inner">
       <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
@@ -35,7 +36,7 @@
   <main>
     <section class="catalog-hero" aria-labelledby="catalogHeading">
       <div class="business-shell catalog-hero-grid">
-        <div class="catalog-hero-copy">
+        <div class="catalog-hero-copy" data-lx-reveal>
           <span class="eyebrow">LOCAL / LA DORADA Y PUERTO SALGAR</span>
           <h1 id="catalogHeading">Descubre lo bueno <em>que crece cerca.</em></h1>
           <p class="lead">Detrás de cada marca hay una persona, una idea y una historia. Explora los emprendimientos de nuestra región y encuentra tu próximo favorito.</p>
@@ -45,7 +46,7 @@
             <span>Contacta directamente</span>
           </div>
         </div>
-        <div class="search-panel" role="search" aria-label="Buscar emprendimientos">
+        <div class="search-panel" data-lx-reveal role="search" aria-label="Buscar emprendimientos">
           <div class="search-panel-head">
             <span>EXPLORA A TU MANERA</span>
             <h2>¿Qué buscas hoy?</h2>
@@ -67,7 +68,7 @@
 
     <section class="catalog-section">
       <div class="business-shell">
-        <div class="catalog-intro">
+        <div class="catalog-intro" data-lx-reveal>
           <div>
             <span class="eyebrow">DESCUBRE NUESTRA COMUNIDAD</span>
             <h2>Personas e ideas que hacen grande lo cercano.</h2>
@@ -85,11 +86,19 @@
         </div>
         <div class="catalog-toolbar">
           <span id="resultsCount" class="catalog-results" aria-live="polite">Explorando negocios...</span>
+          <div class="lx-sort-group">
+            <label for="lxSortSelect">Ordenar</label>
+            <select id="lxSortSelect" aria-label="Ordenar emprendimientos">
+              <option value="name">Nombre A–Z</option>
+              <option value="recent">Más recientes</option>
+            </select>
+            <button id="lxClearFilters" type="button" class="lx-clear-filters" hidden>Limpiar filtros</button>
+          </div>
           <a href="registro.html">¿Tienes un emprendimiento? Únete a Local ↗</a>
         </div>
         <div id="catalogNotice" class="notice info">Cargando emprendimientos de la comunidad...</div>
         <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
-        <aside class="catalog-join-banner" aria-label="Únete a la comunidad Local">
+        <aside class="catalog-join-banner" aria-label="Únete a la comunidad Local" data-lx-reveal>
           <div>
             <span>¿TU MARCA TAMBIÉN NACIÓ AQUÍ?</span>
             <h2>Hay historias que merecen ser descubiertas.</h2>
@@ -161,6 +170,8 @@
     const resultsCount = document.getElementById("resultsCount");
     const searchInput = document.getElementById("searchInput");
     const cityFilter = document.getElementById("cityFilter");
+    const sortSelect = document.getElementById("lxSortSelect");
+    const clearFilters = document.getElementById("lxClearFilters");
     const chips = [...document.querySelectorAll(".filter-chip")];
     const modal = document.getElementById("profileModal");
     const closeModalButton = document.getElementById("closeModal");
@@ -365,6 +376,13 @@
       tag.className = "catalog-tag";
       tag.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
       cover.appendChild(tag);
+      const coverAction = document.createElement("button");
+      coverAction.type = "button";
+      coverAction.className = "lx-cover-action";
+      coverAction.setAttribute("aria-label", `Conocer ${business.name}`);
+      coverAction.textContent = "↗";
+      coverAction.addEventListener("click", () => openProfile(business));
+      cover.appendChild(coverAction);
       if (!imageUrl) {
         const letter = document.createElement("span");
         letter.className = "catalog-letter";
@@ -397,6 +415,13 @@
         return (!term || haystack.includes(term)) && (city === "todas" || business.city === city) && (currentCategory === "todos" || business.category === currentCategory);
       });
       resultsCount.textContent = `${filtered.length} ${filtered.length === 1 ? "emprendimiento encontrado" : "emprendimientos encontrados"}`;
+      if (sortSelect.value === "recent") {
+        filtered.sort((a, b) => (Date.parse(b.created_at || "") || 0) - (Date.parse(a.created_at || "") || 0) || (a.name || "").localeCompare(b.name || "", "es"));
+      } else {
+        filtered.sort((a, b) => (a.name || "").localeCompare(b.name || "", "es"));
+      }
+      const active = Boolean(term) || city !== "todas" || currentCategory !== "todos" || sortSelect.value !== "name";
+      clearFilters.hidden = !active;
       grid.innerHTML = "";
       if (!filtered.length) {
         const empty = document.createElement("div");
@@ -449,15 +474,35 @@
 
     chips.forEach((chip) => chip.addEventListener("click", () => {
       currentCategory = chip.dataset.category;
-      chips.forEach((item) => item.classList.toggle("active", item === chip));
+      chips.forEach((item) => {
+        const selected = item === chip;
+        item.classList.toggle("active", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
       render();
     }));
+    chips.forEach(item => item.setAttribute("aria-pressed", String(item.dataset.category === "todos")));
     searchInput.addEventListener("input", render);
     cityFilter.addEventListener("change", render);
+    sortSelect.addEventListener("change", render);
+    clearFilters.addEventListener("click", () => {
+      searchInput.value = "";
+      cityFilter.value = "todas";
+      sortSelect.value = "name";
+      currentCategory = "todos";
+      chips.forEach((item) => {
+        const selected = item.dataset.category === "todos";
+        item.classList.toggle("active", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+      render();
+      searchInput.focus();
+    });
     closeModalButton.addEventListener("click", closeProfile);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeProfile(); });
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeProfile(); });
     loadBusinesses();
   </script>
+  <script src="local-experience.js"></script>
 </body>
 </html>
