@@ -272,3 +272,170 @@ body.local-editorial {
     transition: none !important; animation: none !important;
   }
 }
+
+/* =============================================================
+   LOCAL — CONTRAST / COLOR ACCESSIBILITY PASS (2026-10-21)
+   Public home + catalog only. Preserve the editorial identity.
+   Dark sections must not inherit dark global heading/button colors.
+   ============================================================= */
+
+/* A consistent, visually legible hierarchy on light surfaces */
+.local-editorial {
+  --reading-ink: #193628;
+  --reading-muted: #526557;
+  --reading-border: #c8d6c9;
+}
+.page-home .pillar-card,
+.page-catalog .catalog-card {
+  border-color: var(--reading-border);
+}
+.page-home .pillar-card h3,
+.page-home .journey-card h3,
+.page-catalog .catalog-card h3 {
+  color: var(--reading-ink);
+}
+.page-home .pillar-card p,
+.page-home .journey-card p,
+.page-catalog .catalog-body > p,
+.page-catalog .catalog-meta,
+.page-catalog .catalog-results,
+.page-catalog .catalog-intro p {
+  color: var(--reading-muted);
+}
+.page-catalog .filter-chip:not(.active) {
+  color: var(--reading-ink);
+  border-color: var(--reading-border);
+  background: #fff;
+}
+.page-catalog .filter-chip:not(.active):hover {
+  color: #153624;
+  background: #eaf1e6;
+}
+.page-catalog .filter-chip.active {
+  color: #fff;
+  background: #173b2b;
+  border-color: #173b2b;
+}
+.page-catalog .search-helper,
+.page-catalog .search-row input::placeholder {
+  color: #536659;
+  opacity: 1;
+}
+.page-catalog .search-row input,
+.page-catalog .search-row select {
+  color: #1b3829;
+  border-color: var(--reading-border);
+  background: #fff;
+}
+.page-catalog .search-row input:focus,
+.page-catalog .search-row select:focus {
+  color: #153624;
+  border-color: #216643;
+  box-shadow: 0 0 0 4px rgba(38, 113, 78, .15);
+}
+.page-catalog .profile-story-note,
+.page-catalog .profile-description {
+  color: var(--reading-muted);
+}
+.page-catalog .catalog-card .button.secondary,
+.page-catalog .profile-modal-actions .button.secondary {
+  background: #e4eddc;
+  color: #173b2b;
+}
+.page-catalog .catalog-card .button.secondary:hover,
+.page-catalog .profile-modal-actions .button.secondary:hover {
+  background: #d4e5cd;
+}
+.page-catalog .catalog-card .button.primary {
+  color: #fff;
+  background: #173b2b;
+}
+.page-catalog .catalog-card .button.primary:hover { background: #285b3f; }
+.page-catalog .catalog-join-banner .button,
+.page-catalog .catalog-join-banner .button:hover {
+  color: #153b29;
+  background: #e4f2d5;
+}
+.page-catalog .catalog-join-banner .button:hover { background: #fff; }
+
+/* Dark home hero: keep all foreground elements distinctly light */
+.page-home .community-panel {
+  background: linear-gradient(147deg, #286148 0%, #143928 68%, #0d2c20 100%);
+  color: #fff;
+}
+.page-home .community-panel h2 { color: #fff; }
+.page-home .community-panel .eyebrow { color: #d2efc9; }
+.page-home .community-panel p { color: #e3efe5; }
+.page-home .community-panel .community-pills span { color: #f6fff5; }
+
+/* Membership: fixed severe dark-on-dark overrides from global h2/h3 rules */
+.page-home .membership-value-shell {
+  background: #143928;
+  color: #f9fff9;
+}
+.page-home .membership-value-shell h2,
+.page-home .membership-value-shell h3,
+.page-home .membership-value-shell .membership-price {
+  color: #fff;
+}
+.page-home .membership-value-shell .eyebrow { color: #d2efc9; }
+.page-home .membership-value-shell .membership-value-head p,
+.page-home .membership-value-shell .membership-benefit p {
+  color: #e1ede4;
+}
+.page-home .membership-value-shell .membership-price-note {
+  color: #dbe9de;
+}
+.page-home .membership-value-shell .membership-benefit {
+  background: rgba(255,255,255,.09);
+  border-color: rgba(235,255,239,.29);
+}
+.page-home .membership-value-shell .membership-benefit-icon {
+  background: rgba(255,255,255,.16);
+}
+.page-home .membership-value-shell .button.primary {
+  color: #153825;
+  background: #e5f2d6;
+  border: 1px solid #e5f2d6;
+  box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+.page-home .membership-value-shell .button.primary:hover {
+  color: #153825;
+  background: #fff;
+  border-color: #fff;
+}
+.page-home .membership-value-shell .button.ghost {
+  color: #f8fff9;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.64);
+  box-shadow: none;
+}
+.page-home .membership-value-shell .button.ghost:hover {
+  color: #fff;
+  background: rgba(255,255,255,.17);
+  border-color: #fff;
+}
+
+/* Consistent clarity in global call-to-action and footer */
+.local-editorial .site-nav a:focus-visible,
+.local-editorial .header-actions a:focus-visible {
+  outline-color: #1e6640;
+}
+.local-editorial .local-footer .brand,
+.local-editorial .local-footer p { color: #f6fff7; }
+.local-editorial .local-footer p { opacity: 1; }
+.local-editorial .local-footer .footer-links a { color: #e5f0e5; }
+.local-editorial .local-footer .footer-links a:hover { color: #fff; text-decoration: underline; }
+.page-home .membership-value-shell :focus-visible,
+.page-home .community-panel :focus-visible,
+.page-catalog .catalog-join-banner :focus-visible,
+.local-editorial .local-footer :focus-visible {
+  outline: 3px solid #d5f0bb;
+  outline-offset: 4px;
+}
+@media (prefers-contrast: more) {
+  .page-home .pillar-card, .page-catalog .catalog-card {
+    border-color: #78977e;
+  }
+  .page-catalog .filter-chip:not(.active) { border-color: #78977e; }
+}
