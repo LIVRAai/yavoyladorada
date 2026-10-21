@@ -13,11 +13,12 @@
   <link rel="stylesheet" href="responsive.css" />
   <link rel="stylesheet" href="membership.css" />
   <link rel="stylesheet" href="local-editorial.css" />
+  <link rel="stylesheet" href="local-experience.css" />
   <script src="/analytics.js"></script>
   <script defer src="/_vercel/insights/script.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
 </head>
-<body class="local-editorial page-home">
+<body class="local-editorial local-experience page-home">
   <header class="business-header">
     <div class="business-shell business-header-inner">
       <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
@@ -37,7 +38,7 @@
   <main class="home-main">
     <section class="local-hero">
       <div class="business-shell local-hero-grid">
-        <div class="local-hero-copy">
+        <div class="local-hero-copy" data-lx-reveal>
           <span class="local-kicker">La Dorada + Puerto Salgar</span>
           <h1>Lo que nace aquí <em>merece llegar lejos.</em></h1>
           <p>Hay talento extraordinario muy cerca de nosotros. Descubre sus historias, encuentra productos y servicios de nuestra región y apoya a quienes se atreven a emprender.</p>
@@ -47,7 +48,9 @@
           </div>
         </div>
 
-        <aside class="community-panel" aria-label="Propósito de Local">
+        <aside class="community-panel" aria-label="Propósito de Local" data-lx-reveal>
+          <span class="lx-hero-index">EL TALENTO QUE NACE AQUÍ</span>
+          <div class="lx-orbit" aria-hidden="true"><svg viewBox="0 0 620 620" fill="none"><circle cx="310" cy="310" r="175" stroke="currentColor" stroke-width="1"/><circle cx="310" cy="310" r="237" stroke="currentColor" stroke-width=".7"/><circle cx="310" cy="310" r="291" stroke="currentColor" stroke-width=".5"/><path d="M75 325C180 125 413 153 554 307M55 382C220 480 385 510 571 365" stroke="currentColor" stroke-width=".7"/></svg></div>
           <span class="eyebrow">Una comunidad, no solo un directorio</span>
           <h2>Lo nuestro también tiene grandes historias.</h2>
           <p>Somos un punto de encuentro para descubrir, apoyar y hacer crecer las marcas que nacen en nuestra región.</p>
@@ -55,6 +58,25 @@
             <span>Visibilizar</span><span>Aprender</span><span>Conectar</span><span>Profesionalizar</span>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <section class="lx-discovery" id="descubrir" aria-labelledby="lxDiscoveryTitle">
+      <div class="business-shell">
+        <div class="lx-discovery-top" data-lx-reveal>
+          <div>
+            <span class="lx-overline">Cerca de ti, lleno de posibilidades</span>
+            <h2 class="lx-section-title" id="lxDiscoveryTitle">Cada negocio tiene <span class="lx-serif">una historia.</span></h2>
+            <p class="lx-section-desc">No se trata solo de comprar. Se trata de conocer a las personas detrás de lo que hacemos aquí.</p>
+          </div>
+          <a class="lx-text-link" href="catalogo-dinamico.html">Explorar todos <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+        <p id="lxDiscoveryStatus" class="lx-discovery-status" aria-live="polite">Cargando historias reales de Local...</p>
+        <div id="lxDiscoveryGrid" class="lx-discovery-grid">
+          <div class="lx-skeleton" aria-hidden="true"></div>
+          <div class="lx-skeleton" aria-hidden="true"></div>
+          <div class="lx-skeleton" aria-hidden="true"></div>
+        </div>
       </div>
     </section>
 
@@ -73,7 +95,7 @@
       </div>
     </section>
 
-    <section class="local-section" id="como-funciona">
+    <section class="local-section" id="como-funciona" data-lx-reveal>
       <div class="business-shell">
         <div class="section-heading-local">
           <div><span class="eyebrow">Una experiencia simple</span><h2>Descubre, conecta y haz parte de la comunidad.</h2></div>
@@ -87,7 +109,7 @@
       </div>
     </section>
 
-    <section class="membership-section" id="membresia">
+    <section class="membership-section" id="membresia" data-lx-reveal>
       <div class="business-shell membership-value-shell">
         <div class="membership-value-head">
           <div>
@@ -121,6 +143,13 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="cover-image.js"></script>
+  <script src="profile-data.js"></script>
+  <script src="trial-lifecycle.js"></script>
+  <script src="local-experience.js"></script>
+  <script src="local-discovery.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     if (params.get("subscription") === "return") window.location.replace("retorno-pago.html");
