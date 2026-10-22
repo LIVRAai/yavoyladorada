@@ -48,7 +48,12 @@
   const isExplorePage = window.location.pathname.includes("catalogo");
   if (!isExplorePage) return;
 
-  if (!document.querySelector('link[data-local-explore="true"]')) {
+  // Las nuevas pantallas de catálogo ya integran su propia composición.
+  // La capa legacy contiene un grid-template-columns: 1fr !important
+  // que desplazaba el buscador debajo del hero en escritorio.
+  const hasModernCatalog = document.body?.classList.contains("page-catalog")
+    && document.body?.classList.contains("local-experience");
+  if (!hasModernCatalog && !document.querySelector('link[data-local-explore="true"]')) {
     const exploreLink = document.createElement("link");
     exploreLink.rel = "stylesheet";
     exploreLink.href = "explore-ux.css";
@@ -72,7 +77,8 @@
     document.head.appendChild(mobileCloseLink);
   }
 
-  if (!document.querySelector('script[data-local-explore="true"]')) {
+  // Evita también insertar controles duplicados de la antigua experiencia.
+  if (!hasModernCatalog && !document.querySelector('script[data-local-explore="true"]')) {
     const exploreScript = document.createElement("script");
     exploreScript.src = "explore-ux.js";
     exploreScript.defer = true;
