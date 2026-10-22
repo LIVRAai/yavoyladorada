@@ -165,6 +165,8 @@
           form.hidden = true;
         } else if (state.temporaryError) {
           show("No pudimos comprobar tu sesión guardada. Puedes intentar ingresar nuevamente.", "info");
+        } else if (params.get("logged_out") === "1") {
+          show("La sesión de este dispositivo terminó. Puedes ingresar cuando quieras.", "success");
         } else if (params.get("expired") === "1") {
           show("Tu sesión finalizó. Ingresa de nuevo para continuar.", "info");
         }
