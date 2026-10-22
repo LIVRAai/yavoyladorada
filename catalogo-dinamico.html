@@ -138,7 +138,7 @@
           <span id="profileEyebrow" class="eyebrow">Local 💚</span>
           <h2 id="profileName">Emprendimiento</h2>
           <p id="profileDescription" class="profile-description"></p>
-          <div class="profile-member-chip">💚 Miembro de Local</div>
+          <div class="profile-member-chip">💚 Emprendimiento de Local</div>
 
           <section id="profileOfferingsSection" class="profile-content-section" hidden>
             <span class="profile-content-label">Qué encuentras aquí</span>
@@ -172,6 +172,7 @@
   <script src="profile-data.js"></script>
   <script src="trial-lifecycle.js"></script>
   <script src="share-business.js"></script>
+  <script src="local-contact.js"></script>
   <script>
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
@@ -234,13 +235,6 @@
         if (!["reel", "p", "tv"].includes(type) || !shortcode) return "";
         return `https://www.instagram.com/${type}/${encodeURIComponent(shortcode)}/embed/`;
       } catch { return ""; }
-    }
-
-    function whatsappUrl(value, businessName) {
-      const digits = String(value || "").replace(/\D/g, "");
-      if (digits.length < 10) return "";
-      const text = encodeURIComponent(`Hola, vi ${businessName} en Local 💚 y quiero más información.`);
-      return `https://wa.me/${digits}?text=${text}`;
     }
 
     function detailRow(label, value) {
@@ -318,7 +312,7 @@
 
     function openProfile(business) {
       const profile = window.LocalProfileData.parse(business.description);
-      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
+      const wa = window.LocalContact.businessWhatsappUrl(business);
       profileName.textContent = business.name;
       profileEyebrow.textContent = `${categoryLabels[business.category] || "Emprendimiento"} · ${cityLabels[business.city] || business.city}`;
       profileDescription.textContent = profile.summary || "Este emprendimiento hace parte de Local 💚.";
@@ -409,7 +403,7 @@
       if (business.location) { const location = document.createElement("span"); location.textContent = business.location; meta.appendChild(location); }
       const actions = document.createElement("div"); actions.className = "catalog-actions";
       const profileButton = document.createElement("button"); profileButton.type = "button"; profileButton.className = "button secondary"; profileButton.textContent = "Ver historia →"; profileButton.addEventListener("click", () => openProfile(business)); actions.appendChild(profileButton);
-      const wa = whatsappUrl(business.whatsapp || business.phone, business.name);
+      const wa = window.LocalContact.businessWhatsappUrl(business);
       if (wa) { const waLink = document.createElement("a"); waLink.className = "button primary"; waLink.href = wa; waLink.target = "_blank"; waLink.rel = "noopener noreferrer"; waLink.textContent = "Contactar"; actions.appendChild(waLink); }
       body.append(h3, p, meta, actions);
       card.append(cover, body);
