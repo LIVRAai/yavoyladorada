@@ -29,7 +29,9 @@
     document.head.appendChild(link);
   }
 
-  if (!document.querySelector('link[href="membership.css"]')) {
+  const pageName = window.location.pathname.split("/").pop() || "index.html";
+  const needsMembershipStyles = ["index.html", "registro.html", "negocio.html", "mi-negocio.html", "retorno-pago.html"].includes(pageName);
+  if (needsMembershipStyles && !document.querySelector('link[href="membership.css"]')) {
     const membershipLink = document.createElement("link");
     membershipLink.rel = "stylesheet";
     membershipLink.href = "membership.css";
