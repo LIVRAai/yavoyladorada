@@ -107,120 +107,118 @@ window.yavoyDb = window.YAVOY_SUPABASE_CONFIGURED
     )
   : null;
 
-// Una sesión guardada en el navegador no implica que siga siendo válida en Supabase.
-// Esta capa valida una sola vez contra Auth y elimina tokens dañados antes de redirigir.
+// Local Auth 2.0 — validate on server, avoid stale redirect loops and destructive
+// logouts on temporary network errors. The publishable client key stays public.
 (function setupLocalAuth() {
   let validationPromise = null;
-  let hasValidated = false;
-  let cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
+  let lastValidation = 0;
+  let cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false, temporaryError: false };
+  const newState = (extras = {}) => ({
+    valid: false, user: null, session: null, invalidStoredSession: false, temporaryError: false, ...extras
+  });
 
   function purgeStoredAuth() {
     try {
       for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
         const key = window.localStorage.key(index);
-        if (key && (key === LOCAL_AUTH_STORAGE_PREFIX || key.startsWith(`${LOCAL_AUTH_STORAGE_PREFIX}-`))) {
+        if (key && (key === LOCAL_AUTH_STORAGE_PREFIX || key.startsWith(LOCAL_AUTH_STORAGE_PREFIX + "-"))) {
           window.localStorage.removeItem(key);
         }
       }
     } catch (error) {
-      console.warn("No pudimos limpiar el almacenamiento local de sesión.", error);
-    }
-  }
-
-  async function clearLocalSession() {
-    // Quitamos primero el token persistido para impedir que una siguiente página
-    // vuelva a considerarlo válido aunque el logout remoto falle.
-    purgeStoredAuth();
-    try {
-      if (window.yavoyDb) await window.yavoyDb.auth.signOut({ scope: "local" });
-    } catch (error) {
-      console.warn("La sesión remota ya no era válida; se limpió localmente.", error);
-    }
-    purgeStoredAuth();
-    cachedResult = { valid: false, user: null, session: null, invalidStoredSession: true };
-    hasValidated = true;
-    window.dispatchEvent(new CustomEvent("local:auth-cleared"));
-    return cachedResult;
-  }
-
-  async function validate(options = {}) {
-    const force = Boolean(options.force);
-    if (!window.yavoyDb) return cachedResult;
-    if (!force && hasValidated) return cachedResult;
-    if (!force && validationPromise) return validationPromise;
-
-    validationPromise = (async () => {
-      let sessionResponse;
-      try {
-        sessionResponse = await window.yavoyDb.auth.getSession();
-      } catch (error) {
-        console.warn("No pudimos leer la sesión de Local.", error);
-        return clearLocalSession();
-      }
-
-      const session = sessionResponse?.data?.session || null;
-      if (sessionResponse?.error) {
-        console.warn("La sesión guardada no se pudo recuperar.", sessionResponse.error);
-        return clearLocalSession();
-      }
-
-      if (!session) {
-        cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
-        hasValidated = true;
-        return cachedResult;
-      }
-
-      let userResponse;
-      try {
-        userResponse = await window.yavoyDb.auth.getUser();
-      } catch (error) {
-        console.warn("No pudimos validar el usuario guardado.", error);
-        return clearLocalSession();
-      }
-
-      const user = userResponse?.data?.user || null;
-      if (userResponse?.error || !user) {
-        console.warn("La sesión almacenada ya no corresponde a un usuario válido.", userResponse?.error || "Usuario ausente");
-        return clearLocalSession();
-      }
-
-      cachedResult = { valid: true, user, session, invalidStoredSession: false };
-      hasValidated = true;
-      window.dispatchEvent(new CustomEvent("local:auth-ready", { detail: cachedResult }));
-      return cachedResult;
-    })();
-
-    try {
-      return await validationPromise;
-    } finally {
-      validationPromise = null;
+      console.warn("No fue posible acceder al almacenamiento de sesión de Local.", error);
     }
   }
 
   function resetCache() {
-    hasValidated = false;
-    cachedResult = { valid: false, user: null, session: null, invalidStoredSession: false };
+    lastValidation = 0;
+    cachedResult = newState();
+  }
+
+  function isConfirmedInvalid(error) {
+    if (!error) return false;
+    const code = String(error.code || "").toLowerCase();
+    const msg = String(error.message || "").toLowerCase();
+    return ["refresh_token_not_found", "invalid_refresh_token", "session_not_found", "user_not_found"].includes(code)
+      || /invalid refresh token|refresh token not found|session (?:not found|expired)|invalid jwt|jwt expired/.test(msg);
+  }
+
+  async function clearLocalSession() {
+    // Auth defaults to global sign-out; never invalidate other devices here.
+    try {
+      if (window.yavoyDb) {
+        await Promise.race([
+          window.yavoyDb.auth.signOut({ scope: "local" }),
+          new Promise((_, reject) => window.setTimeout(() => reject(new Error("Logout timed out")), 6000))
+        ]);
+      }
+    } catch (error) {
+      console.warn("La desconexión remota no se pudo confirmar; limpiamos esta sesión local.", error);
+    } finally {
+      purgeStoredAuth();
+      resetCache();
+      cachedResult = newState({ invalidStoredSession: true });
+      window.dispatchEvent(new CustomEvent("local:auth-cleared"));
+    }
+    return cachedResult;
+  }
+
+  async function validate(options = {}) {
+    if (!window.yavoyDb) return newState({ temporaryError: true });
+    if (validationPromise) return validationPromise;
+    if (!options.force && lastValidation && Date.now() - lastValidation < 12000) return cachedResult;
+
+    validationPromise = (async () => {
+      try {
+        const sessionResult = await window.yavoyDb.auth.getSession();
+        if (sessionResult.error) {
+          if (isConfirmedInvalid(sessionResult.error)) return await clearLocalSession();
+          resetCache();
+          return newState({ temporaryError: true });
+        }
+        const session = sessionResult.data?.session || null;
+        if (!session) {
+          cachedResult = newState();
+          lastValidation = Date.now();
+          return cachedResult;
+        }
+
+        // getSession reads client storage; getUser verifies it against Auth.
+        const userResult = await window.yavoyDb.auth.getUser();
+        if (userResult.error || !userResult.data?.user) {
+          if (isConfirmedInvalid(userResult.error)) return await clearLocalSession();
+          resetCache();
+          return newState({ temporaryError: true });
+        }
+        cachedResult = {
+          valid: true, user: userResult.data.user, session,
+          invalidStoredSession: false, temporaryError: false
+        };
+        lastValidation = Date.now();
+        window.dispatchEvent(new CustomEvent("local:auth-ready", { detail: cachedResult }));
+        return cachedResult;
+      } catch (error) {
+        console.warn("No se pudo validar la sesión de Local por un problema temporal.", error);
+        resetCache();
+        return newState({ temporaryError: true });
+      }
+    })();
+
+    try { return await validationPromise; }
+    finally { validationPromise = null; }
   }
 
   function getCachedUser() {
     return cachedResult.valid ? cachedResult.user : null;
   }
 
-  window.LocalAuth = {
-    validate,
-    clearLocalSession,
-    resetCache,
-    getCachedUser
-  };
-})();
-
-(function loadMiEspacioRecovery() {
-  const isMiEspacio = window.location.pathname.endsWith("/mi-negocio.html") || window.location.pathname.endsWith("mi-negocio.html");
-  if (!isMiEspacio || document.querySelector('script[data-local-mi-espacio-recovery="true"]')) return;
-
-  const recoveryScript = document.createElement("script");
-  recoveryScript.src = "mi-espacio-recovery.js";
-  recoveryScript.defer = true;
-  recoveryScript.dataset.localMiEspacioRecovery = "true";
-  document.head.appendChild(recoveryScript);
+  window.LocalAuth = { validate, clearLocalSession, resetCache, getCachedUser };
+  if (window.yavoyDb) {
+    window.yavoyDb.auth.onAuthStateChange((event) => {
+      if (["SIGNED_OUT", "SIGNED_IN", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) resetCache();
+    });
+  }
+  window.addEventListener("storage", (event) => {
+    if (event.key && event.key.startsWith(LOCAL_AUTH_STORAGE_PREFIX)) resetCache();
+  });
 })();
