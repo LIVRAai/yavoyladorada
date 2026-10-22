@@ -21,7 +21,7 @@
 })();
 
 (function loadExperienceLayers() {
-  if (!document.querySelector('link[data-local-responsive="true"]')) {
+  if (!document.querySelector('link[href="responsive.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "responsive.css";
@@ -29,7 +29,9 @@
     document.head.appendChild(link);
   }
 
-  if (!document.querySelector('link[data-local-membership="true"]')) {
+  const pageName = window.location.pathname.split("/").pop() || "index.html";
+  const needsMembershipStyles = ["index.html", "registro.html", "negocio.html", "mi-negocio.html", "retorno-pago.html"].includes(pageName);
+  if (needsMembershipStyles && !document.querySelector('link[href="membership.css"]')) {
     const membershipLink = document.createElement("link");
     membershipLink.rel = "stylesheet";
     membershipLink.href = "membership.css";
@@ -37,29 +39,8 @@
     document.head.appendChild(membershipLink);
   }
 
-  if (!document.querySelector('script[data-local-membership="true"]')) {
-    const membershipScript = document.createElement("script");
-    membershipScript.src = "membership-copy.js";
-    membershipScript.defer = true;
-    membershipScript.dataset.localMembership = "true";
-    document.head.appendChild(membershipScript);
-  }
-
   const isExplorePage = window.location.pathname.includes("catalogo");
   if (!isExplorePage) return;
-
-  // Las nuevas pantallas de catálogo ya integran su propia composición.
-  // La capa legacy contiene un grid-template-columns: 1fr !important
-  // que desplazaba el buscador debajo del hero en escritorio.
-  const hasModernCatalog = document.body?.classList.contains("page-catalog")
-    && document.body?.classList.contains("local-experience");
-  if (!hasModernCatalog && !document.querySelector('link[data-local-explore="true"]')) {
-    const exploreLink = document.createElement("link");
-    exploreLink.rel = "stylesheet";
-    exploreLink.href = "explore-ux.css";
-    exploreLink.dataset.localExplore = "true";
-    document.head.appendChild(exploreLink);
-  }
 
   if (!document.querySelector('link[data-local-profile-mobile="true"]')) {
     const profileMobileLink = document.createElement("link");
@@ -77,14 +58,6 @@
     document.head.appendChild(mobileCloseLink);
   }
 
-  // Evita también insertar controles duplicados de la antigua experiencia.
-  if (!hasModernCatalog && !document.querySelector('script[data-local-explore="true"]')) {
-    const exploreScript = document.createElement("script");
-    exploreScript.src = "explore-ux.js";
-    exploreScript.defer = true;
-    exploreScript.dataset.localExplore = "true";
-    document.head.appendChild(exploreScript);
-  }
 })();
 
 const YAVOY_SUPABASE_URL = "https://upahrzjvpfjfmbcrjrco.supabase.co";

@@ -410,3 +410,12 @@
   .local-experience.page-access .lx-session-actions { flex-direction: column; }
   .local-experience.page-access .lx-session-actions .button { width: 100%; }
 }
+
+.page-home.local-experience .lx-home-journey .journey-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.page-home.local-experience .lx-home-journey .journey-card { padding:32px; border:1px solid #cadbcb; border-radius:19px; background:#fff; display:flex; flex-direction:column; gap:10px; }
+.page-home.local-experience .lx-home-journey .journey-card h3 { color:#143825; font-size:clamp(1.5rem,2.3vw,2.4rem); margin:5px 0; }
+.page-home.local-experience .lx-home-journey .journey-card p { color:#4d6556; line-height:1.62; }
+.page-home.local-experience .lx-home-journey .journey-card .lx-text-link { margin-top:auto; align-self:flex-start; }
+.page-catalog.local-experience .lx-search-instant { color:#4e6555; font-size:.8rem; line-height:1.55; margin:13px 0 0; }
+.page-dashboard.local-experience .lx-membership-timing { color:#224f36; font-size:.92rem; line-height:1.58; background:#eaf3e8; border:1px solid #bad2bd; border-radius:12px; padding:13px 16px; margin:13px 0 0; }
+@media(max-width:760px){ .page-home.local-experience .lx-home-journey .journey-grid { grid-template-columns:1fr; } }

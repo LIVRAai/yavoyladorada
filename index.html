@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="negocios.css" />
-  <link rel="stylesheet" href="responsive.css" />
-  <link rel="stylesheet" href="membership.css" />
+  <link rel="stylesheet" href="responsive.css" data-local-responsive="true" />
+  <link rel="stylesheet" href="membership.css" data-local-membership="true" />
   <link rel="stylesheet" href="local-editorial.css" />
   <link rel="stylesheet" href="local-experience.css" />
   <script src="/analytics.js"></script>
@@ -23,10 +23,9 @@
     <div class="business-shell business-header-inner">
       <a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a>
       <nav class="site-nav" aria-label="Navegación principal">
-        <a href="catalogo.html">Explorar</a>
         <a href="#comunidad">Nuestra comunidad</a>
         <a href="#como-funciona">Cómo funciona</a>
-        <a class="nav-emphasis" href="registro.html">Soy emprendimiento</a>
+        <a class="nav-emphasis" href="registro.html">Tengo un emprendimiento</a>
       </nav>
       <div class="header-actions">
         <a class="button ghost hide-mobile" href="login.html">Mi espacio</a>
@@ -52,8 +51,8 @@
           <span class="lx-hero-index">EL TALENTO QUE NACE AQUÍ</span>
           <div class="lx-orbit" aria-hidden="true"><svg viewBox="0 0 620 620" fill="none"><circle cx="310" cy="310" r="175" stroke="currentColor" stroke-width="1"/><circle cx="310" cy="310" r="237" stroke="currentColor" stroke-width=".7"/><circle cx="310" cy="310" r="291" stroke="currentColor" stroke-width=".5"/><path d="M75 325C180 125 413 153 554 307M55 382C220 480 385 510 571 365" stroke="currentColor" stroke-width=".7"/></svg></div>
           <span class="eyebrow">Una comunidad, no solo un directorio</span>
-          <h2>Lo nuestro también tiene grandes historias.</h2>
-          <p>Somos un punto de encuentro para descubrir, apoyar y hacer crecer las marcas que nacen en nuestra región.</p>
+          <h2>Conoce quién está detrás de cada marca.</h2>
+          <p>Explora su trabajo, encuentra lo que ofrecen y habla directamente con los emprendimientos de nuestra región.</p>
           <div class="community-pills">
             <span>Visibilizar</span><span>Aprender</span><span>Conectar</span><span>Profesionalizar</span>
           </div>
@@ -61,13 +60,14 @@
       </div>
     </section>
 
-    <section class="lx-discovery" id="descubrir" aria-labelledby="lxDiscoveryTitle">
+    <section class="lx-discovery" id="comunidad" aria-labelledby="lxDiscoveryTitle">
+      <span id="descubrir" aria-hidden="true"></span>
       <div class="business-shell">
         <div class="lx-discovery-top" data-lx-reveal>
           <div>
             <span class="lx-overline">Cerca de ti, lleno de posibilidades</span>
             <h2 class="lx-section-title" id="lxDiscoveryTitle">Cada negocio tiene <span class="lx-serif">una historia.</span></h2>
-            <p class="lx-section-desc">No se trata solo de comprar. Se trata de conocer a las personas detrás de lo que hacemos aquí.</p>
+            <p class="lx-section-desc">Conoce sus productos o servicios, descubre su historia y contáctalos directamente.</p>
           </div>
           <a class="lx-text-link" href="catalogo-dinamico.html">Explorar todos <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
@@ -80,31 +80,25 @@
       </div>
     </section>
 
-    <section class="local-section soft" id="comunidad">
+    <section class="local-section lx-home-journey" id="como-funciona" data-lx-reveal>
       <div class="business-shell">
         <div class="section-heading-local">
-          <div><span class="eyebrow">Lo que mueve a Local</span><h2>Cuatro formas de fortalecer lo que nace aquí.</h2></div>
-          <p>Local busca convertirse en un punto de encuentro entre quienes emprenden y quienes quieren consumir, recomendar, colaborar, aprender o descubrir proyectos de su región.</p>
-        </div>
-        <div class="pillar-grid">
-          <article class="pillar-card"><span class="pillar-number">01</span><h3>Visibilizar</h3><p>Dar a cada emprendimiento un espacio claro, atractivo y fácil de compartir para mostrar lo que hace.</p></article>
-          <article class="pillar-card"><span class="pillar-number">02</span><h3>Apoyar</h3><p>Facilitar que más personas conozcan, recomienden y elijan productos y servicios creados localmente.</p></article>
-          <article class="pillar-card"><span class="pillar-number">03</span><h3>Conectar</h3><p>Acercar emprendimientos con clientes, otros proyectos y futuras oportunidades de colaboración.</p></article>
-          <article class="pillar-card"><span class="pillar-number">04</span><h3>Profesionalizar</h3><p>Aprender cada mes sobre ventas, marketing, servicio, finanzas, contenido y gestión con herramientas que se puedan aplicar al negocio.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="local-section" id="como-funciona" data-lx-reveal>
-      <div class="business-shell">
-        <div class="section-heading-local">
-          <div><span class="eyebrow">Una experiencia simple</span><h2>Descubre, conecta y haz parte de la comunidad.</h2></div>
-          <p>Local reúne una vitrina pública para cada emprendimiento con experiencias de aprendizaje y comunidad para quienes deciden ser miembros.</p>
+          <div><span class="eyebrow">Así funciona Local</span><h2>Dos formas de ser parte.</h2></div>
+          <p>Elige lo que necesitas: descubrir negocios de la región o dar a conocer el tuyo.</p>
         </div>
         <div class="journey-grid">
-          <article class="journey-card"><span>PARA QUIEN DESCUBRE</span><h3>Explora la comunidad</h3><p>Busca por categoría o ciudad, conoce la historia y la oferta de cada emprendimiento y contáctalo directamente.</p></article>
-          <article class="journey-card"><span>PARA QUIEN EMPRENDE</span><h3>Crea tu espacio</h3><p>Presenta tu emprendimiento con una página clara, visual y fácil de compartir para que más personas sepan qué haces y cómo contactarte.</p></article>
-          <article class="journey-card"><span>PARA CRECER</span><h3>Haz parte de Local</h3><p>La membresía combina visibilidad, aprendizaje práctico, recursos y espacios de comunidad para ayudarte a profesionalizar tu emprendimiento.</p></article>
+          <article class="journey-card">
+            <span>QUIERO DESCUBRIR</span>
+            <h3>Encuentra algo hecho cerca de ti.</h3>
+            <p>Explora negocios por categoría, conoce lo que ofrecen y contacta directamente a quienes emprenden.</p>
+            <a class="lx-text-link" href="catalogo-dinamico.html">Ver emprendimientos →</a>
+          </article>
+          <article class="journey-card">
+            <span>TENGO UN EMPRENDIMIENTO</span>
+            <h3>Dale visibilidad a tu negocio.</h3>
+            <p>Publica un perfil con tus productos o servicios, historia y contacto. Empieza con 8 días de prueba gratuita.</p>
+            <a class="lx-text-link" href="registro.html">Crear mi perfil →</a>
+          </article>
         </div>
       </div>
     </section>
@@ -115,11 +109,11 @@
           <div>
             <span class="eyebrow">Membresía Local 💚</span>
             <h2>Más que aparecer: una comunidad para mostrarte, aprender y crecer.</h2>
-            <p>Por $29.900 al mes haces parte de una comunidad que combina presencia pública, aprendizaje práctico, recursos y conexiones para fortalecer tu emprendimiento.</p>
+            <p>Conoce los beneficios que reúne la membresía para emprendedores: perfil público, aprendizaje práctico, recursos y conexiones.</p>
           </div>
           <div class="membership-price-block">
             <div class="membership-price">$29.900 COP / mes</div>
-            <div class="membership-price-note">Visibilidad + aprendizaje + recursos + comunidad</div>
+            <div class="membership-price-note">Comienza con 8 días de prueba gratuita sin tarjeta. Después decides si continúas.</div>
             <div class="hero-actions" style="margin-top:16px">
               <a class="button primary" href="registro.html">Quiero ser parte</a>
               <a class="button ghost" href="login.html">Ya tengo mi espacio</a>
@@ -138,7 +132,7 @@
 
   <footer class="local-footer">
     <div class="business-shell footer-grid">
-      <div><a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a><p>Una comunidad para visibilizar, apoyar, conectar y profesionalizar emprendimientos de La Dorada, Puerto Salgar y nuestra región.</p></div>
+      <div><a class="brand" href="index.html">Local <span class="brand-heart" aria-hidden="true">💚</span></a><p>Descubre y apoya emprendimientos de La Dorada, Puerto Salgar y nuestra región.</p></div>
       <nav class="footer-links" aria-label="Enlaces del pie de página"><a href="catalogo.html">Explorar</a><a href="#comunidad">Comunidad</a><a href="#membresia">Membresía</a><a href="login.html">Mi espacio</a></nav>
     </div>
   </footer>
