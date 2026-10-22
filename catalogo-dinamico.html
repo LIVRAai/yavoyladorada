@@ -68,7 +68,7 @@
               <option value="puerto-salgar">Puerto Salgar</option>
             </select>
           </div>
-          <button id="catalogExploreBtn" type="button" class="lx-search-submit">Ver emprendimientos <span aria-hidden="true">↗</span></button>
+          <p class="lx-search-instant">Los resultados se actualizan mientras escribes.</p>
         </div>
       </div>
     </section>
@@ -82,7 +82,7 @@
           </div>
           <p>Una vitrina de emprendimientos para conocer, apoyar y compartir.</p>
         </div>
-        <div class="lx-filter-caption">Encuentra por categoría</div>
+        
         <div class="filter-row" id="categoryFilters">
           <button class="filter-chip active" data-category="todos" type="button">Todos</button>
           <button class="filter-chip" data-category="comida" type="button">Comida</button>
@@ -102,7 +102,7 @@
             </select>
             <button id="lxClearFilters" type="button" class="lx-clear-filters" hidden>Limpiar filtros</button>
           </div>
-          <a href="registro.html">¿Tienes un emprendimiento? Únete a Local ↗</a>
+          
         </div>
         <div id="catalogNotice" class="notice info">Cargando emprendimientos de la comunidad...</div>
         <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
@@ -178,7 +178,6 @@
     const notice = document.getElementById("catalogNotice");
     const resultsCount = document.getElementById("resultsCount");
     const heroResultCount = document.getElementById("heroResultCount");
-    const exploreButton = document.getElementById("catalogExploreBtn");
     const searchInput = document.getElementById("searchInput");
     const cityFilter = document.getElementById("cityFilter");
     const sortSelect = document.getElementById("lxSortSelect");
@@ -380,13 +379,6 @@
       tag.className = "catalog-tag";
       tag.textContent = categoryLabels[business.category] || business.category || "Emprendimiento";
       cover.appendChild(tag);
-      const coverAction = document.createElement("button");
-      coverAction.type = "button";
-      coverAction.className = "lx-cover-action";
-      coverAction.setAttribute("aria-label", `Conocer ${business.name}`);
-      coverAction.textContent = "↗";
-      coverAction.addEventListener("click", () => openProfile(business));
-      cover.appendChild(coverAction);
       if (!imageUrl) {
         const letter = document.createElement("span");
         letter.className = "catalog-letter";
@@ -487,18 +479,6 @@
       render();
     }));
     chips.forEach(item => item.setAttribute("aria-pressed", String(item.dataset.category === "todos")));
-    exploreButton.addEventListener("click", () => {
-      document.getElementById("explorar-negocios").scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-        block: "start"
-      });
-    });
-    searchInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        exploreButton.click();
-      }
-    });
     searchInput.addEventListener("input", render);
     cityFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
