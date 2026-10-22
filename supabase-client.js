@@ -21,7 +21,7 @@
 })();
 
 (function loadExperienceLayers() {
-  if (!document.querySelector('link[data-local-responsive="true"]')) {
+  if (!document.querySelector('link[href="responsive.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "responsive.css";
@@ -29,20 +29,12 @@
     document.head.appendChild(link);
   }
 
-  if (!document.querySelector('link[data-local-membership="true"]')) {
+  if (!document.querySelector('link[href="membership.css"]')) {
     const membershipLink = document.createElement("link");
     membershipLink.rel = "stylesheet";
     membershipLink.href = "membership.css";
     membershipLink.dataset.localMembership = "true";
     document.head.appendChild(membershipLink);
-  }
-
-  if (!document.querySelector('script[data-local-membership="true"]')) {
-    const membershipScript = document.createElement("script");
-    membershipScript.src = "membership-copy.js";
-    membershipScript.defer = true;
-    membershipScript.dataset.localMembership = "true";
-    document.head.appendChild(membershipScript);
   }
 
   const isExplorePage = window.location.pathname.includes("catalogo");
