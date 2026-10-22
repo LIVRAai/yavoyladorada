@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="profile-modal.css" />
   <link rel="stylesheet" href="local-editorial.css" />
   <link rel="stylesheet" href="local-experience.css" />
+  <link rel="stylesheet" href="local-catalog-v4.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
 </head>
 <body class="local-editorial local-experience page-catalog">
@@ -34,26 +35,32 @@
   </header>
 
   <main>
-    <section class="catalog-hero" aria-labelledby="catalogHeading">
+    <section class="catalog-hero lx-catalog-hero" aria-labelledby="catalogHeading">
       <div class="business-shell catalog-hero-grid">
         <div class="catalog-hero-copy" data-lx-reveal>
-          <span class="eyebrow">LOCAL / LA DORADA Y PUERTO SALGAR</span>
+          <span class="eyebrow">LA DORADA · PUERTO SALGAR</span>
           <h1 id="catalogHeading">Descubre lo bueno <em>que crece cerca.</em></h1>
-          <p class="lead">Detrás de cada marca hay una persona, una idea y una historia. Explora los emprendimientos de nuestra región y encuentra tu próximo favorito.</p>
-          <div class="catalog-highlights" aria-label="Lo que puedes hacer en Local">
-            <span>Conoce sus historias</span>
-            <span>Descubre por categoría</span>
-            <span>Contacta directamente</span>
+          <p class="lead">Marcas locales, productos especiales y personas con grandes ideas. Todo más cerca de lo que imaginas.</p>
+          <div class="lx-hero-trust">
+            <span aria-hidden="true" class="lx-trust-dot"></span>
+            <span id="heroResultCount">Explora negocios de nuestra región</span>
           </div>
         </div>
         <div class="search-panel" data-lx-reveal role="search" aria-label="Buscar emprendimientos">
           <div class="search-panel-head">
-            <span>EXPLORA A TU MANERA</span>
+            <span>ENCUENTRA ALGO PARA TI</span>
             <h2>¿Qué buscas hoy?</h2>
+            <p>Explora negocios y descubre nuevos favoritos.</p>
           </div>
           <div class="search-row">
-            <label for="searchInput" class="sr-only">Emprendimiento, categoría o servicio</label>
-            <input id="searchInput" type="search" placeholder="Busca un negocio, producto o servicio" aria-label="Buscar emprendimientos" autocomplete="off" />
+            <div class="lx-search-field">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/>
+                <path d="m16 16 4.7 4.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <label for="searchInput" class="sr-only">Emprendimiento, producto o servicio</label>
+              <input id="searchInput" type="search" placeholder="Negocios, productos o servicios" aria-label="Buscar emprendimientos" autocomplete="off" />
+            </div>
             <label for="cityFilter" class="sr-only">Ciudad</label>
             <select id="cityFilter" aria-label="Filtrar por ciudad">
               <option value="todas">Todas las ciudades</option>
@@ -61,20 +68,21 @@
               <option value="puerto-salgar">Puerto Salgar</option>
             </select>
           </div>
-          <p class="search-helper">Busca por nombre, categoría o lo que necesites.</p>
+          <button id="catalogExploreBtn" type="button" class="lx-search-submit">Ver emprendimientos <span aria-hidden="true">↗</span></button>
         </div>
       </div>
     </section>
 
-    <section class="catalog-section">
+    <section class="catalog-section" id="explorar-negocios" aria-labelledby="catalogListTitle">
       <div class="business-shell">
         <div class="catalog-intro" data-lx-reveal>
           <div>
-            <span class="eyebrow">DESCUBRE NUESTRA COMUNIDAD</span>
-            <h2>Personas e ideas que hacen grande lo cercano.</h2>
+            <span class="eyebrow">HECHO CERCA DE TI</span>
+            <h2 id="catalogListTitle">Explora la comunidad.</h2>
           </div>
-          <p>Conoce los proyectos locales, descubre qué ofrecen y conecta con quienes están detrás.</p>
+          <p>Una vitrina de emprendimientos para conocer, apoyar y compartir.</p>
         </div>
+        <div class="lx-filter-caption">Encuentra por categoría</div>
         <div class="filter-row" id="categoryFilters">
           <button class="filter-chip active" data-category="todos" type="button">Todos</button>
           <button class="filter-chip" data-category="comida" type="button">Comida</button>
@@ -168,6 +176,8 @@
     const grid = document.getElementById("catalogGrid");
     const notice = document.getElementById("catalogNotice");
     const resultsCount = document.getElementById("resultsCount");
+    const heroResultCount = document.getElementById("heroResultCount");
+    const exploreButton = document.getElementById("catalogExploreBtn");
     const searchInput = document.getElementById("searchInput");
     const cityFilter = document.getElementById("cityFilter");
     const sortSelect = document.getElementById("lxSortSelect");
@@ -415,6 +425,7 @@
         return (!term || haystack.includes(term)) && (city === "todas" || business.city === city) && (currentCategory === "todos" || business.category === currentCategory);
       });
       resultsCount.textContent = `${filtered.length} ${filtered.length === 1 ? "emprendimiento encontrado" : "emprendimientos encontrados"}`;
+      heroResultCount.textContent = `${businesses.length} ${businesses.length === 1 ? "emprendimiento local" : "emprendimientos locales"} para descubrir`;
       if (sortSelect.value === "recent") {
         filtered.sort((a, b) => (Date.parse(b.created_at || "") || 0) - (Date.parse(a.created_at || "") || 0) || (a.name || "").localeCompare(b.name || "", "es"));
       } else {
@@ -482,6 +493,18 @@
       render();
     }));
     chips.forEach(item => item.setAttribute("aria-pressed", String(item.dataset.category === "todos")));
+    exploreButton.addEventListener("click", () => {
+      document.getElementById("explorar-negocios").scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start"
+      });
+    });
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        exploreButton.click();
+      }
+    });
     searchInput.addEventListener("input", render);
     cityFilter.addEventListener("change", render);
     sortSelect.addEventListener("change", render);
