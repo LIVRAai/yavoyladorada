@@ -368,3 +368,45 @@
  .local-experience [data-lx-reveal] { opacity:1!important; transform:none!important; }
  .page-home.local-experience .lx-skeleton { background:#e2e9de; }
 }
+
+/* Local Auth 2.0: clear account switching and resilient loading states. */
+.local-experience [hidden] { display: none !important; }
+.local-experience.page-access .lx-session-panel {
+  background: #e9f3e5; border: 1px solid #9ebda3; border-radius: 17px;
+  padding: 22px; margin: 18px 0 26px; color: #193c2a;
+}
+.local-experience.page-access .lx-session-eyebrow {
+  display: block; color: #1c6540; letter-spacing: .11em;
+  text-transform: uppercase; font-size: .71rem; font-weight: 900; margin-bottom: 10px;
+}
+.local-experience.page-access .lx-session-panel strong {
+  display: block; font-size: 1.05rem; color: #143a28; overflow-wrap: anywhere;
+}
+.local-experience.page-access .lx-session-panel p {
+  color: #45624e; font-size: .92rem; margin: 8px 0 17px; line-height: 1.6;
+}
+.local-experience.page-access .lx-session-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.local-experience.page-access .lx-session-actions .button { flex: 1; min-width: 148px; }
+.local-experience.page-access .lx-password-wrap { position: relative; width: 100%; }
+.local-experience.page-access .lx-password-wrap input { width: 100%; padding-right: 100px; }
+.local-experience.page-access .lx-show-password {
+  display: inline-flex; align-items: center; justify-content: center;
+  position: absolute; top: 50%; right: 7px; transform: translateY(-50%);
+  border: 0; border-radius: 9px; min-height: 38px; padding: 7px 12px;
+  background: #e4efe3; color: #173e2b; font-weight: 850; font-size: .82rem;
+  cursor: pointer;
+}
+.local-experience.page-access .lx-show-password:hover { background: #d1e5d4; }
+.local-experience.page-access .lx-show-password:focus-visible { outline: 3px solid #3c8e5a; outline-offset: 2px; }
+.local-experience.page-access #result[role="status"] { margin-top: 18px; line-height: 1.55; }
+.local-experience.page-access .button[aria-busy="true"] {
+  cursor: progress; opacity: .84;
+}
+.local-experience.page-dashboard #retryLoadingButton { margin: 15px 0 25px; }
+.local-experience.page-dashboard #loadingNotice { color: #214b31; background: #e9f1e5; border: 1px solid #b7d0bb; }
+.local-experience.page-dashboard #errorNotice { border: 1px solid #dfb7a9; background: #fff2ee; color: #6b2e20; }
+.local-experience.page-dashboard #logoutButton[disabled] { opacity: .75; cursor: progress; }
+@media (max-width: 520px) {
+  .local-experience.page-access .lx-session-actions { flex-direction: column; }
+  .local-experience.page-access .lx-session-actions .button { width: 100%; }
+}

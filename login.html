@@ -40,12 +40,25 @@
           <p class="lead">Entra para administrar tu perfil, revisar tu membresía y ver el estado de publicación de tu emprendimiento.</p>
         </div>
 
+        <div id="activeSessionPanel" class="lx-session-panel" hidden>
+          <span class="lx-session-eyebrow">Ya tienes una sesión iniciada</span>
+          <strong id="activeSessionEmail"></strong>
+          <p>¿Quieres continuar con esta cuenta o entrar con otra?</p>
+          <div class="lx-session-actions">
+            <a id="continueSession" class="button primary" href="mi-negocio.html">Continuar a mi espacio →</a>
+            <button id="changeAccount" class="button secondary" type="button">Usar otra cuenta</button>
+          </div>
+        </div>
+
         <form id="loginForm" class="form-grid">
           <label class="field full">Correo electrónico
             <input id="email" type="email" autocomplete="email" required />
           </label>
           <label class="field full">Contraseña
-            <input id="password" type="password" autocomplete="current-password" required />
+            <div class="lx-password-wrap">
+              <input id="password" type="password" autocomplete="current-password" required />
+              <button id="showPassword" type="button" class="lx-show-password" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button>
+            </div>
           </label>
           <div class="form-actions">
             <button id="loginButton" class="button primary" type="submit">Entrar a mi espacio</button>
@@ -67,7 +80,7 @@
           </form>
         </div>
 
-        <div id="result" class="notice info" hidden></div>
+        <div id="result" class="notice info" role="status" aria-live="polite" hidden></div>
       </section>
     </div>
   </main>
@@ -75,27 +88,48 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
   <script>
-    const form = document.getElementById("loginForm");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const button = document.getElementById("loginButton");
-    const result = document.getElementById("result");
-    const showRecoveryButton = document.getElementById("showRecoveryButton");
-    const recoveryPanel = document.getElementById("recoveryPanel");
-    const recoveryForm = document.getElementById("recoveryForm");
-    const recoveryEmailInput = document.getElementById("recoveryEmail");
-    const recoveryButton = document.getElementById("recoveryButton");
-    const cancelRecoveryButton = document.getElementById("cancelRecoveryButton");
-
-    const searchParams = new URLSearchParams(window.location.search);
-    const requestedNext = searchParams.get("next");
+    (() => {
+    "use strict";
+    const $ = (id) => document.getElementById(id);
+    const form = $("loginForm");
+    const emailInput = $("email");
+    const passwordInput = $("password");
+    const button = $("loginButton");
+    const result = $("result");
+    const recoveryPanel = $("recoveryPanel");
+    const recoveryForm = $("recoveryForm");
+    const recoveryEmailInput = $("recoveryEmail");
+    const recoveryButton = $("recoveryButton");
+    const sessionPanel = $("activeSessionPanel");
+    const sessionEmail = $("activeSessionEmail");
+    const changeAccount = $("changeAccount");
+    const continueSession = $("continueSession");
+    const showPassword = $("showPassword");
+    const params = new URLSearchParams(window.location.search);
     const safeTargets = new Set(["negocio.html", "mi-negocio.html", "retorno-pago.html"]);
-    const nextPage = safeTargets.has(requestedNext) ? requestedNext : "mi-negocio.html";
+    const nextPage = safeTargets.has(params.get("next")) ? params.get("next") : "mi-negocio.html";
+    continueSession.href = nextPage;
+    let busy = false;
 
     function show(message, type = "info") {
       result.textContent = message;
-      result.className = `notice ${type}`;
+      result.className = "notice " + type;
       result.hidden = false;
+    }
+    function deadline(task, ms = 15000) {
+      let timeoutId;
+      return Promise.race([
+        task,
+        new Promise((_, reject) => {
+          timeoutId = window.setTimeout(() => reject(new Error("TIMEOUT")), ms);
+        })
+      ]).finally(() => window.clearTimeout(timeoutId));
+    }
+    function setBusy(active, label = "Entrando...") {
+      busy = active;
+      button.disabled = active;
+      button.setAttribute("aria-busy", String(active));
+      button.textContent = active ? label : "Entrar a mi espacio";
     }
 
     function openRecovery() {
@@ -103,100 +137,132 @@
       recoveryPanel.hidden = false;
       recoveryEmailInput.focus();
     }
-
     function closeRecovery() {
       recoveryPanel.hidden = true;
       result.hidden = true;
     }
 
-    async function redirectIfAuthenticated() {
-      if (!window.yavoyDb || !window.LocalAuth) return;
-      const authState = await window.LocalAuth.validate();
-      if (authState.valid) window.location.replace(nextPage);
+    showPassword.addEventListener("click", () => {
+      const visible = passwordInput.type === "password";
+      passwordInput.type = visible ? "text" : "password";
+      showPassword.textContent = visible ? "Ocultar" : "Mostrar";
+      showPassword.setAttribute("aria-pressed", String(visible));
+      showPassword.setAttribute("aria-label", visible ? "Ocultar contraseña" : "Mostrar contraseña");
+    });
+    $("showRecoveryButton").addEventListener("click", openRecovery);
+    $("cancelRecoveryButton").addEventListener("click", closeRecovery);
+
+    async function inspectExistingSession() {
+      if (!window.yavoyDb || !window.LocalAuth) {
+        show("No pudimos conectar con Local. Revisa tu conexión y recarga la página.", "error");
+        return;
+      }
+      try {
+        const state = await deadline(window.LocalAuth.validate({ force: true }), 12000);
+        if (state.valid && state.user) {
+          sessionPanel.hidden = false;
+          sessionEmail.textContent = state.user.email || "Tu cuenta Local";
+          form.hidden = true;
+        } else if (state.temporaryError) {
+          show("No pudimos comprobar tu sesión guardada. Puedes intentar ingresar nuevamente.", "info");
+        } else if (params.get("logged_out") === "1") {
+          show("La sesión de este dispositivo terminó. Puedes ingresar cuando quieras.", "success");
+        } else if (params.get("expired") === "1") {
+          show("Tu sesión finalizó. Ingresa de nuevo para continuar.", "info");
+        }
+      } catch (error) {
+        show("No pudimos comprobar la sesión anterior. Puedes ingresar con tu correo y contraseña.", "info");
+      }
     }
 
-    showRecoveryButton.addEventListener("click", openRecovery);
-    cancelRecoveryButton.addEventListener("click", closeRecovery);
+    changeAccount.addEventListener("click", async () => {
+      if (changeAccount.disabled) return;
+      changeAccount.disabled = true;
+      changeAccount.textContent = "Cerrando sesión...";
+      try {
+        await deadline(window.LocalAuth.clearLocalSession(), 9000);
+        sessionPanel.hidden = true;
+        form.hidden = false;
+        emailInput.value = "";
+        passwordInput.value = "";
+        emailInput.focus();
+        show("La sesión anterior se cerró en este dispositivo. Ya puedes utilizar otra cuenta.", "success");
+      } catch (error) {
+        show("No pudimos confirmar el cierre. Recarga la página y vuelve a intentarlo.", "error");
+      } finally {
+        changeAccount.disabled = false;
+        changeAccount.textContent = "Usar otra cuenta";
+      }
+    });
 
     recoveryForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!window.yavoyDb) {
-        show("No pudimos conectar con Local en este momento.", "error");
-        return;
-      }
-
+      if (!window.yavoyDb) return show("No pudimos conectar con Local.", "error");
+      if (recoveryButton.disabled) return;
       const email = recoveryEmailInput.value.trim();
       if (!email) return;
-
       recoveryButton.disabled = true;
-      recoveryButton.textContent = "Enviando...";
+      recoveryButton.textContent = "Enviando enlace...";
       result.hidden = true;
-
-      const { error } = await window.yavoyDb.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password.html`
-      });
-
-      recoveryButton.disabled = false;
-      recoveryButton.textContent = "Enviar enlace de recuperación";
-
-      if (error) {
-        console.error(error);
-        show("No pudimos enviar el enlace. Revisa el correo e inténtalo de nuevo.", "error");
-        return;
+      try {
+        const { error } = await deadline(window.yavoyDb.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/reset-password.html"
+        }));
+        if (error) throw error;
+        show("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa también la carpeta de spam.", "success");
+      } catch (error) {
+        show(error?.message === "TIMEOUT"
+          ? "El servicio tardó demasiado. Comprueba tu conexión e intenta nuevamente."
+          : "No pudimos procesar la solicitud. Intenta de nuevo en unos momentos.", "error");
+      } finally {
+        recoveryButton.disabled = false;
+        recoveryButton.textContent = "Enviar enlace de recuperación";
       }
-
-      show("Listo. Revisa tu correo y abre el enlace más reciente para crear una nueva contraseña.", "success");
     });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!window.yavoyDb) {
-        show("No pudimos conectar con Local en este momento.", "error");
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "Entrando...";
+      if (busy) return;
+      if (!window.yavoyDb) return show("No pudimos conectar con Local. Intenta recargar la página.", "error");
+      setBusy(true, "Validando acceso...");
       result.hidden = true;
-
-      const { data, error } = await window.yavoyDb.auth.signInWithPassword({
-        email: emailInput.value.trim(),
-        password: passwordInput.value
-      });
-
-      if (error) {
-        button.disabled = false;
-        button.textContent = "Entrar a mi espacio";
-        console.error(error);
-        show("El correo o la contraseña no son correctos.", "error");
-        return;
-      }
-      if (!data.session) {
-        button.disabled = false;
-        button.textContent = "Entrar a mi espacio";
-        show("No pudimos iniciar una sesión válida.", "error");
-        return;
-      }
-
-      if (window.LocalAuth) {
-        window.LocalAuth.resetCache();
-        const authState = await window.LocalAuth.validate({ force: true });
-        if (!authState.valid) {
-          button.disabled = false;
-          button.textContent = "Entrar a mi espacio";
-          show("No pudimos validar la sesión. Intenta iniciar nuevamente.", "error");
+      try {
+        const { data, error } = await deadline(window.yavoyDb.auth.signInWithPassword({
+          email: emailInput.value.trim(),
+          password: passwordInput.value
+        }), 18000);
+        if (error) {
+          const unauthorized = error.status === 400 || error.status === 401;
+          show(unauthorized
+            ? "No pudimos iniciar sesión. Revisa el correo y la contraseña, o recupera tu acceso."
+            : "El servicio de acceso no respondió correctamente. Intenta nuevamente.", "error");
           return;
         }
+        if (!data?.session) {
+          show("No pudimos crear la sesión. Comprueba si necesitas verificar tu correo.", "error");
+          return;
+        }
+        if (window.LocalAuth) {
+          window.LocalAuth.resetCache();
+          const verified = await deadline(window.LocalAuth.validate({ force: true }), 12000);
+          if (!verified.valid) {
+            show("Se recibió tu acceso, pero no pudimos confirmar la sesión. Intenta nuevamente.", "error");
+            return;
+          }
+        }
+        show("Acceso confirmado. Abriendo tu espacio...", "success");
+        window.location.assign(nextPage);
+      } catch (error) {
+        show(error?.message === "TIMEOUT"
+          ? "La conexión tardó demasiado. Verifica tu red e intenta de nuevo."
+          : "Ocurrió un problema de conexión. Intenta de nuevo.", "error");
+      } finally {
+        setBusy(false);
       }
-
-      window.location.assign(nextPage);
     });
-
-    if (searchParams.get("recovery") === "1") {
-      openRecovery();
-    }
-
-    redirectIfAuthenticated();
+    if (params.get("recovery") === "1") openRecovery();
+    inspectExistingSession();
+  })();
   </script>
   <script src="local-experience.js"></script>
 </body>
