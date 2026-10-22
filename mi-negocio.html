@@ -35,7 +35,8 @@
         <span class="eyebrow">Mi espacio Local</span>
         <h1>Crea el perfil de tu emprendimiento.</h1>
         <p class="lead">Tu perfil puede empezar a aparecer en Local desde hoy. Los primeros 8 días son gratis y no necesitas ingresar un medio de pago.</p>
-        <a class="button primary" href="negocio.html">Crear mi perfil y empezar gratis</a>
+        <a class="button primary" href="negocio.html">Crear mi perfil</a>
+        <a class="button ghost" href="login.html?next=mi-negocio.html">Cambiar de cuenta</a>
       </section>
 
       <div id="dashboard" class="split" hidden>
@@ -49,6 +50,7 @@
               <span id="statusBadge" class="status-badge status-draft">Cargando</span>
             </div>
             <p id="statusExplanation" class="lead"></p>
+            <p id="membershipTiming" class="lx-membership-timing" role="status" aria-live="polite" hidden></p>
 
             <div id="membershipValueNotice" class="membership-status-panel" hidden>
               <h3 id="membershipValueTitle"></h3>
@@ -130,9 +132,9 @@
             </div>
           </article>
           <article class="card">
-            <span class="eyebrow">Cómo funciona</span>
-            <h3>8 días gratis + 3 días de gracia</h3>
-            <p>Los nuevos emprendimientos aparecen gratis durante 8 días. Después tienen 3 días adicionales para activar la membresía antes de que el perfil deje de mostrarse públicamente.</p>
+            <span class="eyebrow">Mejora tu perfil</span>
+            <h3>Haz que sea fácil contactarte.</h3>
+            <p>Revisa tu foto, los productos o servicios y el número de WhatsApp antes de compartir tu emprendimiento.</p>
           </article>
         </aside>
       </div>
@@ -272,7 +274,17 @@
 
     function renderStatus() {
       const state = window.LocalTrial.phase(currentBusiness, currentSubscription);
-      const copy = window.LocalTrial.dashboardCopy(state);
+      let copy = window.LocalTrial.dashboardCopy(state);
+      const isExistingProfile = state.key === "member" && window.LocalTrial.isGrandfathered(currentBusiness)
+        && !window.LocalTrial.hasConfirmedPayment(currentBusiness, currentSubscription);
+      if (isExistingProfile) {
+        copy = {
+          badge: "Perfil activo", badgeClass: "status-active",
+          title: "Tu emprendimiento está visible en Local 💚",
+          text: "Tu perfil conserva su visibilidad por estar registrado antes del programa de membresías. No se muestra como una membresía pagada.",
+          cta: "", tone: "success"
+        };
+      }
       const badge = document.getElementById("statusBadge");
 
       document.getElementById("businessName").textContent = currentBusiness.name;
@@ -292,7 +304,21 @@
         expired: "Prueba finalizada",
         suspended: "Pausada"
       };
-      document.getElementById("subscriptionStatus").textContent = stateLabels[state.key] || "—";
+      document.getElementById("subscriptionStatus").textContent = isExistingProfile ? "Perfil activo" : (stateLabels[state.key] || "—");
+      const timing = document.getElementById("membershipTiming");
+      timing.hidden = true;
+      timing.textContent = "";
+      const dateText = (milliseconds) => new Intl.DateTimeFormat("es-CO", { dateStyle: "long", timeZone: "America/Bogota" }).format(new Date(milliseconds));
+      if (state.key === "trial") {
+        timing.textContent = `Prueba gratuita hasta el ${dateText(state.trialEndsAt)}. Después dispones de 3 días de gracia para activar la membresía.`;
+        timing.hidden = false;
+      } else if (state.key === "grace") {
+        timing.textContent = `Tu perfil sigue visible hasta el ${dateText(state.graceEndsAt)}. Activa la membresía para mantenerlo publicado.`;
+        timing.hidden = false;
+      } else if (state.key === "expired") {
+        timing.textContent = "La prueba y el periodo de gracia terminaron. Tu perfil se conserva, pero ya no aparece públicamente.";
+        timing.hidden = false;
+      }
       document.getElementById("lastPayment").textContent = formatDate(currentSubscription?.last_payment_date);
       document.getElementById("nextPayment").textContent = formatDate(currentSubscription?.next_payment_date);
 
