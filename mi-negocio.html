@@ -404,7 +404,7 @@
         console.error("No fue posible cargar Mi espacio.", error);
         showRecoverableError(error?.message === "TIMEOUT"
           ? "La consulta tardó demasiado. Revisa tu conexión y pulsa Reintentar carga."
-          : error?.message || "No pudimos abrir tu espacio. Intenta nuevamente.");
+          : "No pudimos abrir tu espacio. Revisa tu conexión y pulsa Reintentar carga.");
       } finally {
         isInitializing = false;
       }
