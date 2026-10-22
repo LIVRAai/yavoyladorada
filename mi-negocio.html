@@ -27,8 +27,9 @@
 
   <main class="business-main">
     <div class="business-shell">
-      <div id="loadingNotice" class="notice info">Cargando tu espacio...</div>
-      <div id="errorNotice" class="notice error" hidden></div>
+      <div id="loadingNotice" class="notice info" role="status" aria-live="polite">Validando tu sesión...</div>
+      <div id="errorNotice" class="notice error" role="alert" hidden></div>
+      <button id="retryLoadingButton" class="button secondary" type="button" hidden>Reintentar carga</button>
 
       <section id="emptyState" class="card" hidden>
         <span class="eyebrow">Mi espacio Local</span>
@@ -146,6 +147,7 @@
   <script>
     const loadingNotice = document.getElementById("loadingNotice");
     const errorNotice = document.getElementById("errorNotice");
+    const retryLoadingButton = document.getElementById("retryLoadingButton");
     const emptyState = document.getElementById("emptyState");
     const dashboard = document.getElementById("dashboard");
     const logoutButton = document.getElementById("logoutButton");
@@ -331,31 +333,83 @@
       renderStatus();
     }
 
-    async function init() {
-      if (!window.yavoyDb) {
-        loadingNotice.hidden = true;
-        showError("No pudimos conectar con Local en este momento.");
-        return;
-      }
-      const { data: userData, error: userError } = await window.yavoyDb.auth.getUser();
-      if (userError || !userData.user) {
-        window.location.replace("login.html?next=mi-negocio.html");
-        return;
-      }
-      currentUser = userData.user;
-      try { await loadBusiness(); }
-      catch (error) {
-        console.error(error);
-        loadingNotice.hidden = true;
-        showError("No pudimos cargar tu emprendimiento.");
-        return;
-      }
-      loadingNotice.hidden = true;
-      if (!currentBusiness) { emptyState.hidden = false; return; }
-      await refreshLifecycle();
-      fillForm();
-      dashboard.hidden = false;
+    let isInitializing = false;
+    let isClosingSession = false;
+    async function withDeadline(task, ms = 14000) {
+      let timer;
+      return Promise.race([
+        task,
+        new Promise((_, reject) => {
+          timer = window.setTimeout(() => reject(new Error("TIMEOUT")), ms);
+        })
+      ]).finally(() => window.clearTimeout(timer));
     }
+
+    function showRecoverableError(message) {
+      loadingNotice.hidden = true;
+      errorNotice.hidden = false;
+      errorNotice.textContent = message;
+      retryLoadingButton.hidden = false;
+    }
+
+    async function init() {
+      if (isInitializing || isClosingSession) return;
+      isInitializing = true;
+      errorNotice.hidden = true;
+      retryLoadingButton.hidden = true;
+      loadingNotice.hidden = false;
+      loadingNotice.textContent = "Validando tu sesión...";
+      try {
+        if (!window.yavoyDb || !window.LocalAuth) {
+          throw new Error("No pudimos conectar con Local. Revisa tu conexión y vuelve a intentar.");
+        }
+        const authState = await withDeadline(window.LocalAuth.validate({ force: true }), 14000);
+        if (isClosingSession) return;
+        if (!authState.valid || !authState.user) {
+          if (authState.temporaryError) {
+            throw new Error("No pudimos comprobar tu sesión. Revisa tu conexión y reintenta.");
+          }
+          window.location.replace("login.html?next=mi-negocio.html&expired=1");
+          return;
+        }
+        currentUser = authState.user;
+        loadingNotice.textContent = "Buscando tu emprendimiento...";
+        await withDeadline(loadBusiness(), 14000);
+        if (isClosingSession) return;
+        if (!currentBusiness) {
+          loadingNotice.hidden = true;
+          dashboard.hidden = true;
+          emptyState.hidden = false;
+          return;
+        }
+        fillForm();
+        emptyState.hidden = true;
+        dashboard.hidden = false;
+        loadingNotice.textContent = "Actualizando el estado de tu membresía...";
+        try {
+          await withDeadline(refreshLifecycle(), 14000);
+        } catch (error) {
+          console.warn("No se pudo actualizar el estado de membresía.", error);
+          document.getElementById("statusBadge").textContent = "Por verificar";
+          document.getElementById("statusExplanation").textContent = "Puedes editar tu perfil. No pudimos verificar aún el estado de la membresía.";
+          document.getElementById("subscriptionStatus").textContent = "No disponible";
+          paymentButton.hidden = true;
+          catalogButton.hidden = true;
+          membershipValueNotice.hidden = true;
+          showError("Tu perfil está disponible para edición, pero el estado de membresía no se pudo actualizar. Puedes reintentar.");
+          retryLoadingButton.hidden = false;
+        }
+        loadingNotice.hidden = true;
+      } catch (error) {
+        console.error("No fue posible cargar Mi espacio.", error);
+        showRecoverableError(error?.message === "TIMEOUT"
+          ? "La consulta tardó demasiado. Revisa tu conexión y pulsa Reintentar carga."
+          : error?.message || "No pudimos abrir tu espacio. Intenta nuevamente.");
+      } finally {
+        isInitializing = false;
+      }
+    }
+    retryLoadingButton.addEventListener("click", init);
 
     businessForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -433,13 +487,33 @@
     });
 
     window.addEventListener("pageshow", async (event) => {
-      if (!event.persisted || !currentBusiness) return;
-      await refreshLifecycle();
+      if (!event.persisted || isClosingSession) return;
+      if (window.LocalAuth) window.LocalAuth.resetCache();
+      if (!currentBusiness) return init();
+      try {
+        await withDeadline(refreshLifecycle(), 14000);
+      } catch (error) {
+        console.warn("No pudimos renovar el estado de tu perfil.", error);
+        showError("No pudimos actualizar el estado de la membresía. Vuelve a intentarlo.");
+        retryLoadingButton.hidden = false;
+      }
     });
 
     logoutButton.addEventListener("click", async () => {
-      await window.yavoyDb?.auth.signOut();
-      window.location.replace("index.html");
+      if (isClosingSession) return;
+      isClosingSession = true;
+      logoutButton.disabled = true;
+      logoutButton.textContent = "Cerrando sesión...";
+      loadingNotice.hidden = false;
+      loadingNotice.textContent = "Cerrando la sesión en este dispositivo...";
+      try {
+        if (window.LocalAuth) await withDeadline(window.LocalAuth.clearLocalSession(), 9000);
+        else await withDeadline(window.yavoyDb?.auth.signOut({ scope: "local" }), 9000);
+      } catch (error) {
+        console.warn("No se pudo confirmar el cierre remoto de sesión.", error);
+      } finally {
+        window.location.replace("login.html?logged_out=1");
+      }
     });
 
     init();
